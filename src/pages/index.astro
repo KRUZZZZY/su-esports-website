@@ -14,6 +14,14 @@ const news = (await getCollection("news"))
   .filter((n) => !n.data.draft)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
+
+const placements = await getCollection("placements");
+const totalPlacements = placements.length;
+const latestYear = Math.max(...placements.map((p) => p.data.year));
+const medalRank: Record<string, number> = { "🥇": 1, "🥈": 2, "🥉": 3 };
+const latestPlacements = placements
+  .filter((p) => p.data.year === latestYear)
+  .sort((a, b) => (medalRank[a.data.medal] ?? 9) - (medalRank[b.data.medal] ?? 9));
 ---
 
 <BaseLayout>
@@ -29,14 +37,26 @@ const news = (await getCollection("news"))
           <a href={site.discord} target="_blank" rel="noopener" class="rounded bg-brand px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
             Join the Discord
           </a>
-          <a href="/roster" class="rounded border border-white/20 px-5 py-2.5 text-sm font-medium text-offwhite transition-colors hover:border-brand hover:text-brand">
-            Meet the teams
+          <a href={site.studentsUnion} target="_blank" rel="noopener" class="rounded border border-brand/50 px-5 py-2.5 text-sm font-medium text-brand transition-colors hover:bg-brand/10">
+            Students' Union
+          </a>
+          <a href="/committee" class="rounded border border-white/20 px-5 py-2.5 text-sm font-medium text-offwhite transition-colors hover:border-brand hover:text-brand">
+            Meet the Committee
           </a>
         </div>
       </div>
       <div class="hidden md:block">
         <img src="/brand/swan-wide.png" alt="Swansea Esports swan emblem" width="1600" height="646" class="w-full opacity-90" />
       </div>
+    </div>
+  </section>
+
+  <section class="border-b border-white/10 bg-brand-gradient">
+    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-6 sm:px-6 md:flex-row">
+      <p class="font-display text-2xl tracking-wider text-offwhite">SUPPORT THE SOCIETY — GRAB THE MERCH</p>
+      <a href={site.merch} target="_blank" rel="noopener" class="rounded bg-brand px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
+        Shop the Merch Store ↗
+      </a>
     </div>
   </section>
 
@@ -49,7 +69,7 @@ const news = (await getCollection("news"))
       upcoming.length > 0 ? (
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {upcoming.map((e) => (
-            <EventCard title={e.data.title} date={e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} href={`/events/${e.id}`} />
+            <EventCard title={e.data.title} date={e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} image={e.data.image} href={`/events/${e.id}`} />
           ))}
         </div>
       ) : (
@@ -74,5 +94,19 @@ const news = (await getCollection("news"))
         <p class="mt-6 text-offwhite/60">News coming soon.</p>
       )
     }
+  </section>
+
+  <section class="border-t border-white/10 bg-brand-gradient">
+    <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-4 py-10 sm:px-6 md:flex-row md:items-center">
+      <div>
+        <h2 class="font-display text-3xl tracking-wide text-offwhite">🏆 {totalPlacements} national placements</h2>
+        <p class="mt-1 text-sm text-offwhite/60">
+          Latest ({latestYear}): {latestPlacements.slice(0, 3).map((p) => `${p.data.medal} ${p.data.competition}`).join(" · ")}
+        </p>
+      </div>
+      <a href="/achievements" class="rounded border border-white/20 px-5 py-2.5 text-sm font-medium text-offwhite transition-colors hover:border-brand hover:text-brand">
+        Full competitive history →
+      </a>
+    </div>
   </section>
 </BaseLayout>

@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CommitteeCard from "../components/CommitteeCard.astro";
+import { getCollection } from "astro:content";
+import { site } from "../site.config";
+
+const members = await getCollection("committee");
+---
+
+<BaseLayout title="Committee">
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-4xl tracking-wide text-offwhite">Committee</h1>
+    <p class="mt-2 max-w-2xl text-offwhite/60">
+      The people who run the society. Reach us by email at{" "}
+      <a href={`mailto:${site.email}`} class="text-brand hover:underline">{site.email}</a>{" "}
+      or through the <a href={site.discord} target="_blank" rel="noopener" class="text-brand hover:underline">Discord</a>.
+    </p>
+
+    <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {members.map((m) => (
+        <CommitteeCard name={m.data.name} role={m.data.role} photo={m.data.photo} socials={m.data.socials} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

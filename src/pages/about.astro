@@ -22,6 +22,19 @@ import { site } from "../site.config";
       </p>
     </div>
 
+    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Contact us</h2>
+    <div class="mt-4 space-y-3 text-offwhite/80">
+      <p>
+        Email the committee at{" "}
+        <a href={`mailto:${site.email}`} class="text-brand hover:underline">{site.email}</a>.
+      </p>
+      <p>
+        For the fastest reply,{" "}
+        <a href={site.discord} target="_blank" rel="noopener" class="text-brand hover:underline">join the Discord</a>{" "}
+        and message a committee member directly.
+      </p>
+    </div>
+
     <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Follow us</h2>
     <div class="mt-4">
       <SocialLinks />

@@ -15,6 +15,17 @@ public_folder: "/images"
 site_url: https://swanseauniesports.co.uk
 
 collections:
+  - name: committee
+    label: "Committee"
+    label_singular: "Committee member"
+    folder: "src/content/committee"
+    create: true
+    fields:
+      - { name: name, label: "Name", widget: string }
+      - { name: role, label: "Role", widget: string }
+      - { name: photo, label: "Photo", widget: image, required: false }
+      - { name: socials, label: "Social link", widget: string, required: false }
+
   - name: roster
     label: "Team Roster"
     label_singular: "Roster member"
@@ -40,6 +51,7 @@ collections:
       - { name: endDate, label: "End date", widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
       - { name: game, label: "Game", widget: string, required: false }
       - { name: location, label: "Location", widget: string, required: false }
+      - { name: image, label: "Thumbnail", widget: image, required: false }
       - { name: link, label: "Sign-up link", widget: string, required: false }
       - { name: description, label: "Short description", widget: string, required: false }
       - { name: body, label: "Details", widget: markdown, required: false }
@@ -57,3 +69,24 @@ collections:
       - { name: image, label: "Image", widget: image, required: false }
       - { name: draft, label: "Draft", widget: boolean, default: false }
       - { name: body, label: "Body", widget: markdown, required: false }
+
+  - name: placements
+    label: "Achievements"
+    label_singular: "Placement"
+    folder: "src/content/placements"
+    create: true
+    fields:
+      - { name: year, label: "Year", widget: number, value_type: int }
+      - { name: competition, label: "Competition", widget: string }
+      - { name: game, label: "Game", widget: string }
+      - { name: medal, label: "Medal", widget: select, options: ["🥇", "🥈", "🥉"], default: "🥇" }
+
+  - name: rankings
+    label: "Season Rankings"
+    label_singular: "Ranking"
+    folder: "src/content/rankings"
+    create: true
+    fields:
+      - { name: season, label: "Season", widget: string }
+      - { name: placement, label: "Placement", widget: string }
+      - { name: order, label: "Order", widget: number, value_type: int, default: 99, hint: "Lower number shows higher (1 = most recent)" }

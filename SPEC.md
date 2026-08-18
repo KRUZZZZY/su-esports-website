@@ -13,26 +13,28 @@ This document is the **specification** for the Swansea Esports website. It recor
 
 | Route | File | Purpose |
 | --- | --- | --- |
-| `/` | `src/pages/index.astro` | Home — hero, latest news, upcoming events, links. |
-| `/roster` | `src/pages/roster.astro` | All roster members, rendered as cards. |
-| `/events` | `src/pages/events.astro` | All events. |
-| `/news` | `src/pages/news/index.astro` | All published news posts. |
+| `/` | `src/pages/index.astro` | Home — hero, merch banner, upcoming events, latest news, achievements teaser. |
+| `/committee` | `src/pages/committee.astro` | Committee members, rendered as cards. |
+| `/roster` | `src/pages/roster.astro` | All roster members, grouped by game. |
+| `/events` | `src/pages/events.astro` | All events (upcoming + past). |
+| `/news` | `src/pages/news/index.astro` | All published news posts + social-follow section. |
 | `/news/[slug]` | `src/pages/news/[slug].astro` | Single news post (dynamic route per markdown file). |
 | `/events/[slug]` | `src/pages/events/[slug].astro` | Single event detail page. |
-| `/about` | `src/pages/about.astro` | About the society. |
+| `/achievements` | `src/pages/achievements.astro` | Competitive placements by year + season rankings. |
+| `/about` | `src/pages/about.astro` | About the society + contact email. |
 | `404` | `src/pages/404.astro` | Custom 404 page. |
 | `/admin` | `public/admin/index.html` | Sveltia CMS editor UI (not an Astro route — a static file). |
 | `/sitemap-index.xml` | generated | Produced by `@astrojs/sitemap` at build time. |
 
-**Navigation** (defined in `src/site.config.ts` `nav`): Home, Roster, Events, News, About.
+**Navigation** (defined in `src/site.config.ts` `nav`): Home, Committee, Roster, Events, News, Achievements, About.
 
-Shared layout: `src/layouts/BaseLayout.astro`; shared components: `Header.astro`, `Footer.astro`, `RosterCard.astro`, `EventCard.astro`, `NewsCard.astro`, `SocialLinks.astro`.
+Shared layout: `src/layouts/BaseLayout.astro`; shared components: `Header.astro`, `Footer.astro`, `RosterCard.astro`, `CommitteeCard.astro`, `EventCard.astro`, `NewsCard.astro`, `SocialLinks.astro`.
 
 ---
 
 ## 2. Content model
 
-Three Astro content collections, defined in **`src/content.config.ts`** (glob loaders + zod schemas — this file is the source of truth). All content is **markdown with YAML frontmatter** in `src/content/<collection>/*.md`.
+Six Astro content collections, defined in **`src/content.config.ts`** (glob loaders + zod schemas — this file is the source of truth). All content is **markdown with YAML frontmatter** in `src/content/<collection>/*.md`.
 
 ### 2.1 Roster — `src/content/roster/*.md`
 
@@ -91,6 +93,40 @@ One file per post. Shown on the News page (+ detail page).
 
 ---
 
+### 2.4 Committee — `src/content/committee/*.md`
+
+One file per committee member. Shown on the Committee page.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | string | ✅ | Real name. |
+| `role` | string | ✅ | Committee role (President, Treasurer, …). |
+| `photo` | string | — | Optional image path. |
+| `socials` | string | — | Optional profile URL. |
+
+### 2.5 Placements — `src/content/placements/*.md`
+
+One file per competitive placement. Shown on the Achievements page, grouped by year.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `year` | number | ✅ | Year of the placement. |
+| `competition` | string | ✅ | e.g. "NSE Spring", "NUEL Winter". |
+| `game` | string | ✅ | Game, e.g. "R6S", "Apex", "CSGO". |
+| `medal` | string | ✅ | "🥇" / "🥈" / "🥉". |
+
+### 2.6 Rankings — `src/content/rankings/*.md`
+
+One file per season ranking. Shown on the Achievements page.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `season` | string | ✅ | e.g. "2024/2025", "Winter 2024". |
+| `placement` | string | ✅ | e.g. "🥉 3rd Overall NSE". |
+| `order` | number | — | Sort order (lower = higher / more recent). |
+
+---
+
 ## 3. Site-wide configuration — `src/site.config.ts`
 
 Single source for site metadata and links (used by Header, Footer, SocialLinks, and pages):
@@ -102,6 +138,7 @@ Single source for site metadata and links (used by Header, Footer, SocialLinks, 
 - **discord:** `https://discord.gg/swansea-esports-447142229639954462`
 - **studentsUnion:** `https://www.swansea-union.co.uk/activities/society/swanseaesports/`
 - **merch:** `https://esk.gg/collections/swansea-esports`
+- **email:** `esports@swansea-societies.co.uk`
 - **socials:** Discord, Instagram `https://instagram.com/swanseagg`, Twitter/X `https://twitter.com/swanseagg`, Twitch `https://twitch.tv/swanseagg`, Steam `https://steamcommunity.com/groups/SwanseaGG`, Merch Store, Students' Union
 - **competitions:** NUEL `https://thenuel.com/university/swansea-university`, NSE `https://www.nse.gg/universities/swansea-university/`
 
@@ -158,7 +195,7 @@ Single source for site metadata and links (used by Header, Footer, SocialLinks, 
 Use as a checklist when reviewing the site or a change to it.
 
 ### Content & data
-- [ ] Roster, events, and news all render from their markdown collections via `src/content.config.ts` schemas.
+- [ ] Roster, committee, events, news, placements, and rankings all render from their markdown collections via `src/content.config.ts` schemas.
 - [ ] Every required field is enforced by the zod schema; optional fields render only when present.
 - [ ] News posts with `draft: true` never appear on the live site.
 - [ ] Events sort by `date`; multi-day events (`endDate`) display correctly.
@@ -171,7 +208,7 @@ Use as a checklist when reviewing the site or a change to it.
 - [ ] Logos referenced from `public/brand/` (swan-head square mark, swan-wide, logo-crest) and `public/favicon.png` used for the favicon.
 
 ### Site behaviour
-- [ ] All nav links (Home, Roster, Events, News, About) resolve; 404 page handles unknown routes.
+- [ ] All nav links (Home, Committee, Roster, Events, News, Achievements, About) resolve; 404 page handles unknown routes.
 - [ ] Social/competition/merch/SU links match `src/site.config.ts` exactly.
 - [ ] Sitemap generated at build (`@astrojs/sitemap`) with the canonical URL `https://swanseauniesports.co.uk`.
 - [ ] Fully static — `npm run build` succeeds with no SSR adapter; `dist/` works when served statically.

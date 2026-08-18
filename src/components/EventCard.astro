@@ -5,19 +5,31 @@ interface Props {
   endDate?: Date;
   location?: string;
   game?: string;
+  image?: string;
   href: string;
 }
 
-const { title, date, endDate, location, game, href } = Astro.props;
+const { title, date, endDate, location, game, image, href } = Astro.props;
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 const dateLabel = endDate ? `${fmt(date)} – ${fmt(endDate)}` : fmt(date);
 ---
 
-<a href={href} class="group block rounded-lg border border-white/10 bg-panel p-5 transition-colors hover:border-brand/60">
-  <div class="flex items-center justify-between gap-3">
-    <time class="text-xs font-semibold uppercase tracking-wider text-brand">{dateLabel}</time>
-    {game && <span class="rounded bg-white/5 px-2 py-0.5 text-xs text-offwhite/70">{game}</span>}
+<a href={href} class="group flex flex-col overflow-hidden rounded-lg border border-white/10 bg-panel transition-colors hover:border-brand/60">
+  {
+    image ? (
+      <img src={image} alt="" width="640" height="360" class="aspect-video w-full object-cover" />
+    ) : (
+      <div class="flex aspect-video w-full items-center justify-center bg-brand-gradient">
+        <img src="/brand/swan-head.png" alt="" width="64" height="64" class="h-16 w-16 opacity-40" />
+      </div>
+    )
+  }
+  <div class="flex flex-1 flex-col p-5">
+    <div class="flex items-center justify-between gap-3">
+      <time class="text-xs font-semibold uppercase tracking-wider text-brand">{dateLabel}</time>
+      {game && <span class="rounded bg-white/5 px-2 py-0.5 text-xs text-offwhite/70">{game}</span>}
+    </div>
+    <h3 class="mt-2 font-display text-2xl leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">{title}</h3>
+    {location && <p class="mt-1 text-sm text-offwhite/60">{location}</p>}
   </div>
-  <h3 class="mt-2 font-display text-2xl leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">{title}</h3>
-  {location && <p class="mt-1 text-sm text-offwhite/60">{location}</p>}
 </a>

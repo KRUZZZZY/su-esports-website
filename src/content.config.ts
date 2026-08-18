@@ -14,6 +14,16 @@ const roster = defineCollection({
   })
 });
 
+const committee = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/committee" }),
+  schema: z.object({
+    name: z.string(),
+    role: z.string(),
+    photo: z.string().optional(),
+    socials: z.string().optional()
+  })
+});
+
 const events = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/events" }),
   schema: z.object({
@@ -22,6 +32,7 @@ const events = defineCollection({
     endDate: z.coerce.date().optional(),
     location: z.string().optional(),
     game: z.string().optional(),
+    image: z.string().optional(),
     link: z.string().optional(),
     description: z.string().optional()
   })
@@ -39,4 +50,23 @@ const news = defineCollection({
   })
 });
 
-export const collections = { roster, events, news };
+const placements = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/placements" }),
+  schema: z.object({
+    year: z.coerce.number(),
+    competition: z.string(),
+    game: z.string(),
+    medal: z.string()
+  })
+});
+
+const rankings = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/rankings" }),
+  schema: z.object({
+    season: z.string(),
+    placement: z.string(),
+    order: z.coerce.number().default(99)
+  })
+});
+
+export const collections = { roster, committee, events, news, placements, rankings };

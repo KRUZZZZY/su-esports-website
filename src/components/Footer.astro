@@ -51,7 +51,10 @@ import SocialLinks from "./SocialLinks.astro";
     </div>
 
     <div class="mt-10 border-t border-white/10 pt-6 text-xs text-offwhite/50">
-      <p>© {new Date().getFullYear()} {site.name} · a society of Swansea University Students' Union</p>
+      <p>
+        © {new Date().getFullYear()} {site.name} · a society of Swansea University Students' Union ·{" "}
+        <a href={`mailto:${site.email}`} class="transition-colors hover:text-offwhite">{site.email}</a>
+      </p>
     </div>
   </div>
 </footer>

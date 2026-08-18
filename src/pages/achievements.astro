@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const placements = await getCollection("placements");
+const rankings = await getCollection("rankings");
+
+const medalRank: Record<string, number> = { "🥇": 1, "🥈": 2, "🥉": 3 };
+const years = [...new Set(placements.map((p) => p.data.year))].sort((a, b) => b - a);
+const sortedForYear = (y: number) =>
+  placements
+    .filter((p) => p.data.year === y)
+    .sort(
+      (a, b) =>
+        (medalRank[a.data.medal] ?? 9) - (medalRank[b.data.medal] ?? 9) ||
+        a.data.competition.localeCompare(b.data.competition)
+    );
+const sortedRankings = rankings.sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Achievements">
+  <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-4xl tracking-wide text-offwhite">Achievements</h1>
+    <p class="mt-2 text-offwhite/60">Our competitive history and season rankings.</p>
+
+    <h2 class="mt-12 font-display text-2xl tracking-wide text-brand">🏆 Placements by year</h2>
+    {
+      years.map((y) => (
+        <div class="mt-6">
+          <h3 class="font-display text-3xl text-offwhite">{y}</h3>
+          <ul class="mt-2 divide-y divide-white/5 border-t border-white/10">
+            {sortedForYear(y).map((p) => (
+              <li class="flex items-center gap-3 py-2">
+                <span class="w-8 text-lg">{p.data.medal}</span>
+                <span class="font-medium text-offwhite/90">{p.data.competition}</span>
+                <span class="text-offwhite/50">– {p.data.game}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+
+    <h2 class="mt-14 font-display text-2xl tracking-wide text-brand">📊 NSE &amp; NUEL season rankings</h2>
+    <ul class="mt-4 divide-y divide-white/5 border-t border-white/10">
+      {sortedRankings.map((r) => (
+        <li class="flex items-baseline gap-4 py-2.5">
+          <span class="w-32 shrink-0 font-display text-lg text-brand">{r.data.season}</span>
+          <span class="text-offwhite/90">{r.data.placement}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
