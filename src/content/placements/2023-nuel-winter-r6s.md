@@ -2,5 +2,5 @@
 year: 2023
 competition: NUEL Winter
 game: R6S
-medal: "🥇"
+medal: "1st"
 ---

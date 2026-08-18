@@ -5,7 +5,12 @@ import { getCollection } from "astro:content";
 const placements = await getCollection("placements");
 const rankings = await getCollection("rankings");
 
-const medalRank: Record<string, number> = { "🥇": 1, "🥈": 2, "🥉": 3 };
+const medalRank: Record<string, number> = { "1st": 1, "2nd": 2, "3rd": 3 };
+const medalBadge: Record<string, string> = {
+  "1st": "border-gold/40 bg-gold/10 text-gold",
+  "2nd": "border-silver/40 bg-silver/10 text-silver",
+  "3rd": "border-bronze/40 bg-bronze/10 text-bronze"
+};
 const years = [...new Set(placements.map((p) => p.data.year))].sort((a, b) => b - a);
 const sortedForYear = (y: number) =>
   placements
@@ -23,7 +28,7 @@ const sortedRankings = rankings.sort((a, b) => a.data.order - b.data.order);
     <h1 class="font-display text-4xl tracking-wide text-offwhite">Achievements</h1>
     <p class="mt-2 text-offwhite/60">Our competitive history and season rankings.</p>
 
-    <h2 class="mt-12 font-display text-2xl tracking-wide text-brand">🏆 Placements by year</h2>
+    <h2 class="mt-12 font-display text-2xl tracking-wide text-brand">Placements by year</h2>
     {
       years.map((y) => (
         <div class="mt-6">
@@ -31,7 +36,9 @@ const sortedRankings = rankings.sort((a, b) => a.data.order - b.data.order);
           <ul class="mt-2 divide-y divide-white/5 border-t border-white/10">
             {sortedForYear(y).map((p) => (
               <li class="flex items-center gap-3 py-2">
-                <span class="w-8 text-lg">{p.data.medal}</span>
+                <span class={`w-14 shrink-0 rounded border px-2 py-0.5 text-center text-xs font-bold ${medalBadge[p.data.medal] ?? "border-white/20 text-offwhite/70"}`}>
+                  {p.data.medal}
+                </span>
                 <span class="font-medium text-offwhite/90">{p.data.competition}</span>
                 <span class="text-offwhite/50">– {p.data.game}</span>
               </li>
@@ -41,7 +48,7 @@ const sortedRankings = rankings.sort((a, b) => a.data.order - b.data.order);
       ))
     }
 
-    <h2 class="mt-14 font-display text-2xl tracking-wide text-brand">📊 NSE &amp; NUEL season rankings</h2>
+    <h2 class="mt-14 font-display text-2xl tracking-wide text-brand">NSE &amp; NUEL season rankings</h2>
     <ul class="mt-4 divide-y divide-white/5 border-t border-white/10">
       {sortedRankings.map((r) => (
         <li class="flex items-baseline gap-4 py-2.5">

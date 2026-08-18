@@ -2,18 +2,6 @@ import { defineCollection } from "astro:content";
 import { z } from "zod";
 import { glob } from "astro/loaders";
 
-const roster = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/roster" }),
-  schema: z.object({
-    name: z.string(),
-    ign: z.string().optional(), // in-game name / gamertag
-    game: z.string(),
-    role: z.string(),
-    photo: z.string().optional(),
-    socials: z.string().optional()
-  })
-});
-
 const committee = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/committee" }),
   schema: z.object({
@@ -79,4 +67,4 @@ const rankings = defineCollection({
   })
 });
 
-export const collections = { roster, committee, reps, events, news, placements, rankings };
+export const collections = { committee, reps, events, news, placements, rankings };

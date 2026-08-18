@@ -30,6 +30,9 @@
   --color-ink: #0b0c0e; /* page background (near-black) */
   --color-panel: #111215; /* panel bg — gradient top-right */
   --color-panel-2: #1c1c1c; /* panel bg — gradient bottom-left */
+  --color-gold: #d4af37;
+  --color-silver: #b8bcc4;
+  --color-bronze: #cd7f32;
 
   --font-display: "Bebas Neue", "Arial Narrow", sans-serif;
   --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;

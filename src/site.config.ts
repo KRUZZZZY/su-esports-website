@@ -18,7 +18,6 @@ export const site = {
   nav: [
     { label: "Home", href: "/" },
     { label: "Committee", href: "/committee" },
-    { label: "Roster", href: "/roster" },
     { label: "Events", href: "/events" },
     { label: "News", href: "/news" },
     { label: "Achievements", href: "/achievements" },

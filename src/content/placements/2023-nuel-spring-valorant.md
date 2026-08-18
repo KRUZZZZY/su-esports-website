@@ -2,5 +2,5 @@
 year: 2023
 competition: NUEL Spring
 game: Valorant
-medal: "🥈"
+medal: "2nd"
 ---

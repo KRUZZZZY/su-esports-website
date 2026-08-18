@@ -2,5 +2,5 @@
 year: 2021
 competition: NSE Summer
 game: CSGO
-medal: "🥇"
+medal: "1st"
 ---

@@ -2,5 +2,5 @@
 year: 2018
 competition: King of the North VI
 game: Overwatch
-medal: "🥉"
+medal: "3rd"
 ---

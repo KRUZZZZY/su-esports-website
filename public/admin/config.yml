@@ -27,20 +27,6 @@ collections:
       - { name: photo, label: "Photo", widget: image, required: false }
       - { name: socials, label: "Social link", widget: string, required: false }
 
-  - name: roster
-    label: "Team Roster"
-    label_singular: "Roster member"
-    folder: "src/content/roster"
-    create: true
-    fields:
-      - { name: name, label: "Name", widget: string }
-      - { name: ign, label: "In-game name", widget: string, required: false }
-      - { name: game, label: "Game", widget: string }
-      - { name: role, label: "Role", widget: string }
-      - { name: photo, label: "Photo", widget: image, required: false }
-      - { name: socials, label: "Social link", widget: string, required: false }
-      - { name: body, label: "Bio", widget: markdown, required: false }
-
   - name: events
     label: "Events"
     label_singular: "Event"
@@ -80,7 +66,7 @@ collections:
       - { name: year, label: "Year", widget: number, value_type: int }
       - { name: competition, label: "Competition", widget: string }
       - { name: game, label: "Game", widget: string }
-      - { name: medal, label: "Medal", widget: select, options: ["🥇", "🥈", "🥉"], default: "🥇" }
+      - { name: medal, label: "Medal", widget: select, options: ["1st", "2nd", "3rd"], default: "1st" }
 
   - name: rankings
     label: "Season Rankings"

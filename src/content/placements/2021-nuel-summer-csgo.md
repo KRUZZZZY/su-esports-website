@@ -2,5 +2,5 @@
 year: 2021
 competition: NUEL Summer
 game: CSGO
-medal: "🥇"
+medal: "1st"
 ---

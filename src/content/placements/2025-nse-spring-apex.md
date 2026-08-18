@@ -2,5 +2,5 @@
 year: 2025
 competition: NSE Spring
 game: Apex
-medal: "🥇"
+medal: "1st"
 ---

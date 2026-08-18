@@ -2,5 +2,5 @@
 year: 2021
 competition: NUEL Winter
 game: CSGO
-medal: "🥉"
+medal: "3rd"
 ---

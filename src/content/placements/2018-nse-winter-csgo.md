@@ -2,5 +2,5 @@
 year: 2018
 competition: NSE Winter
 game: CSGO
-medal: "🥉"
+medal: "3rd"
 ---

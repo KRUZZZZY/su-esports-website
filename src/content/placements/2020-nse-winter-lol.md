@@ -2,5 +2,5 @@
 year: 2020
 competition: NSE Winter
 game: LoL
-medal: "🥈"
+medal: "2nd"
 ---

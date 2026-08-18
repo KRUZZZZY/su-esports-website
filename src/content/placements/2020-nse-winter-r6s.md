@@ -2,5 +2,5 @@
 year: 2020
 competition: NSE Winter
 game: R6S
-medal: "🥈"
+medal: "2nd"
 ---

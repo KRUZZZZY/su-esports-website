@@ -15,7 +15,6 @@ This document is the **specification** for the Swansea Esports website. It recor
 | --- | --- | --- |
 | `/` | `src/pages/index.astro` | Home — hero, merch banner, upcoming events, latest news, achievements teaser. |
 | `/committee` | `src/pages/committee.astro` | Committee members, rendered as cards. |
-| `/roster` | `src/pages/roster.astro` | All roster members, grouped by game. |
 | `/events` | `src/pages/events.astro` | All events (upcoming + past). |
 | `/news` | `src/pages/news/index.astro` | All published news posts + social-follow section. |
 | `/news/[slug]` | `src/pages/news/[slug].astro` | Single news post (dynamic route per markdown file). |
@@ -26,39 +25,15 @@ This document is the **specification** for the Swansea Esports website. It recor
 | `/admin` | `public/admin/index.html` | Sveltia CMS editor UI (not an Astro route — a static file). |
 | `/sitemap-index.xml` | generated | Produced by `@astrojs/sitemap` at build time. |
 
-**Navigation** (defined in `src/site.config.ts` `nav`): Home, Committee, Roster, Events, News, Achievements, About.
+**Navigation** (defined in `src/site.config.ts` `nav`): Home, Committee, Events, News, Achievements, About.
 
-Shared layout: `src/layouts/BaseLayout.astro`; shared components: `Header.astro`, `Footer.astro`, `RosterCard.astro`, `CommitteeCard.astro`, `EventCard.astro`, `NewsCard.astro`, `SocialLinks.astro`.
+Shared layout: `src/layouts/BaseLayout.astro`; shared components: `Header.astro`, `Footer.astro`, `CommitteeCard.astro`, `EventCard.astro`, `NewsCard.astro`, `SocialLinks.astro`.
 
 ---
 
 ## 2. Content model
 
 Six Astro content collections, defined in **`src/content.config.ts`** (glob loaders + zod schemas — this file is the source of truth). All content is **markdown with YAML frontmatter** in `src/content/<collection>/*.md`.
-
-### 2.1 Roster — `src/content/roster/*.md`
-
-One file per person. Shown on the Roster page.
-
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `name` | string | ✅ | Real name. |
-| `ign` | string | — | In-game name / gamertag. |
-| `game` | string | ✅ | The game they play. |
-| `role` | string | ✅ | Role or position (player role, captain, committee role, …). |
-| `photo` | string | — | Optional image path (uploaded via CMS). |
-| `socials` | string | — | Optional URL to their profile. |
-| body | markdown | — | Optional short bio. |
-
-```yaml
----
-name: Jamie Evans
-ign: Jev
-game: League of Legends
-role: Top Lane
----
-Top laner for the LoL roster. Bruiser enjoyer.
-```
 
 ### 2.2 Events — `src/content/events/*.md`
 
@@ -114,7 +89,7 @@ One file per competitive placement. Shown on the Achievements page, grouped by y
 | `year` | number | ✅ | Year of the placement. |
 | `competition` | string | ✅ | e.g. "NSE Spring", "NUEL Winter". |
 | `game` | string | ✅ | Game, e.g. "R6S", "Apex", "CSGO". |
-| `medal` | string | ✅ | "🥇" / "🥈" / "🥉". |
+| `medal` | string | ✅ | "1st" / "2nd" / "3rd" (rendered as gold/silver/bronze badges). |
 
 ### 2.6 Rankings — `src/content/rankings/*.md`
 
@@ -208,7 +183,7 @@ Single source for site metadata and links (used by Header, Footer, SocialLinks, 
 Use as a checklist when reviewing the site or a change to it.
 
 ### Content & data
-- [ ] Roster, committee, events, news, placements, and rankings all render from their markdown collections via `src/content.config.ts` schemas.
+- [ ] Committee, game reps, events, news, placements, and rankings all render from their markdown collections via `src/content.config.ts` schemas.
 - [ ] Every required field is enforced by the zod schema; optional fields render only when present.
 - [ ] News posts with `draft: true` never appear on the live site.
 - [ ] Events sort by `date`; multi-day events (`endDate`) display correctly.
@@ -237,3 +212,9 @@ Use as a checklist when reviewing the site or a change to it.
 ### Housekeeping
 - [ ] `dist/` and `node_modules/` are never committed.
 - [ ] `README.md`, `CONTENT-EDITING.md`, `DEPLOY.md`, `SPEC.md`, `AGENTS.md` stay accurate when the site changes.
+
+---
+
+## 8. Future work
+
+- **Weekly results tab** (backburner — not implemented): a page where players/teams are entered, and weekly match results plus final standings feed an automated roundup; ideally auto-pulled from the Google Docs where results are already published.
