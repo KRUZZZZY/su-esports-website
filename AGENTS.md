@@ -1,0 +1,49 @@
+# AGENTS.md
+
+Cross-tool context for AI coding agents (Claude Code, Codex, Cursor, Copilot, …) working in this repository.
+
+## What this repo is
+
+The website for **Swansea University Esports** (a UK university society), live at https://swanseauniesports.co.uk. A fully static site built with **Astro 7.2.3** + **Tailwind CSS 4.3.3** (CSS-first), with **@tailwindcss/typography** and **@astrojs/sitemap**. Content is markdown in Astro content collections, edited by committee members through **Sveltia CMS** at `/admin`. Hosted on **Cloudflare Pages** (static output, no SSR adapter — `dist/` is served directly). Package manager: **npm**. Node >= 22.
+
+## Commands
+
+```sh
+npm install        # install dependencies
+npm run dev        # dev server at http://localhost:4321
+npm run build      # production build → dist/
+npm run preview    # preview the built site locally
+npx astro check    # type-check (content schemas, components)
+```
+
+Always run `npm run build` (and ideally `npx astro check`) before finishing a change.
+
+## Ground rules
+
+1. **Design tokens live in `src/styles/global.css` (`@theme`) — never hardcode brand values.**
+   Brand colours (off-white `#e9e9e9`, orange `#e08f20`, black `#000000`, gradient `#1c1c1c → #111215`) and the Bebas Neue font are defined once, as Tailwind `@theme` tokens (`--color-brand`, `--color-offwhite`, `--font-display`, …) plus the `.bg-brand-gradient` / `.bg-brand-glow` utilities. Use the tokens (`bg-brand`, `text-offwhite`, `font-display`, …) in components and pages. Do **not** add hardcoded hex values, font stacks, or new colours inline. If a new token is genuinely needed, add it to `@theme` first.
+
+2. **Content lives in `src/content/*` with schemas in `src/content.config.ts`.**
+   - `src/content/roster/*.md` — name (req), ign, game (req), role (req), photo, socials
+   - `src/content/events/*.md` — title (req), date (req, YYYY-MM-DD), endDate, location, game, link, description + markdown body
+   - `src/content/news/*.md` — title (req), date (req), author (default "Swansea Esports"), excerpt, image, draft (default false) + markdown body
+   `src/content.config.ts` (glob loaders + zod schemas) is the source of truth for fields. **Keep `public/admin/config.yml` (Sveltia CMS) in sync** whenever collections or fields change — the CMS editor must match the schemas. Filter `draft: true` news posts out of listings and detail routes.
+
+3. **Never commit `dist/`.** It is git-ignored build output; Cloudflare Pages builds it from source.
+
+4. **Central config:** site metadata, nav, socials, competitions, and links live in `src/site.config.ts` (name "Swansea University Esports", URL https://swanseauniesports.co.uk, handle SwanseaGG, Discord/Instagram/Twitter/Twitch/Steam/Merch/SU links, NUEL + NSE competitions). Add or change links there, not in components.
+
+5. **Brand assets:** fonts in `public/fonts/` (Bebas Neue Regular + Bold, bundled — no CDN), logos in `public/brand/` (`swan-head.png` square mark, `swan-wide.png` wide swan, `logo-crest.png` full crest), favicon `public/favicon.png`.
+
+## Content editing / CMS note
+
+The committee edits content via Sveltia CMS at `/admin` (`public/admin/index.html` + `public/admin/config.yml`). Each save commits markdown to the GitHub repo and Cloudflare Pages auto-rebuilds. Auth uses the `sveltia-cms-auth` Cloudflare Worker with a fine-grained GitHub PAT set as a Pages secret. The `backend.repo` value in `config.yml` is a placeholder until the society repo exists. See DEPLOY.md for the full runbook.
+
+## Docs
+
+- `README.md` — overview, stack, local dev, folder structure
+- `CONTENT-EDITING.md` — guide for non-technical committee members
+- `DEPLOY.md` — deploy runbook (domain, Cloudflare Pages, CMS auth)
+- `SPEC.md` — site spec: pages, content model, design tokens, acceptance criteria
+
+Keep these docs accurate when you change the site.

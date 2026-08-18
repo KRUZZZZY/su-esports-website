@@ -1,0 +1,57 @@
+---
+import { site } from "../site.config";
+import SocialLinks from "./SocialLinks.astro";
+---
+
+<footer class="mt-16 border-t border-white/10 bg-brand-gradient">
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="grid gap-10 md:grid-cols-3">
+      <div>
+        <div class="flex items-center gap-3">
+          <img src="/brand/swan-head.png" alt="" width="36" height="36" class="h-9 w-9" />
+          <span class="font-display text-xl tracking-widest text-offwhite">SWANSEA <span class="text-brand">ESPORTS</span></span>
+        </div>
+        <p class="mt-4 text-sm text-offwhite/70">{site.description}</p>
+        <div class="mt-5">
+          <SocialLinks />
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-display text-lg tracking-wider text-brand">Explore</h3>
+        <ul class="mt-4 space-y-2 text-sm">
+          {
+            site.nav.map((item) => (
+              <li>
+                <a href={item.href} class="text-offwhite/70 transition-colors hover:text-offwhite">{item.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-display text-lg tracking-wider text-brand">Compete &amp; community</h3>
+        <ul class="mt-4 space-y-2 text-sm">
+          {
+            site.competitions.map((item) => (
+              <li>
+                <a href={item.href} target="_blank" rel="noopener" class="text-offwhite/70 transition-colors hover:text-offwhite">{item.label}</a>
+              </li>
+            ))
+          }
+          <li>
+            <a href={site.studentsUnion} target="_blank" rel="noopener" class="text-offwhite/70 transition-colors hover:text-offwhite">Students' Union</a>
+          </li>
+          <li>
+            <a href={site.merch} target="_blank" rel="noopener" class="text-offwhite/70 transition-colors hover:text-offwhite">Merch Store</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-10 border-t border-white/10 pt-6 text-xs text-offwhite/50">
+      <p>© {new Date().getFullYear()} {site.name} · a society of Swansea University Students' Union</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,66 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ============================================================
+   Swansea Esports brand tokens (from "Swansea Esports Colours.txt")
+   Off-White #e9e9e9 · Orange #e08f20 · Black #000000
+   Gradient: bottom-left #1c1c1c → top-right #111215
+   ============================================================ */
+
+/* Bebas Neue — the society's display font (bundled locally, no CDN) */
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("/fonts/BebasNeue-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("/fonts/BebasNeue-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-brand: #e08f20; /* orange accent */
+  --color-brand-dark: #c07a16;
+  --color-offwhite: #e9e9e9;
+  --color-ink: #0b0c0e; /* page background (near-black) */
+  --color-panel: #111215; /* panel bg — gradient top-right */
+  --color-panel-2: #1c1c1c; /* panel bg — gradient bottom-left */
+
+  --font-display: "Bebas Neue", "Arial Narrow", sans-serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-offwhite);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0.03em;
+  }
+}
+
+@layer utilities {
+  /* exact brand gradient (bottom-left #1c1c1c → top-right #111215) */
+  .bg-brand-gradient {
+    background: linear-gradient(135deg, #1c1c1c 0%, #111215 100%);
+  }
+  /* subtle radial glow in brand orange for hero sections */
+  .bg-brand-glow {
+    background:
+      radial-gradient(60% 50% at 80% 0%, rgba(224, 143, 32, 0.14) 0%, transparent 70%),
+      linear-gradient(135deg, #1c1c1c 0%, #111215 100%);
+  }
+}

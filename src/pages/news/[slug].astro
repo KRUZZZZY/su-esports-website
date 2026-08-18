@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("news")).filter((n) => !n.data.draft);
+  return posts.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, date, author, excerpt } = entry.data;
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+---
+
+<BaseLayout title={title} description={excerpt}>
+  <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <a href="/news" class="text-sm text-brand transition-colors hover:text-brand-dark">← All news</a>
+    <h1 class="mt-4 font-display text-4xl leading-tight tracking-wide text-offwhite">{title}</h1>
+    <div class="mt-3 flex items-center gap-3 text-sm text-offwhite/60">
+      <time>{fmt(date)}</time>
+      <span>·</span>
+      <span>{author}</span>
+    </div>
+    <div class="prose prose-invert mt-8 max-w-none prose-a:text-brand">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

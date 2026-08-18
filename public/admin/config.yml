@@ -1,0 +1,59 @@
+# Sveltia CMS configuration (Decap/Netlify-CMS-compatible format).
+# Edits here map to the Astro content collections in src/content.config.ts —
+# keep the fields in sync or builds will fail.
+
+backend:
+  name: github
+  # TODO: set to the society's repo once it exists, e.g. SwanseaUniEsports/su-esports-website
+  repo: SwanseaUniEsports/su-esports-website
+  branch: main
+
+# Uploaded images land here and are served at /images/...
+media_folder: "public/images"
+public_folder: "/images"
+
+site_url: https://swanseauniesports.co.uk
+
+collections:
+  - name: roster
+    label: "Team Roster"
+    label_singular: "Roster member"
+    folder: "src/content/roster"
+    create: true
+    fields:
+      - { name: name, label: "Name", widget: string }
+      - { name: ign, label: "In-game name", widget: string, required: false }
+      - { name: game, label: "Game", widget: string }
+      - { name: role, label: "Role", widget: string }
+      - { name: photo, label: "Photo", widget: image, required: false }
+      - { name: socials, label: "Social link", widget: string, required: false }
+      - { name: body, label: "Bio", widget: markdown, required: false }
+
+  - name: events
+    label: "Events"
+    label_singular: "Event"
+    folder: "src/content/events"
+    create: true
+    fields:
+      - { name: title, label: "Title", widget: string }
+      - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { name: endDate, label: "End date", widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
+      - { name: game, label: "Game", widget: string, required: false }
+      - { name: location, label: "Location", widget: string, required: false }
+      - { name: link, label: "Sign-up link", widget: string, required: false }
+      - { name: description, label: "Short description", widget: string, required: false }
+      - { name: body, label: "Details", widget: markdown, required: false }
+
+  - name: news
+    label: "News"
+    label_singular: "News post"
+    folder: "src/content/news"
+    create: true
+    fields:
+      - { name: title, label: "Title", widget: string }
+      - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { name: author, label: "Author", widget: string, default: "Swansea Esports" }
+      - { name: excerpt, label: "Excerpt", widget: string, required: false }
+      - { name: image, label: "Image", widget: image, required: false }
+      - { name: draft, label: "Draft", widget: boolean, default: false }
+      - { name: body, label: "Body", widget: markdown, required: false }

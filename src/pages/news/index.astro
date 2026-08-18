@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import NewsCard from "../../components/NewsCard.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("news"))
+  .filter((n) => !n.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout title="News">
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-4xl tracking-wide text-offwhite">News</h1>
+    <p class="mt-2 text-offwhite/60">Announcements, results and updates.</p>
+
+    {
+      posts.length > 0 ? (
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((n) => (
+            <NewsCard title={n.data.title} date={n.data.date} excerpt={n.data.excerpt} href={`/news/${n.id}`} />
+          ))}
+        </div>
+      ) : (
+        <p class="mt-8 text-offwhite/60">No posts yet.</p>
+      )
+    }
+  </section>
+</BaseLayout>

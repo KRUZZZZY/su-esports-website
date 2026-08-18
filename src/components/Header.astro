@@ -1,0 +1,72 @@
+---
+import { site } from "../site.config";
+
+const pathname = Astro.url.pathname;
+const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+---
+
+<header class="sticky top-0 z-50 border-b border-white/10 bg-ink/85 backdrop-blur">
+  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+    <a href="/" class="flex items-center gap-3" aria-label="Swansea Esports — home">
+      <img src="/brand/swan-head.png" alt="" width="36" height="36" class="h-9 w-9" />
+      <span class="font-display text-2xl leading-none tracking-widest text-offwhite">
+        SWANSEA <span class="text-brand">ESPORTS</span>
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-6 md:flex" aria-label="Main">
+      {
+        site.nav.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              "text-sm font-medium tracking-wide transition-colors",
+              isActive(item.href) ? "text-brand" : "text-offwhite/80 hover:text-offwhite"
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a
+        href={site.discord}
+        target="_blank"
+        rel="noopener"
+        class="rounded bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
+      >
+        Join Discord
+      </a>
+    </nav>
+
+    <details class="group relative md:hidden">
+      <summary class="flex cursor-pointer list-none items-center rounded px-2 py-1 text-offwhite [&::-webkit-details-marker]:hidden" aria-label="Open menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </summary>
+      <div class="absolute right-0 mt-2 w-52 rounded-lg border border-white/10 bg-panel p-2 shadow-xl">
+        {
+          site.nav.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                "block rounded px-3 py-2 text-sm font-medium",
+                isActive(item.href) ? "text-brand" : "text-offwhite/80 hover:bg-white/5 hover:text-offwhite"
+              ]}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+        <a
+          href={site.discord}
+          target="_blank"
+          rel="noopener"
+          class="mt-1 block rounded bg-brand px-3 py-2 text-center text-sm font-semibold text-black hover:bg-brand-dark"
+        >
+          Join Discord
+        </a>
+      </div>
+    </details>
+  </div>
+</header>

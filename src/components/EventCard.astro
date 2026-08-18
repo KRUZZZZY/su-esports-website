@@ -1,0 +1,23 @@
+---
+interface Props {
+  title: string;
+  date: Date;
+  endDate?: Date;
+  location?: string;
+  game?: string;
+  href: string;
+}
+
+const { title, date, endDate, location, game, href } = Astro.props;
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+const dateLabel = endDate ? `${fmt(date)} – ${fmt(endDate)}` : fmt(date);
+---
+
+<a href={href} class="group block rounded-lg border border-white/10 bg-panel p-5 transition-colors hover:border-brand/60">
+  <div class="flex items-center justify-between gap-3">
+    <time class="text-xs font-semibold uppercase tracking-wider text-brand">{dateLabel}</time>
+    {game && <span class="rounded bg-white/5 px-2 py-0.5 text-xs text-offwhite/70">{game}</span>}
+  </div>
+  <h3 class="mt-2 font-display text-2xl leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">{title}</h3>
+  {location && <p class="mt-1 text-sm text-offwhite/60">{location}</p>}
+</a>

@@ -1,0 +1,78 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EventCard from "../components/EventCard.astro";
+import NewsCard from "../components/NewsCard.astro";
+import { getCollection } from "astro:content";
+import { site } from "../site.config";
+
+const now = new Date();
+const upcoming = (await getCollection("events"))
+  .filter((e) => e.data.date >= now)
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
+  .slice(0, 3);
+const news = (await getCollection("news"))
+  .filter((n) => !n.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+---
+
+<BaseLayout>
+  <section class="border-b border-white/10 bg-brand-glow">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:py-24">
+      <div>
+        <p class="font-display text-lg tracking-widest text-brand">{site.handle}</p>
+        <h1 class="mt-2 font-display text-5xl leading-[0.95] tracking-wide text-offwhite sm:text-6xl">
+          SWANSEA<br />UNIVERSITY <span class="text-brand">ESPORTS</span>
+        </h1>
+        <p class="mt-4 max-w-md text-offwhite/70">{site.description}</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href={site.discord} target="_blank" rel="noopener" class="rounded bg-brand px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
+            Join the Discord
+          </a>
+          <a href="/roster" class="rounded border border-white/20 px-5 py-2.5 text-sm font-medium text-offwhite transition-colors hover:border-brand hover:text-brand">
+            Meet the teams
+          </a>
+        </div>
+      </div>
+      <div class="hidden md:block">
+        <img src="/brand/swan-wide.png" alt="Swansea Esports swan emblem" width="1600" height="646" class="w-full opacity-90" />
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="flex items-end justify-between">
+      <h2 class="font-display text-3xl tracking-wide text-offwhite">Upcoming events</h2>
+      <a href="/events" class="text-sm font-medium text-brand transition-colors hover:text-brand-dark">All events →</a>
+    </div>
+    {
+      upcoming.length > 0 ? (
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {upcoming.map((e) => (
+            <EventCard title={e.data.title} date={e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} href={`/events/${e.id}`} />
+          ))}
+        </div>
+      ) : (
+        <p class="mt-6 text-offwhite/60">No upcoming events yet — join the Discord to hear first.</p>
+      )
+    }
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="flex items-end justify-between">
+      <h2 class="font-display text-3xl tracking-wide text-offwhite">Latest news</h2>
+      <a href="/news" class="text-sm font-medium text-brand transition-colors hover:text-brand-dark">All news →</a>
+    </div>
+    {
+      news.length > 0 ? (
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {news.map((n) => (
+            <NewsCard title={n.data.title} date={n.data.date} excerpt={n.data.excerpt} href={`/news/${n.id}`} />
+          ))}
+        </div>
+      ) : (
+        <p class="mt-6 text-offwhite/60">News coming soon.</p>
+      )
+    }
+  </section>
+</BaseLayout>

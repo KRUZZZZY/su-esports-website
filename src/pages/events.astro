@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EventCard from "../components/EventCard.astro";
+import { getCollection } from "astro:content";
+
+const now = new Date();
+const all = await getCollection("events");
+const upcoming = all
+  .filter((e) => e.data.date >= now || (e.data.endDate && e.data.endDate >= now))
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const past = all
+  .filter((e) => e.data.date < now && !(e.data.endDate && e.data.endDate >= now))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout title="Events">
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-4xl tracking-wide text-offwhite">Events</h1>
+    <p class="mt-2 text-offwhite/60">Tournaments, socials, LANs and watch parties.</p>
+
+    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Upcoming</h2>
+    {
+      upcoming.length > 0 ? (
+        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {upcoming.map((e) => (
+            <EventCard title={e.data.title} date={e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} href={`/events/${e.id}`} />
+          ))}
+        </div>
+      ) : (
+        <p class="mt-4 text-offwhite/60">Nothing scheduled — join the Discord to hear first.</p>
+      )
+    }
+
+    <h2 class="mt-12 font-display text-2xl tracking-wide text-brand">Past</h2>
+    {
+      past.length > 0 ? (
+        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {past.map((e) => (
+            <EventCard title={e.data.title} date={e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} href={`/events/${e.id}`} />
+          ))}
+        </div>
+      ) : (
+        <p class="mt-4 text-offwhite/60">No past events yet.</p>
+      )
+    }
+  </section>
+</BaseLayout>

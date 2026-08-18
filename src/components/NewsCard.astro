@@ -1,0 +1,17 @@
+---
+interface Props {
+  title: string;
+  date: Date;
+  excerpt?: string;
+  href: string;
+}
+
+const { title, date, excerpt, href } = Astro.props;
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+---
+
+<a href={href} class="group block rounded-lg border border-white/10 bg-panel p-5 transition-colors hover:border-brand/60">
+  <time class="text-xs font-semibold uppercase tracking-wider text-brand">{fmt(date)}</time>
+  <h3 class="mt-2 font-display text-xl leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">{title}</h3>
+  {excerpt && <p class="mt-2 text-sm text-offwhite/60 line-clamp-2">{excerpt}</p>}
+</a>
