@@ -24,12 +24,13 @@ Always run `npm run build` (and ideally `npx astro check`) before finishing a ch
    Brand colours (off-white `#e9e9e9`, orange `#e08f20`, black `#000000`, gradient `#1c1c1c → #111215`) and the Bebas Neue font are defined once, as Tailwind `@theme` tokens (`--color-brand`, `--color-offwhite`, `--font-display`, …) plus the `.bg-brand-gradient` / `.bg-brand-glow` utilities. Use the tokens (`bg-brand`, `text-offwhite`, `font-display`, …) in components and pages. Do **not** add hardcoded hex values, font stacks, or new colours inline. If a new token is genuinely needed, add it to `@theme` first.
 
 2. **Content lives in `src/content/*` with schemas in `src/content.config.ts`.**
-   - `src/content/committee/*.md` — name (req), role (req), photo, socials
+   - `src/content/committee/*.md` — name (req), role (req), ign, photo, socials
    - `src/content/roster/*.md` — name (req), ign, game (req), role (req), photo, socials
    - `src/content/events/*.md` — title (req), date (req, YYYY-MM-DD), endDate, location, game, image, link, description + markdown body
    - `src/content/news/*.md` — title (req), date (req), author (default "Swansea Esports"), excerpt, image, draft (default false) + markdown body
    - `src/content/placements/*.md` — year (req, number), competition (req), game (req), medal (req "🥇"/"🥈"/"🥉")
    - `src/content/rankings/*.md` — season (req), placement (req), order (number, sort key)
+   - `src/content/reps/*.md` — game (req), name (req, "TBC" if vacant), ign
    `src/content.config.ts` (glob loaders + zod schemas) is the source of truth for fields. **Keep `public/admin/config.yml` (Sveltia CMS) in sync** whenever collections or fields change — the CMS editor must match the schemas. Filter `draft: true` news posts out of listings and detail routes.
 
 3. **Never commit `dist/`.** It is git-ignored build output; Cloudflare Pages builds it from source.

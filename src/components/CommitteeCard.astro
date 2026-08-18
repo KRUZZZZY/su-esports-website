@@ -2,11 +2,12 @@
 interface Props {
   name: string;
   role: string;
+  ign?: string;
   photo?: string;
   socials?: string;
 }
 
-const { name, role, photo, socials } = Astro.props;
+const { name, role, ign, photo, socials } = Astro.props;
 const initials = name
   .split(" ")
   .map((p) => p[0])
@@ -24,7 +25,10 @@ const initials = name
     )
   }
   <div class="min-w-0 flex-1">
-    <div class="font-semibold text-offwhite">{name}</div>
+    <div class="flex flex-wrap items-baseline gap-x-2">
+      <span class="font-semibold text-offwhite">{name}</span>
+      {ign && <span class="text-sm text-offwhite/50">“{ign}”</span>}
+    </div>
     <div class="text-sm text-brand">{role}</div>
   </div>
   {socials && (

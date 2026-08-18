@@ -4,7 +4,8 @@ import CommitteeCard from "../components/CommitteeCard.astro";
 import { getCollection } from "astro:content";
 import { site } from "../site.config";
 
-const members = await getCollection("committee");
+const committee = await getCollection("committee");
+const reps = (await getCollection("reps")).sort((a, b) => a.data.game.localeCompare(b.data.game));
 ---
 
 <BaseLayout title="Committee">
@@ -16,9 +17,20 @@ const members = await getCollection("committee");
       or through the <a href={site.discord} target="_blank" rel="noopener" class="text-brand hover:underline">Discord</a>.
     </p>
 
-    <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {members.map((m) => (
-        <CommitteeCard name={m.data.name} role={m.data.role} photo={m.data.photo} socials={m.data.socials} />
+    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Committee 2025/26</h2>
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {committee.map((m) => (
+        <CommitteeCard name={m.data.name} role={m.data.role} ign={m.data.ign} photo={m.data.photo} socials={m.data.socials} />
+      ))}
+    </div>
+
+    <h2 class="mt-12 font-display text-2xl tracking-wide text-brand">Game Reps 2026/27</h2>
+    <div class="mt-4 grid gap-x-8 gap-y-0 sm:grid-cols-2">
+      {reps.map((r) => (
+        <div class="flex items-baseline justify-between gap-3 border-b border-white/5 py-2.5">
+          <span class="font-medium text-offwhite">{r.data.game}</span>
+          <span class="text-right text-offwhite/60">{r.data.name}{r.data.ign ? ` “${r.data.ign}”` : ""}</span>
+        </div>
       ))}
     </div>
   </section>

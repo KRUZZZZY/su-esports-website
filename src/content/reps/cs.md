@@ -1,0 +1,4 @@
+---
+game: CS
+name: TBC
+---

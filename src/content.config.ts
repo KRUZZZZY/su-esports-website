@@ -19,8 +19,18 @@ const committee = defineCollection({
   schema: z.object({
     name: z.string(),
     role: z.string(),
+    ign: z.string().optional(),
     photo: z.string().optional(),
     socials: z.string().optional()
+  })
+});
+
+const reps = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/reps" }),
+  schema: z.object({
+    game: z.string(),
+    name: z.string(),
+    ign: z.string().optional()
   })
 });
 
@@ -69,4 +79,4 @@ const rankings = defineCollection({
   })
 });
 
-export const collections = { roster, committee, events, news, placements, rankings };
+export const collections = { roster, committee, reps, events, news, placements, rankings };

@@ -23,6 +23,7 @@ collections:
     fields:
       - { name: name, label: "Name", widget: string }
       - { name: role, label: "Role", widget: string }
+      - { name: ign, label: "In-game name", widget: string, required: false }
       - { name: photo, label: "Photo", widget: image, required: false }
       - { name: socials, label: "Social link", widget: string, required: false }
 
@@ -90,3 +91,13 @@ collections:
       - { name: season, label: "Season", widget: string }
       - { name: placement, label: "Placement", widget: string }
       - { name: order, label: "Order", widget: number, value_type: int, default: 99, hint: "Lower number shows higher (1 = most recent)" }
+
+  - name: reps
+    label: "Game Reps"
+    label_singular: "Game rep"
+    folder: "src/content/reps"
+    create: true
+    fields:
+      - { name: game, label: "Game", widget: string }
+      - { name: name, label: "Name", widget: string, hint: "\"TBC\" if vacant" }
+      - { name: ign, label: "In-game name", widget: string, required: false }

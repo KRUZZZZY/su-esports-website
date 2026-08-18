@@ -101,6 +101,7 @@ One file per committee member. Shown on the Committee page.
 | --- | --- | --- | --- |
 | `name` | string | ✅ | Real name. |
 | `role` | string | ✅ | Committee role (President, Treasurer, …). |
+| `ign` | string | — | In-game name / tag. |
 | `photo` | string | — | Optional image path. |
 | `socials` | string | — | Optional profile URL. |
 
@@ -127,6 +128,18 @@ One file per season ranking. Shown on the Achievements page.
 
 ---
 
+### 2.7 Game Reps — `src/content/reps/*.md`
+
+One file per game rep. Shown on the Committee page.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `game` | string | ✅ | The game they rep. |
+| `name` | string | ✅ | Real name (use "TBC" if vacant). |
+| `ign` | string | — | In-game name / tag. |
+
+---
+
 ## 3. Site-wide configuration — `src/site.config.ts`
 
 Single source for site metadata and links (used by Header, Footer, SocialLinks, and pages):
@@ -135,7 +148,7 @@ Single source for site metadata and links (used by Header, Footer, SocialLinks, 
 - **shortName:** `Swansea Esports`
 - **handle:** `SwanseaGG`
 - **url:** `https://swanseauniesports.co.uk`
-- **discord:** `https://discord.gg/swansea-esports-447142229639954462`
+- **discord:** `https://discord.gg/swansea`
 - **studentsUnion:** `https://www.swansea-union.co.uk/activities/society/swanseaesports/`
 - **merch:** `https://esk.gg/collections/swansea-esports`
 - **email:** `esports@swansea-societies.co.uk`

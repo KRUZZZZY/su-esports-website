@@ -10,7 +10,7 @@ export const site = {
   url: "https://swanseauniesports.co.uk",
   description:
     "The official home of Swansea University Esports — competitive teams, tournaments, and a community for every game.",
-  discord: "https://discord.gg/swansea-esports-447142229639954462",
+  discord: "https://discord.gg/swansea",
   studentsUnion: "https://www.swansea-union.co.uk/activities/society/swanseaesports/",
   merch: "https://esk.gg/collections/swansea-esports",
   email: "esports@swansea-societies.co.uk",
@@ -26,7 +26,7 @@ export const site = {
   ],
 
   socials: [
-    { label: "Discord", href: "https://discord.gg/swansea-esports-447142229639954462" },
+    { label: "Discord", href: "https://discord.gg/swansea" },
     { label: "Students' Union", href: "https://www.swansea-union.co.uk/activities/society/swanseaesports/" },
     { label: "Merch Store", href: "https://esk.gg/collections/swansea-esports" },
     { label: "Instagram", href: "https://instagram.com/swanseagg" },
