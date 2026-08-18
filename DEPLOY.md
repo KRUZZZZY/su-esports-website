@@ -100,6 +100,23 @@ backend:
 
 5. **Test it:** go to `https://swanseauniesports.co.uk/admin`, sign in with a collaborator's GitHub account, make a tiny test edit (e.g. fix a typo in a news post), and save. Confirm the commit lands in GitHub and the site rebuilds.
 
+### Admin news wizard — `/admin/new`
+
+Alongside the Sveltia CMS at `/admin`, the site ships a step-based news wizard at **`/admin/new`** (source: `src/pages/admin/new.astro`) — a single-admin login (email + password) plus a 5-step article form, backed by **Cloudflare Pages Functions** in the repo's `functions/` directory. `POST /api/news` validates the post and commits it to GitHub via the Contents API — the same commit-triggers-rebuild loop as the CMS — so a published post appears on the site within a minute. The wizard page itself is public (it holds no secrets); the API is the security boundary, gated by an HMAC-signed HttpOnly session cookie.
+
+Set these Pages secrets (Settings → Environment variables → add → mark as **secret**):
+
+| Variable | Value |
+| --- | --- |
+| `ADMIN_EMAIL` | Admin login email, e.g. `esports@swansea-societies.co.uk` |
+| `ADMIN_PASSWORD` | Admin login password (the single credential — keep it strong) |
+| `AUTH_SECRET` | Random 32-byte hex used to sign session cookies (`openssl rand -hex 32`) |
+| `GITHUB_TOKEN` | Fine-grained GitHub PAT with **Contents: Read and write** on the site repo (can be the same token the CMS auth uses) |
+| `GITHUB_OWNER` | GitHub owner of the site repo, e.g. `SwanseaUniEsports` |
+| `GITHUB_REPO` | GitHub repo name, e.g. `su-esports-website` |
+
+Locally these live in **`.dev.vars`** (git-ignored). Test the full stack with `npm run build` then `npx wrangler pages dev dist` — `astro dev` does not run Functions.
+
 ---
 
 ## 6. Enable auto-deploy

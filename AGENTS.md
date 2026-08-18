@@ -42,6 +42,10 @@ Always run `npm run build` (and ideally `npx astro check`) before finishing a ch
 
 The committee edits content via Sveltia CMS at `/admin` (`public/admin/index.html` + `public/admin/config.yml`). Each save commits markdown to the GitHub repo and Cloudflare Pages auto-rebuilds. Auth uses the `sveltia-cms-auth` Cloudflare Worker with a fine-grained GitHub PAT set as a Pages secret. The `backend.repo` value in `config.yml` is a placeholder until the society repo exists. See DEPLOY.md for the full runbook.
 
+## Admin API / news wizard note
+
+`functions/` holds **Cloudflare Pages Functions** (Pages Functions module syntax — the site stays `output: static`, no adapter needed; Functions co-deploy with the build): `functions/api/auth/{login,me,logout}.js` implement the single-admin login (email + password from secrets, HMAC-SHA256-signed HttpOnly session cookie) and `functions/api/news.js` validates a news post and commits it to GitHub via the Contents API, which triggers the Pages auto-rebuild. Shared helpers live in `functions/_lib/` (underscore-prefixed = not routed). The step-based news wizard is `src/pages/admin/new.astro` → `/admin/new`. Local secrets live in **`.dev.vars`** (git-ignored — never commit it); set the same variables as Pages secrets for production. Test Functions locally with `npx wrangler pages dev dist` after `npm run build` — `astro dev` does not run Functions.
+
 ## Docs
 
 - `README.md` — overview, stack, local dev, folder structure

@@ -1,0 +1,492 @@
+---
+import "../../styles/global.css";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin · Swansea Esports</title>
+    <meta name="description" content="Swansea Esports admin — publish news posts." />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="robots" content="noindex" />
+  </head>
+  <body class="bg-ink text-offwhite">
+    <div class="min-h-screen bg-brand-glow">
+      <header class="border-b border-white/10 bg-ink/85 backdrop-blur">
+        <div class="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
+          <div class="flex items-center gap-3">
+            <img src="/brand/swan-head.png" alt="" width="36" height="36" class="h-9 w-9" />
+            <span class="font-display text-xl tracking-widest text-offwhite">
+              SWANSEA <span class="text-brand">ESPORTS</span>
+              <span class="text-offwhite/50">— Admin</span>
+            </span>
+          </div>
+          <button
+            id="signout-btn"
+            class="hidden rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+          >
+            Sign out
+          </button>
+        </div>
+      </header>
+
+      <main class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+        <!-- ============ LOGIN ============ -->
+        <section id="login-view" class="hidden">
+          <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8">
+            <h1 class="font-display text-3xl tracking-wider text-brand">Sign in</h1>
+            <p class="mt-2 text-sm text-offwhite/60">Admin access for Swansea Esports committee members.</p>
+            <form id="login-form" class="mt-6 space-y-4">
+              <div>
+                <label for="login-email" class="block text-sm font-medium text-offwhite/80">Email</label>
+                <input
+                  id="login-email"
+                  type="email"
+                  required
+                  autocomplete="username"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand"
+                />
+              </div>
+              <div>
+                <label for="login-password" class="block text-sm font-medium text-offwhite/80">Password</label>
+                <input
+                  id="login-password"
+                  type="password"
+                  required
+                  autocomplete="current-password"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand"
+                />
+              </div>
+              <p id="login-error" class="hidden text-sm text-red-400" aria-live="polite"></p>
+              <button
+                type="submit"
+                id="login-btn"
+                class="w-full rounded-lg bg-brand px-4 py-2.5 font-semibold text-black transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Sign in
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ============ WIZARD ============ -->
+        <section id="wizard-view" class="hidden">
+          <div class="rounded-xl border border-white/10 bg-panel p-6 sm:p-8">
+            <div class="flex items-center justify-between">
+              <h1 class="font-display text-3xl tracking-wider text-brand">New news post</h1>
+              <span id="step-label" class="text-sm text-offwhite/50">Step 1 of 5</span>
+            </div>
+
+            <!-- progress dots -->
+            <div class="mt-6 flex items-center gap-2" aria-hidden="true">
+              <span id="dot-1" class="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-xs font-bold text-black">1</span>
+              <span class="h-px w-6 bg-white/15"></span>
+              <span id="dot-2" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-offwhite/60">2</span>
+              <span class="h-px w-6 bg-white/15"></span>
+              <span id="dot-3" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-offwhite/60">3</span>
+              <span class="h-px w-6 bg-white/15"></span>
+              <span id="dot-4" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-offwhite/60">4</span>
+              <span class="h-px w-6 bg-white/15"></span>
+              <span id="dot-5" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-offwhite/60">5</span>
+            </div>
+
+            <!-- Step 1: title -->
+            <section id="step-1" class="mt-8">
+              <h2 class="font-display text-xl tracking-wider text-offwhite">1 · Title</h2>
+              <p class="mt-1 text-sm text-offwhite/60">What is this post about?</p>
+              <input
+                id="w-title"
+                type="text"
+                maxlength="200"
+                placeholder="e.g. Welcome to the new website"
+                class="mt-4 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+              />
+              <p class="mt-2 text-xs text-offwhite/50">
+                Page URL: <span id="w-slug-hint" class="text-brand">—</span>
+              </p>
+            </section>
+
+            <!-- Step 2: date & author -->
+            <section id="step-2" class="mt-8 hidden">
+              <h2 class="font-display text-xl tracking-wider text-offwhite">2 · Date &amp; author</h2>
+              <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label for="w-date" class="block text-sm font-medium text-offwhite/80">Date</label>
+                  <input
+                    id="w-date"
+                    type="date"
+                    class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+                  />
+                </div>
+                <div>
+                  <label for="w-author" class="block text-sm font-medium text-offwhite/80">Author</label>
+                  <input
+                    id="w-author"
+                    type="text"
+                    maxlength="100"
+                    placeholder="Swansea Esports"
+                    class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <!-- Step 3: excerpt -->
+            <section id="step-3" class="mt-8 hidden">
+              <h2 class="font-display text-xl tracking-wider text-offwhite">3 · Excerpt</h2>
+              <p class="mt-1 text-sm text-offwhite/60">A short teaser shown on the news listing — optional.</p>
+              <textarea
+                id="w-excerpt"
+                rows="2"
+                maxlength="300"
+                placeholder="One or two sentences summarising the post…"
+                class="mt-4 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+              ></textarea>
+              <p class="mt-2 text-xs text-offwhite/50">Max 300 characters.</p>
+            </section>
+
+            <!-- Step 4: body -->
+            <section id="step-4" class="mt-8 hidden">
+              <h2 class="font-display text-xl tracking-wider text-offwhite">4 · Content</h2>
+              <p class="mt-1 text-sm text-offwhite/60">
+                Write the post in <span class="text-brand">markdown</span> — <code class="rounded bg-white/10 px-1 py-0.5 text-xs"># Heading</code>,
+                <code class="rounded bg-white/10 px-1 py-0.5 text-xs">**bold**</code>, links, lists all work.
+              </p>
+              <textarea
+                id="w-body"
+                rows="14"
+                placeholder="Write your post here…&#10;&#10;Markdown supported."
+                class="mt-4 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 font-mono text-sm text-offwhite outline-none transition-colors focus:border-brand"
+              ></textarea>
+              <p class="mt-2 text-xs text-offwhite/50">Markdown supported.</p>
+            </section>
+
+            <!-- Step 5: preview & publish -->
+            <section id="step-5" class="mt-8 hidden">
+              <h2 class="font-display text-xl tracking-wider text-offwhite">5 · Preview &amp; publish</h2>
+              <div class="mt-4 rounded-lg border border-white/10 bg-ink p-5">
+                <h3 id="pv-title" class="font-display text-2xl tracking-wider text-offwhite"></h3>
+                <p id="pv-meta" class="mt-1 text-sm text-offwhite/50"></p>
+                <p id="pv-excerpt" class="mt-3 text-sm italic text-offwhite/70"></p>
+                <div id="pv-body" class="mt-4 whitespace-pre-wrap border-t border-white/10 pt-4 text-sm leading-relaxed text-offwhite/85"></div>
+              </div>
+              <p class="mt-3 text-xs text-offwhite/50">Publishing commits the post to the site's GitHub repo — Cloudflare Pages rebuilds automatically.</p>
+            </section>
+
+            <p id="step-error" class="mt-6 hidden text-sm text-red-400" aria-live="polite"></p>
+
+            <!-- nav buttons -->
+            <div class="mt-6 flex items-center justify-between gap-3">
+              <button
+                id="btn-back"
+                class="hidden rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+              >
+                Back
+              </button>
+              <span class="flex-1"></span>
+              <button
+                id="btn-next"
+                class="hidden rounded-lg bg-brand px-6 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
+              >
+                Next
+              </button>
+              <button
+                id="btn-publish"
+                class="hidden rounded-lg bg-brand px-6 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Publish
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ SUCCESS ============ -->
+        <section id="success-view" class="hidden">
+          <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8 text-center">
+            <h1 class="font-display text-3xl tracking-wider text-brand">Post published 🎉</h1>
+            <p class="mt-3 text-sm text-offwhite/70">
+              Live shortly — the site rebuilds after this commit.<br />
+              <a id="success-link" href="/news" class="mt-2 inline-block text-brand underline-offset-4 hover:underline">/news/…</a>
+            </p>
+            <div class="mt-6 flex justify-center gap-3">
+              <a
+                href="/admin/new"
+                class="rounded-lg bg-brand px-5 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
+              >
+                Write another
+              </a>
+              <a
+                href="/news"
+                class="rounded-lg border border-white/15 px-5 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+              >
+                View news
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" is:inline>
+      (function () {
+        "use strict";
+
+        const $ = (id) => document.getElementById(id);
+        const STORAGE_KEY = "su-admin-draft";
+
+        const now = new Date();
+        const today =
+          now.getFullYear() +
+          "-" +
+          String(now.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(now.getDate()).padStart(2, "0");
+
+        const state = { step: 1, title: "", date: today, author: "Swansea Esports", excerpt: "", body: "" };
+
+        // ---- helpers -------------------------------------------------------
+        function slugify(str) {
+          return str
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+        }
+
+        function formatDate(iso) {
+          const d = new Date(iso + "T00:00:00");
+          return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+        }
+
+        // ---- draft persistence ---------------------------------------------
+        function saveDraft() {
+          try {
+            localStorage.setItem(
+              STORAGE_KEY,
+              JSON.stringify({ title: state.title, date: state.date, author: state.author, excerpt: state.excerpt, body: state.body })
+            );
+          } catch (e) {
+            /* storage unavailable — ignore */
+          }
+        }
+
+        function loadDraft() {
+          try {
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+            if (saved && typeof saved === "object") {
+              if (typeof saved.title === "string") state.title = saved.title;
+              if (typeof saved.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(saved.date)) state.date = saved.date;
+              if (typeof saved.author === "string") state.author = saved.author;
+              if (typeof saved.excerpt === "string") state.excerpt = saved.excerpt;
+              if (typeof saved.body === "string") state.body = saved.body;
+            }
+          } catch (e) {
+            /* corrupted draft — ignore */
+          }
+        }
+
+        // ---- views ----------------------------------------------------------
+        function showView(name) {
+          $("login-view").classList.toggle("hidden", name !== "login");
+          $("wizard-view").classList.toggle("hidden", name !== "wizard");
+          $("success-view").classList.toggle("hidden", name !== "success");
+          $("signout-btn").classList.toggle("hidden", name !== "wizard");
+        }
+
+        function syncInputs() {
+          $("w-title").value = state.title;
+          $("w-date").value = state.date;
+          $("w-author").value = state.author;
+          $("w-excerpt").value = state.excerpt;
+          $("w-body").value = state.body;
+          updateSlugHint();
+        }
+
+        function updateSlugHint() {
+          const slug = slugify(state.title);
+          $("w-slug-hint").textContent = slug ? "/news/" + slug : "—";
+        }
+
+        function showStep(n) {
+          state.step = n;
+          for (let i = 1; i <= 5; i++) {
+            $("step-" + i).classList.toggle("hidden", i !== n);
+            const dot = $("dot-" + i);
+            const done = i <= n;
+            dot.classList.toggle("bg-brand", done);
+            dot.classList.toggle("bg-white/10", !done);
+            dot.classList.toggle("text-black", done);
+            dot.classList.toggle("text-offwhite/60", !done);
+          }
+          $("btn-back").classList.toggle("hidden", n === 1);
+          $("btn-next").classList.toggle("hidden", n === 5);
+          $("btn-publish").classList.toggle("hidden", n !== 5);
+          $("step-label").textContent = "Step " + n + " of 5";
+          if (n === 5) renderPreview();
+        }
+
+        function setError(msg) {
+          const err = $("step-error");
+          err.textContent = msg;
+          err.classList.toggle("hidden", !msg);
+        }
+
+        function validateStep(n) {
+          if (n === 1) {
+            if (!state.title.trim()) return "Give the post a title.";
+            if (state.title.trim().length > 200) return "Title must be 200 characters or fewer.";
+          } else if (n === 2) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(state.date)) return "Pick a valid date.";
+            if (!state.author.trim()) return "Add an author.";
+            if (state.author.trim().length > 100) return "Author must be 100 characters or fewer.";
+          } else if (n === 3) {
+            if (state.excerpt.length > 300) return "Excerpt must be 300 characters or fewer.";
+          } else if (n === 4) {
+            if (!state.body.trim()) return "Write some content for the post.";
+            if (state.body.length > 100000) return "Body is too long (max 100,000 characters).";
+          }
+          return "";
+        }
+
+        function renderPreview() {
+          $("pv-title").textContent = state.title.trim() || "(untitled)";
+          $("pv-meta").textContent =
+            formatDate(state.date) + " · " + (state.author.trim() || "Swansea Esports");
+          $("pv-excerpt").textContent = state.excerpt.trim();
+          $("pv-excerpt").classList.toggle("hidden", !state.excerpt.trim());
+          $("pv-body").textContent = state.body;
+        }
+
+        // ---- publish ---------------------------------------------------------
+        async function publish() {
+          const btn = $("btn-publish");
+          btn.disabled = true;
+          btn.textContent = "Publishing…";
+          setError("");
+          try {
+            const res = await fetch("/api/news", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                title: state.title.trim(),
+                date: state.date,
+                author: state.author.trim() || "Swansea Esports",
+                excerpt: state.excerpt.trim(),
+                body: state.body,
+              }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.slug) {
+              try {
+                localStorage.removeItem(STORAGE_KEY);
+              } catch (e) {
+                /* ignore */
+              }
+              showSuccess(data.slug);
+            } else {
+              setError((data && data.error) || "Publish failed — try again.");
+            }
+          } catch (e) {
+            setError("Network error — check your connection and try again.");
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Publish";
+          }
+        }
+
+        function showSuccess(slug) {
+          $("wizard-view").classList.add("hidden");
+          $("success-view").classList.remove("hidden");
+          const link = $("success-link");
+          link.href = "/news/" + slug;
+          link.textContent = "/news/" + slug;
+        }
+
+        // ---- events ------------------------------------------------------------
+        ["w-title", "w-date", "w-author", "w-excerpt", "w-body"].forEach((id) => {
+          $(id).addEventListener("input", (e) => {
+            const key = { "w-title": "title", "w-date": "date", "w-author": "author", "w-excerpt": "excerpt", "w-body": "body" }[id];
+            state[key] = e.target.value;
+            if (id === "w-title") updateSlugHint();
+            saveDraft();
+          });
+        });
+
+        $("btn-next").addEventListener("click", () => {
+          const msg = validateStep(state.step);
+          if (msg) {
+            setError(msg);
+            return;
+          }
+          setError("");
+          showStep(state.step + 1);
+        });
+
+        $("btn-back").addEventListener("click", () => {
+          setError("");
+          showStep(Math.max(1, state.step - 1));
+        });
+
+        $("btn-publish").addEventListener("click", publish);
+
+        $("signout-btn").addEventListener("click", async () => {
+          try {
+            await fetch("/api/auth/logout", { method: "POST" });
+          } catch (e) {
+            /* ignore — reload regardless */
+          }
+          location.reload();
+        });
+
+        $("login-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = $("login-btn");
+          const err = $("login-error");
+          btn.disabled = true;
+          btn.textContent = "Signing in…";
+          err.classList.add("hidden");
+          try {
+            const res = await fetch("/api/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: $("login-email").value.trim(),
+                password: $("login-password").value,
+              }),
+            });
+            if (res.ok) {
+              location.reload();
+              return;
+            }
+            const data = await res.json().catch(() => ({}));
+            err.textContent = (data && data.error) || "Invalid credentials";
+            err.classList.remove("hidden");
+          } catch (e2) {
+            err.textContent = "Network error — try again.";
+            err.classList.remove("hidden");
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Sign in";
+          }
+        });
+
+        // ---- boot -----------------------------------------------------------------
+        (async function init() {
+          loadDraft();
+          try {
+            const res = await fetch("/api/auth/me");
+            if (res.ok) {
+              syncInputs();
+              showView("wizard");
+              showStep(1);
+            } else {
+              showView("login");
+            }
+          } catch (e) {
+            showView("login");
+          }
+        })();
+      })();
+    </script>
+  </body>
+</html>
