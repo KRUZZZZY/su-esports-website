@@ -9,6 +9,7 @@ const committee = defineCollection({
     role: z.string(),
     ign: z.string().optional(),
     photo: z.string().optional(),
+    bio: z.string().optional(),
     socials: z.string().optional(),
     order: z.coerce.number().default(99)
   })
@@ -19,7 +20,9 @@ const reps = defineCollection({
   schema: z.object({
     game: z.string(),
     name: z.string(),
-    ign: z.string().optional()
+    ign: z.string().optional(),
+    photo: z.string().optional(),
+    bio: z.string().optional()
   })
 });
 

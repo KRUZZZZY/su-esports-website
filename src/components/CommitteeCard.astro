@@ -4,19 +4,27 @@ interface Props {
   role: string;
   ign?: string;
   photo?: string;
+  bio?: string;
   socials?: string;
 }
 
-const { name, role, ign, photo, socials } = Astro.props;
+const { name, role, ign, photo, bio, socials } = Astro.props;
 const initials = name
   .split(" ")
   .map((p) => p[0])
   .join("")
   .slice(0, 2)
   .toUpperCase();
+const profile = JSON.stringify({ name, role, ign, photo, bio, socials });
 ---
 
-<div class="flex items-center gap-4 rounded-lg border border-white/10 bg-panel p-4">
+<div
+  role="button"
+  tabindex="0"
+  aria-haspopup="dialog"
+  data-profile={profile}
+  class="flex cursor-pointer select-none items-center gap-4 rounded-lg border border-white/10 bg-panel p-4 transition-colors hover:border-white/20 focus-visible:outline-2 focus-visible:outline-brand"
+>
   {
     photo ? (
       <img src={photo} alt={name} width="56" height="56" class="h-14 w-14 rounded-full object-cover" />
