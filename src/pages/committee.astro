@@ -32,7 +32,7 @@ const reps = (await getCollection("reps")).sort((a, b) => a.data.game.localeComp
           type="button"
           aria-haspopup="dialog"
           data-profile={JSON.stringify({ name: r.data.name, role: r.data.game, ign: r.data.ign, photo: r.data.photo, bio: r.data.bio })}
-          class="flex w-full cursor-pointer items-baseline justify-between gap-3 border-b border-line/5 bg-transparent py-2.5 text-left font-inherit transition-colors hover:border-line/15 hover:bg-line/[0.03] focus-visible:outline-2 focus-visible:outline-brand"
+          class="flex w-full cursor-pointer items-baseline justify-between gap-3 border-b border-line/15 bg-transparent py-2.5 text-left font-inherit transition-colors hover:border-line/30 hover:bg-line/[0.03] focus-visible:outline-2 focus-visible:outline-brand"
         >
           <span class="font-medium text-offwhite">{r.data.game}</span>
           <span class="text-right text-offwhite/60">{r.data.name}{r.data.ign ? ` “${r.data.ign}”` : ""}</span>

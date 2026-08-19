@@ -29,14 +29,14 @@ const feedSocials = site.socials.filter((s) => ["Twitter / X", "Instagram", "Twi
     }
   </section>
 
-  <section class="border-t border-line/10 bg-brand-gradient">
+  <section class="border-t border-line/25 bg-brand-gradient">
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <h2 class="font-display text-3xl tracking-wide text-offwhite">Follow the community</h2>
       <p class="mt-2 text-offwhite/60">Match-day clips, memes and announcements land on our socials first.</p>
       <div class="mt-6 grid gap-4 sm:grid-cols-3">
         {
           feedSocials.map((s) => (
-            <a href={s.href} target="_blank" rel="noopener" class="group flex flex-col justify-between rounded-lg border border-line/10 bg-panel p-5 transition-colors hover:border-brand/60">
+            <a href={s.href} target="_blank" rel="noopener" class="group flex flex-col justify-between rounded-lg border border-line/25 bg-panel p-5 transition-colors hover:border-brand/60">
               <div>
                 <span class="font-display text-xl tracking-wide text-offwhite transition-colors group-hover:text-brand">{s.label}</span>
                 <p class="mt-1 text-sm text-offwhite/60">@swanseagg</p>

@@ -5,11 +5,10 @@ const pathname = Astro.url.pathname;
 const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 ---
 
-<header class="sticky top-0 z-50 border-b border-line/10 bg-ink/85 backdrop-blur">
+<header class="sticky top-0 z-50 border-b border-line/25 bg-ink/85 backdrop-blur">
   <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
     <a href="/" class="flex items-center gap-3" aria-label="Swansea Esports — home">
-      <img src="/brand/swan-head.png" alt="" width="36" height="36" class="logo-white h-9 w-9" />
-      <img src="/brand/swan-head-light.png" alt="" width="36" height="36" class="logo-black hidden h-9 w-9" />
+      <img src="/brand/swan-head.png" alt="" width="36" height="36" class="h-9 w-9" />
       <span class="font-display text-2xl leading-none tracking-widest text-offwhite">
         SWANSEA <span class="text-brand">ESPORTS</span>
       </span>
@@ -74,7 +73,7 @@ const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.s
             <path d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </summary>
-        <div class="absolute right-0 mt-2 w-52 rounded-lg border border-line/10 bg-panel p-2 shadow-xl">
+        <div class="absolute right-0 mt-2 w-52 rounded-lg border border-line/25 bg-panel p-2 shadow-xl">
           {
             site.nav.map((item) => (
               <a

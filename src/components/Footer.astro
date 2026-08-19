@@ -3,12 +3,12 @@ import { site } from "../site.config";
 import SocialLinks from "./SocialLinks.astro";
 ---
 
-<footer class="mt-16 border-t border-line/10 bg-brand-gradient">
+<footer class="mt-16 border-t border-line/25 bg-brand-gradient">
   <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
     <div class="grid gap-10 md:grid-cols-3">
       <div>
         <div class="flex items-center gap-3">
-          <img src="/brand/swan-head.png" alt="" width="36" height="36" class="h-9 w-9" />
+          <img src="/brand/swan-head.png" alt="" width="36" height="36" class="logo-invert-dark h-9 w-9" />
           <span class="font-display text-xl tracking-widest text-offwhite">SWANSEA <span class="text-brand">ESPORTS</span></span>
         </div>
         <p class="mt-4 text-sm text-offwhite/70">{site.description}</p>
@@ -50,7 +50,7 @@ import SocialLinks from "./SocialLinks.astro";
       </div>
     </div>
 
-    <div class="mt-10 border-t border-line/10 pt-6 text-xs text-offwhite/50">
+    <div class="mt-10 border-t border-line/25 pt-6 text-xs text-offwhite/50">
       <p>
         © {new Date().getFullYear()} {site.name} · a society of Swansea University Students' Union ·{" "}
         <a href={`mailto:${site.email}`} class="transition-colors hover:text-offwhite">{site.email}</a>
