@@ -95,17 +95,6 @@
     linear-gradient(135deg, #ffffff 0%, #e8e8ea 100%);
 }
 
-/* Dark logo variants shown in light mode (white original shown in dark mode). */
-.theme-light {
-  display: none;
-}
-[data-theme="light"] .theme-light {
-  display: block;
-}
-[data-theme="light"] .theme-dark {
-  display: none;
-}
-
 /* Theme toggle icons: sun shown in dark mode, moon in light mode */
 [data-theme="light"] .icon-sun {
   display: none;
