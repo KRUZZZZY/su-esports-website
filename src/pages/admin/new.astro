@@ -7,7 +7,7 @@ import "../../styles/global.css";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin · Swansea Esports</title>
-    <meta name="description" content="Swansea Esports admin — publish news posts." />
+    <meta name="description" content="Swansea Esports admin — manage news and events." />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="robots" content="noindex" />
   </head>
@@ -70,11 +70,41 @@ import "../../styles/global.css";
           </div>
         </section>
 
+        <!-- ============ LIST ============ -->
+        <section id="list-view" class="hidden">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h1 class="font-display text-3xl tracking-wider text-brand">Content</h1>
+            <div class="flex gap-2">
+              <button
+                id="new-news-btn"
+                class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
+              >
+                ＋ New news post
+              </button>
+              <button
+                id="new-event-btn"
+                class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10"
+              >
+                ＋ New event
+              </button>
+            </div>
+          </div>
+          <p id="list-status" class="mt-4 text-sm text-offwhite/50" aria-live="polite">Loading…</p>
+
+          <h2 class="mt-8 font-display text-xl tracking-wider text-offwhite">News</h2>
+          <div id="list-news" class="mt-3 space-y-2"></div>
+          <p id="list-news-empty" class="hidden mt-3 text-sm text-offwhite/50">No news posts yet.</p>
+
+          <h2 class="mt-8 font-display text-xl tracking-wider text-offwhite">Events</h2>
+          <div id="list-events" class="mt-3 space-y-2"></div>
+          <p id="list-events-empty" class="hidden mt-3 text-sm text-offwhite/50">No events yet.</p>
+        </section>
+
         <!-- ============ WIZARD ============ -->
         <section id="wizard-view" class="hidden">
           <div class="rounded-xl border border-white/10 bg-panel p-6 sm:p-8">
             <div class="flex items-center justify-between">
-              <h1 class="font-display text-3xl tracking-wider text-brand">New news post</h1>
+              <h1 id="wizard-heading" class="font-display text-3xl tracking-wider text-brand">New news post</h1>
               <span id="step-label" class="text-sm text-offwhite/50">Step 1 of 5</span>
             </div>
 
@@ -94,7 +124,7 @@ import "../../styles/global.css";
             <!-- Step 1: title -->
             <section id="step-1" class="mt-8">
               <h2 class="font-display text-xl tracking-wider text-offwhite">1 · Title</h2>
-              <p class="mt-1 text-sm text-offwhite/60">What is this post about?</p>
+              <p class="mt-1 text-sm text-offwhite/60">What is this piece called?</p>
               <input
                 id="w-title"
                 type="text"
@@ -107,9 +137,9 @@ import "../../styles/global.css";
               </p>
             </section>
 
-            <!-- Step 2: date & author -->
+            <!-- Step 2: details (type-specific fields toggled by JS) -->
             <section id="step-2" class="mt-8 hidden">
-              <h2 class="font-display text-xl tracking-wider text-offwhite">2 · Date &amp; author</h2>
+              <h2 id="step2-heading" class="font-display text-xl tracking-wider text-offwhite">2 · Date &amp; author</h2>
               <div class="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
                   <label for="w-date" class="block text-sm font-medium text-offwhite/80">Date</label>
@@ -119,7 +149,7 @@ import "../../styles/global.css";
                     class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
                   />
                 </div>
-                <div>
+                <div id="w-author-wrap">
                   <label for="w-author" class="block text-sm font-medium text-offwhite/80">Author</label>
                   <input
                     id="w-author"
@@ -129,49 +159,127 @@ import "../../styles/global.css";
                     class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
                   />
                 </div>
+                <div id="w-enddate-wrap" class="hidden">
+                  <label for="w-enddate" class="block text-sm font-medium text-offwhite/80">End date (optional)</label>
+                  <input
+                    id="w-enddate"
+                    type="date"
+                    class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+                  />
+                </div>
+              </div>
+              <div id="w-location-wrap" class="mt-4 hidden">
+                <label for="w-location" class="block text-sm font-medium text-offwhite/80">Location (optional)</label>
+                <input
+                  id="w-location"
+                  type="text"
+                  maxlength="200"
+                  placeholder="e.g. Fulton House, Room 101"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+                />
+              </div>
+              <div id="w-game-wrap" class="mt-4 hidden">
+                <label for="w-game" class="block text-sm font-medium text-offwhite/80">Game (optional)</label>
+                <input
+                  id="w-game"
+                  type="text"
+                  maxlength="200"
+                  placeholder="e.g. League of Legends"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+                />
+              </div>
+              <div id="w-link-wrap" class="mt-4 hidden">
+                <label for="w-link" class="block text-sm font-medium text-offwhite/80">Sign-up link (optional)</label>
+                <input
+                  id="w-link"
+                  type="text"
+                  maxlength="200"
+                  placeholder="https://…"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+                />
               </div>
             </section>
 
-            <!-- Step 3: excerpt -->
+            <!-- Step 3: summary & thumbnail -->
             <section id="step-3" class="mt-8 hidden">
-              <h2 class="font-display text-xl tracking-wider text-offwhite">3 · Excerpt</h2>
-              <p class="mt-1 text-sm text-offwhite/60">A short teaser shown on the news listing — optional.</p>
-              <textarea
-                id="w-excerpt"
-                rows="2"
-                maxlength="300"
-                placeholder="One or two sentences summarising the post…"
-                class="mt-4 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-              ></textarea>
-              <p class="mt-2 text-xs text-offwhite/50">Max 300 characters.</p>
+              <h2 id="step3-heading" class="font-display text-xl tracking-wider text-offwhite">3 · Excerpt &amp; thumbnail</h2>
+              <div id="w-excerpt-wrap">
+                <label for="w-excerpt" class="mt-4 block text-sm font-medium text-offwhite/80">Excerpt (optional)</label>
+                <textarea
+                  id="w-excerpt"
+                  rows="2"
+                  maxlength="300"
+                  placeholder="One or two sentences summarising the post…"
+                  class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+                ></textarea>
+                <p class="mt-1 text-xs text-offwhite/50">Max 300 characters.</p>
+              </div>
+              <div id="w-desc-wrap" class="hidden">
+                <label for="w-desc" class="mt-4 block text-sm font-medium text-offwhite/80">Description (optional)</label>
+                <textarea
+                  id="w-desc"
+                  rows="2"
+                  maxlength="200"
+                  placeholder="A short description shown on the events listing…"
+                  class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
+                ></textarea>
+                <p class="mt-1 text-xs text-offwhite/50">Max 200 characters.</p>
+              </div>
+              <div class="mt-4">
+                <span class="block text-sm font-medium text-offwhite/80">Thumbnail (optional)</span>
+                <div class="mt-2 flex flex-wrap items-center gap-3">
+                  <img id="w-thumb-preview" alt="Thumbnail preview" class="hidden h-20 w-36 rounded-lg border border-white/10 object-cover" />
+                  <label class="cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
+                    Upload image
+                    <input id="w-thumb-input" type="file" accept="image/*" class="hidden" />
+                  </label>
+                  <button
+                    id="w-thumb-remove"
+                    class="hidden rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <p id="w-thumb-status" class="mt-2 text-xs text-offwhite/50"></p>
+              </div>
             </section>
 
-            <!-- Step 4: body -->
+            <!-- Step 4: block editor -->
             <section id="step-4" class="mt-8 hidden">
               <h2 class="font-display text-xl tracking-wider text-offwhite">4 · Content</h2>
               <p class="mt-1 text-sm text-offwhite/60">
-                Write the post in <span class="text-brand">markdown</span> — <code class="rounded bg-white/10 px-1 py-0.5 text-xs"># Heading</code>,
-                <code class="rounded bg-white/10 px-1 py-0.5 text-xs">**bold**</code>, links, lists all work.
+                Build the body from blocks. Text blocks support <span class="text-brand">markdown</span>; image blocks insert a picture between blocks.
               </p>
-              <textarea
-                id="w-body"
-                rows="14"
-                placeholder="Write your post here…&#10;&#10;Markdown supported."
-                class="mt-4 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 font-mono text-sm text-offwhite outline-none transition-colors focus:border-brand"
-              ></textarea>
-              <p class="mt-2 text-xs text-offwhite/50">Markdown supported.</p>
+              <div id="block-list" class="mt-4 space-y-3"></div>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <button
+                  id="add-text-btn"
+                  class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10"
+                >
+                  ＋ Add text block
+                </button>
+                <button
+                  id="add-image-btn"
+                  class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10"
+                >
+                  ＋ Add image block
+                </button>
+              </div>
             </section>
 
             <!-- Step 5: preview & publish -->
             <section id="step-5" class="mt-8 hidden">
               <h2 class="font-display text-xl tracking-wider text-offwhite">5 · Preview &amp; publish</h2>
               <div class="mt-4 rounded-lg border border-white/10 bg-ink p-5">
+                <img id="pv-image" alt="" class="mb-4 hidden aspect-video w-full rounded-lg border border-white/10 object-cover" />
                 <h3 id="pv-title" class="font-display text-2xl tracking-wider text-offwhite"></h3>
                 <p id="pv-meta" class="mt-1 text-sm text-offwhite/50"></p>
-                <p id="pv-excerpt" class="mt-3 text-sm italic text-offwhite/70"></p>
+                <p id="pv-summary" class="mt-3 text-sm italic text-offwhite/70"></p>
                 <div id="pv-body" class="mt-4 whitespace-pre-wrap border-t border-white/10 pt-4 text-sm leading-relaxed text-offwhite/85"></div>
               </div>
-              <p class="mt-3 text-xs text-offwhite/50">Publishing commits the post to the site's GitHub repo — Cloudflare Pages rebuilds automatically.</p>
+              <p class="mt-3 text-xs text-offwhite/50">
+                Publishing commits the article to the site's GitHub repo — Cloudflare Pages rebuilds automatically.
+              </p>
             </section>
 
             <p id="step-error" class="mt-6 hidden text-sm text-red-400" aria-live="polite"></p>
@@ -204,24 +312,25 @@ import "../../styles/global.css";
         <!-- ============ SUCCESS ============ -->
         <section id="success-view" class="hidden">
           <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8 text-center">
-            <h1 class="font-display text-3xl tracking-wider text-brand">Post published 🎉</h1>
+            <h1 id="success-heading" class="font-display text-3xl tracking-wider text-brand">Published 🎉</h1>
             <p class="mt-3 text-sm text-offwhite/70">
               Live shortly — the site rebuilds after this commit.<br />
               <a id="success-link" href="/news" class="mt-2 inline-block text-brand underline-offset-4 hover:underline">/news/…</a>
             </p>
             <div class="mt-6 flex justify-center gap-3">
               <a
-                href="/admin/new"
+                id="success-view-link"
+                href="/news"
                 class="rounded-lg bg-brand px-5 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
               >
-                Write another
+                View page
               </a>
-              <a
-                href="/news"
+              <button
+                id="success-back-btn"
                 class="rounded-lg border border-white/15 px-5 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
               >
-                View news
-              </a>
+                Back to content
+              </button>
             </div>
           </div>
         </section>
@@ -243,27 +352,83 @@ import "../../styles/global.css";
           "-" +
           String(now.getDate()).padStart(2, "0");
 
-        const state = { step: 1, title: "", date: today, author: "Swansea Esports", excerpt: "", body: "" };
+        const state = {
+          view: "login", // login | list | wizard | success
+          mode: "create", // create | edit
+          type: "news", // news | events
+          slug: null, // original slug when editing
+          sha: null,
+          step: 1,
+          title: "",
+          date: today,
+          author: "Swansea Esports",
+          excerpt: "",
+          description: "",
+          endDate: "",
+          location: "",
+          game: "",
+          link: "",
+          image: "",
+          blocks: [], // [{ kind: "text", text } | { kind: "image", url, caption }]
+        };
 
-        // ---- helpers -------------------------------------------------------
+        // ---- small helpers -------------------------------------------------
         function slugify(str) {
-          return str
+          return String(str)
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/^-+|-+$/g, "");
         }
 
         function formatDate(iso) {
+          if (!iso) return "";
           const d = new Date(iso + "T00:00:00");
-          return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+          return Number.isNaN(d.getTime())
+            ? ""
+            : d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
         }
 
-        // ---- draft persistence ---------------------------------------------
+        function defaultState() {
+          return {
+            mode: "create",
+            type: "news",
+            slug: null,
+            sha: null,
+            step: 1,
+            title: "",
+            date: today,
+            author: "Swansea Esports",
+            excerpt: "",
+            description: "",
+            endDate: "",
+            location: "",
+            game: "",
+            link: "",
+            image: "",
+            blocks: [{ kind: "text", text: "" }],
+          };
+        }
+
+        // ---- draft persistence (create mode only) ---------------------------
         function saveDraft() {
+          if (state.mode !== "create") return;
           try {
             localStorage.setItem(
               STORAGE_KEY,
-              JSON.stringify({ title: state.title, date: state.date, author: state.author, excerpt: state.excerpt, body: state.body })
+              JSON.stringify({
+                type: state.type,
+                title: state.title,
+                date: state.date,
+                author: state.author,
+                excerpt: state.excerpt,
+                description: state.description,
+                endDate: state.endDate,
+                location: state.location,
+                game: state.game,
+                link: state.link,
+                image: state.image,
+                blocks: state.blocks,
+              })
             );
           } catch (e) {
             /* storage unavailable — ignore */
@@ -274,23 +439,156 @@ import "../../styles/global.css";
           try {
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
             if (saved && typeof saved === "object") {
+              // NOTE: the draft's type is intentionally NOT restored — the
+              // caller (startWizard) picks the type from the button clicked.
               if (typeof saved.title === "string") state.title = saved.title;
               if (typeof saved.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(saved.date)) state.date = saved.date;
               if (typeof saved.author === "string") state.author = saved.author;
               if (typeof saved.excerpt === "string") state.excerpt = saved.excerpt;
-              if (typeof saved.body === "string") state.body = saved.body;
+              if (typeof saved.description === "string") state.description = saved.description;
+              if (typeof saved.endDate === "string") state.endDate = saved.endDate;
+              if (typeof saved.location === "string") state.location = saved.location;
+              if (typeof saved.game === "string") state.game = saved.game;
+              if (typeof saved.link === "string") state.link = saved.link;
+              if (typeof saved.image === "string") state.image = saved.image;
+              if (Array.isArray(saved.blocks) && saved.blocks.length) {
+                state.blocks = saved.blocks
+                  .filter((b) => b && (b.kind === "text" || b.kind === "image"))
+                  .map((b) =>
+                    b.kind === "image"
+                      ? { kind: "image", url: typeof b.url === "string" ? b.url : "", caption: typeof b.caption === "string" ? b.caption : "" }
+                      : { kind: "text", text: typeof b.text === "string" ? b.text : "" }
+                  );
+              }
             }
           } catch (e) {
             /* corrupted draft — ignore */
           }
         }
 
-        // ---- views ----------------------------------------------------------
+        // ---- views -----------------------------------------------------------
         function showView(name) {
-          $("login-view").classList.toggle("hidden", name !== "login");
-          $("wizard-view").classList.toggle("hidden", name !== "wizard");
-          $("success-view").classList.toggle("hidden", name !== "success");
-          $("signout-btn").classList.toggle("hidden", name !== "wizard");
+          state.view = name;
+          ["login", "list", "wizard", "success"].forEach((v) => {
+            $(v + "-view").classList.toggle("hidden", v !== name);
+          });
+          $("signout-btn").classList.toggle("hidden", name === "login");
+        }
+
+        // ---- list view --------------------------------------------------------
+        async function fetchList() {
+          const status = $("list-status");
+          status.textContent = "Loading…";
+          status.classList.remove("hidden");
+          try {
+            const [newsRes, eventsRes] = await Promise.all([
+              fetch("/api/content?type=news"),
+              fetch("/api/content?type=events"),
+            ]);
+            const newsData = await newsRes.json().catch(() => ({}));
+            const eventsData = await eventsRes.json().catch(() => ({}));
+            renderList("news", Array.isArray(newsData.items) ? newsData.items : []);
+            renderList("events", Array.isArray(eventsData.items) ? eventsData.items : []);
+            status.classList.add("hidden");
+          } catch (e) {
+            status.textContent = "Could not load content — refresh to try again.";
+          }
+        }
+
+        function renderList(type, items) {
+          const container = $(type === "news" ? "list-news" : "list-events");
+          const empty = $(type === "news" ? "list-news-empty" : "list-events-empty");
+          container.textContent = "";
+          empty.classList.toggle("hidden", items.length > 0);
+          items.forEach((item) => {
+            const row = document.createElement("div");
+            row.className = "flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-panel px-4 py-3";
+
+            const info = document.createElement("div");
+            info.className = "min-w-0";
+            const title = document.createElement("p");
+            title.className = "truncate font-medium text-offwhite";
+            title.textContent = item.title || "(untitled)";
+            const meta = document.createElement("p");
+            meta.className = "mt-0.5 text-xs text-offwhite/50";
+            meta.textContent = item.date ? formatDate(item.date) : "—";
+            info.append(title, meta);
+
+            const actions = document.createElement("div");
+            actions.className = "flex shrink-0 gap-2";
+            const editBtn = document.createElement("button");
+            editBtn.type = "button";
+            editBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
+            editBtn.textContent = "Edit";
+            editBtn.addEventListener("click", () => startWizard("edit", type, item.slug));
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-red-400/80 transition-colors hover:border-red-400/50 hover:text-red-400";
+            delBtn.textContent = "Delete";
+            delBtn.addEventListener("click", () => deleteArticle(type, item.slug, item.title || item.slug));
+            actions.append(editBtn, delBtn);
+
+            row.append(info, actions);
+            container.append(row);
+          });
+        }
+
+        async function deleteArticle(type, slug, title) {
+          if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
+          try {
+            const res = await fetch(`/api/content?type=${encodeURIComponent(type)}&slug=${encodeURIComponent(slug)}`, {
+              method: "DELETE",
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              window.alert((data && data.error) || "Delete failed — try again.");
+              return;
+            }
+            await fetchList();
+          } catch (e) {
+            window.alert("Network error — check your connection and try again.");
+          }
+        }
+
+        // ---- wizard -------------------------------------------------------------
+        function startWizard(mode, type, slug) {
+          Object.assign(state, defaultState());
+          state.mode = mode;
+          state.type = type;
+          if (mode === "edit") {
+            state.slug = slug || null;
+          } else {
+            loadDraft();
+            if (!state.blocks.length) state.blocks = [{ kind: "text", text: "" }];
+          }
+          updateWizardHeading();
+          showView("wizard");
+          syncTypeFields();
+          syncInputs();
+          if (mode === "edit" && state.slug) {
+            loadArticle();
+          } else {
+            showStep(1);
+          }
+        }
+
+        function updateWizardHeading() {
+          const verb = state.mode === "edit" ? "Edit" : "New";
+          const noun = state.type === "news" ? "news post" : "event";
+          $("wizard-heading").textContent = verb + " " + noun;
+        }
+
+        function syncTypeFields() {
+          const isNews = state.type === "news";
+          $("w-author-wrap").classList.toggle("hidden", !isNews);
+          $("w-enddate-wrap").classList.toggle("hidden", isNews);
+          $("w-location-wrap").classList.toggle("hidden", isNews);
+          $("w-game-wrap").classList.toggle("hidden", isNews);
+          $("w-link-wrap").classList.toggle("hidden", isNews);
+          $("w-excerpt-wrap").classList.toggle("hidden", !isNews);
+          $("w-desc-wrap").classList.toggle("hidden", isNews);
+          $("step2-heading").textContent = isNews ? "2 · Date & author" : "2 · Date & details";
+          $("step3-heading").textContent = isNews ? "3 · Excerpt & thumbnail" : "3 · Summary & thumbnail";
         }
 
         function syncInputs() {
@@ -298,13 +596,31 @@ import "../../styles/global.css";
           $("w-date").value = state.date;
           $("w-author").value = state.author;
           $("w-excerpt").value = state.excerpt;
-          $("w-body").value = state.body;
+          $("w-desc").value = state.description;
+          $("w-enddate").value = state.endDate;
+          $("w-location").value = state.location;
+          $("w-game").value = state.game;
+          $("w-link").value = state.link;
           updateSlugHint();
+          updateThumbnailUI();
         }
 
         function updateSlugHint() {
           const slug = slugify(state.title);
-          $("w-slug-hint").textContent = slug ? "/news/" + slug : "—";
+          $("w-slug-hint").textContent = slug ? "/" + state.type + "/" + slug : "—";
+        }
+
+        function updateThumbnailUI() {
+          const preview = $("w-thumb-preview");
+          if (state.image) {
+            preview.src = state.image;
+            preview.classList.remove("hidden");
+            $("w-thumb-remove").classList.remove("hidden");
+          } else {
+            preview.removeAttribute("src");
+            preview.classList.add("hidden");
+            $("w-thumb-remove").classList.add("hidden");
+          }
         }
 
         function showStep(n) {
@@ -321,7 +637,9 @@ import "../../styles/global.css";
           $("btn-back").classList.toggle("hidden", n === 1);
           $("btn-next").classList.toggle("hidden", n === 5);
           $("btn-publish").classList.toggle("hidden", n !== 5);
+          $("btn-publish").textContent = state.mode === "edit" ? "Update" : "Publish";
           $("step-label").textContent = "Step " + n + " of 5";
+          if (n === 4) renderBlocks();
           if (n === 5) renderPreview();
         }
 
@@ -337,43 +655,264 @@ import "../../styles/global.css";
             if (state.title.trim().length > 200) return "Title must be 200 characters or fewer.";
           } else if (n === 2) {
             if (!/^\d{4}-\d{2}-\d{2}$/.test(state.date)) return "Pick a valid date.";
-            if (!state.author.trim()) return "Add an author.";
-            if (state.author.trim().length > 100) return "Author must be 100 characters or fewer.";
+            if (state.type === "news") {
+              if (!state.author.trim()) return "Add an author.";
+              if (state.author.trim().length > 100) return "Author must be 100 characters or fewer.";
+            } else {
+              if (state.endDate && !/^\d{4}-\d{2}-\d{2}$/.test(state.endDate)) return "End date must be a valid date.";
+              if (state.location.length > 200) return "Location must be 200 characters or fewer.";
+              if (state.game.length > 200) return "Game must be 200 characters or fewer.";
+              if (state.link.length > 200) return "Link must be 200 characters or fewer.";
+            }
           } else if (n === 3) {
-            if (state.excerpt.length > 300) return "Excerpt must be 300 characters or fewer.";
+            if (state.type === "news" && state.excerpt.length > 300) return "Excerpt must be 300 characters or fewer.";
+            if (state.type === "events" && state.description.length > 200) return "Description must be 200 characters or fewer.";
           } else if (n === 4) {
-            if (!state.body.trim()) return "Write some content for the post.";
-            if (state.body.length > 100000) return "Body is too long (max 100,000 characters).";
+            const body = serializeBlocks();
+            if (!body.trim()) return "Write some content — add a text or image block.";
+            if (body.length > 100000) return "Body is too long (max 100,000 characters).";
           }
           return "";
         }
 
-        function renderPreview() {
-          $("pv-title").textContent = state.title.trim() || "(untitled)";
-          $("pv-meta").textContent =
-            formatDate(state.date) + " · " + (state.author.trim() || "Swansea Esports");
-          $("pv-excerpt").textContent = state.excerpt.trim();
-          $("pv-excerpt").classList.toggle("hidden", !state.excerpt.trim());
-          $("pv-body").textContent = state.body;
+        // ---- block editor -------------------------------------------------------
+        function serializeBlocks() {
+          return state.blocks
+            .map((b) => {
+              if (b.kind === "text") return b.text;
+              if (!b.url) return "";
+              const alt = b.caption || "";
+              return "![" + alt + "](" + b.url + ")";
+            })
+            .join("\n\n");
         }
 
-        // ---- publish ---------------------------------------------------------
+        function parseBlocks(md) {
+          const blocks = [];
+          let text = [];
+          const flushText = () => {
+            const t = text.join("\n").trim();
+            if (t) blocks.push({ kind: "text", text: t });
+            text = [];
+          };
+          String(md || "")
+            .split("\n")
+            .forEach((line) => {
+              const m = /^!\[([^\]]*)\]\(([^)]+)\)$/.exec(line.trim());
+              if (m) {
+                flushText();
+                blocks.push({ kind: "image", url: m[2], caption: m[1] });
+              } else {
+                text.push(line);
+              }
+            });
+          flushText();
+          return blocks.length ? blocks : [{ kind: "text", text: "" }];
+        }
+
+        function renderBlocks() {
+          const list = $("block-list");
+          list.textContent = "";
+
+          state.blocks.forEach((block, i) => {
+            const row = document.createElement("div");
+            row.className = "rounded-lg border border-white/10 bg-ink p-4";
+
+            const head = document.createElement("div");
+            head.className = "flex items-center justify-between gap-3";
+            const label = document.createElement("span");
+            label.className = "text-xs font-semibold uppercase tracking-wider text-brand";
+            label.textContent = block.kind === "text" ? "Text block" : "Image block";
+            head.append(label);
+
+            const controls = document.createElement("div");
+            controls.className = "flex gap-2";
+            const mkBtn = (txt, cls, onClick) => {
+              const b = document.createElement("button");
+              b.type = "button";
+              b.className =
+                "rounded border border-white/15 px-2 py-1 text-xs text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite" +
+                (cls ? " " + cls : "");
+              b.textContent = txt;
+              b.addEventListener("click", onClick);
+              return b;
+            };
+            controls.append(
+              mkBtn("↑", "", () => moveBlock(i, -1)),
+              mkBtn("↓", "", () => moveBlock(i, 1)),
+              mkBtn("Remove", "hover:border-red-400/50 hover:text-red-400", () => removeBlock(i))
+            );
+            head.append(controls);
+            row.append(head);
+
+            if (block.kind === "text") {
+              const ta = document.createElement("textarea");
+              ta.rows = 4;
+              ta.className = "mt-3 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 font-mono text-sm text-offwhite outline-none transition-colors focus:border-brand";
+              ta.placeholder = "Write a paragraph or two… (markdown allowed)";
+              ta.value = block.text;
+              ta.addEventListener("input", () => {
+                state.blocks[i].text = ta.value;
+                saveDraft();
+              });
+              row.append(ta);
+            } else {
+              if (block.url) {
+                const img = document.createElement("img");
+                img.src = block.url;
+                img.alt = "";
+                img.className = "mt-3 h-28 w-full rounded-lg border border-white/10 object-cover";
+                row.append(img);
+              }
+              const bar = document.createElement("div");
+              bar.className = "mt-3 flex flex-wrap items-center gap-2";
+              const fileLabel = document.createElement("label");
+              fileLabel.className =
+                "cursor-pointer rounded border border-white/15 px-3 py-1.5 text-xs text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
+              fileLabel.textContent = block.url ? "Replace image" : "Upload image";
+              const fileInput = document.createElement("input");
+              fileInput.type = "file";
+              fileInput.accept = "image/*";
+              fileInput.className = "hidden";
+              fileInput.addEventListener("change", async () => {
+                const file = fileInput.files && fileInput.files[0];
+                if (!file) return;
+                try {
+                  const url = await uploadFile(file);
+                  state.blocks[i].url = url;
+                  renderBlocks();
+                  saveDraft();
+                  setError("");
+                } catch (err) {
+                  setError(err.message || "Upload failed — try again.");
+                }
+              });
+              fileLabel.append(fileInput);
+              bar.append(fileLabel);
+              if (block.url) {
+                const urlText = document.createElement("span");
+                urlText.className = "min-w-0 truncate text-xs text-offwhite/50";
+                urlText.textContent = block.url;
+                bar.append(urlText);
+              }
+              row.append(bar);
+
+              const cap = document.createElement("input");
+              cap.type = "text";
+              cap.maxLength = 200;
+              cap.placeholder = "Caption (optional)";
+              cap.className = "mt-2 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-sm text-offwhite outline-none transition-colors focus:border-brand";
+              cap.value = block.caption || "";
+              cap.addEventListener("input", () => {
+                state.blocks[i].caption = cap.value;
+                saveDraft();
+              });
+              row.append(cap);
+            }
+
+            list.append(row);
+          });
+        }
+
+        function moveBlock(i, delta) {
+          const j = i + delta;
+          if (j < 0 || j >= state.blocks.length) return;
+          const tmp = state.blocks[i];
+          state.blocks[i] = state.blocks[j];
+          state.blocks[j] = tmp;
+          renderBlocks();
+          saveDraft();
+        }
+
+        function removeBlock(i) {
+          if (state.blocks.length > 1) {
+            state.blocks.splice(i, 1);
+          } else {
+            state.blocks[0] = { kind: "text", text: "" };
+          }
+          renderBlocks();
+          saveDraft();
+        }
+
+        // ---- image upload ---------------------------------------------------------
+        async function uploadFile(file) {
+          const data = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error("Could not read the file"));
+            reader.readAsDataURL(file);
+          });
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              filename: file.name,
+              data: data,
+              contentType: file.type || "image/png",
+            }),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error((json && json.error) || "Upload failed — try again.");
+          return json.url;
+        }
+
+        // ---- preview ---------------------------------------------------------------
+        function renderPreview() {
+          $("pv-title").textContent = state.title.trim() || "(untitled)";
+          const isNews = state.type === "news";
+          let meta = formatDate(state.date);
+          if (isNews) meta += " · " + (state.author.trim() || "Swansea Esports");
+          else if (state.endDate) meta += " – " + formatDate(state.endDate);
+          $("pv-meta").textContent = meta;
+          const summary = (isNews ? state.excerpt : state.description).trim();
+          $("pv-summary").textContent = summary;
+          $("pv-summary").classList.toggle("hidden", !summary);
+          const img = $("pv-image");
+          if (state.image) {
+            img.src = state.image;
+            img.classList.remove("hidden");
+          } else {
+            img.removeAttribute("src");
+            img.classList.add("hidden");
+          }
+          $("pv-body").textContent = serializeBlocks();
+        }
+
+        // ---- publish / update ------------------------------------------------------
+        function collectPayload() {
+          const payload = {
+            title: state.title.trim(),
+            date: state.date,
+            body: serializeBlocks(),
+          };
+          if (state.type === "news") {
+            payload.author = state.author.trim() || "Swansea Esports";
+            payload.excerpt = state.excerpt.trim();
+          } else {
+            payload.endDate = state.endDate.trim();
+            payload.location = state.location.trim();
+            payload.game = state.game.trim();
+            payload.link = state.link.trim();
+            payload.description = state.description.trim();
+          }
+          payload.image = state.image.trim();
+          return payload;
+        }
+
         async function publish() {
           const btn = $("btn-publish");
+          const isEdit = state.mode === "edit";
           btn.disabled = true;
-          btn.textContent = "Publishing…";
+          btn.textContent = isEdit ? "Updating…" : "Publishing…";
           setError("");
           try {
-            const res = await fetch("/api/news", {
-              method: "POST",
+            const url = isEdit
+              ? "/api/content?type=" + encodeURIComponent(state.type) + "&slug=" + encodeURIComponent(state.slug)
+              : "/api/content";
+            const res = await fetch(url, {
+              method: isEdit ? "PUT" : "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                title: state.title.trim(),
-                date: state.date,
-                author: state.author.trim() || "Swansea Esports",
-                excerpt: state.excerpt.trim(),
-                body: state.body,
-              }),
+              body: JSON.stringify(collectPayload()),
             });
             const data = await res.json().catch(() => ({}));
             if (res.ok && data.slug) {
@@ -382,34 +921,140 @@ import "../../styles/global.css";
               } catch (e) {
                 /* ignore */
               }
-              showSuccess(data.slug);
+              showSuccess(data.slug, isEdit);
             } else {
-              setError((data && data.error) || "Publish failed — try again.");
+              setError((data && data.error) || (isEdit ? "Update failed — try again." : "Publish failed — try again."));
             }
           } catch (e) {
             setError("Network error — check your connection and try again.");
           } finally {
             btn.disabled = false;
-            btn.textContent = "Publish";
+            btn.textContent = isEdit ? "Update" : "Publish";
           }
         }
 
-        function showSuccess(slug) {
-          $("wizard-view").classList.add("hidden");
-          $("success-view").classList.remove("hidden");
+        function showSuccess(slug, isEdit) {
+          showView("success");
+          const noun = state.type === "news" ? "Post" : "Event";
+          $("success-heading").textContent = noun + " " + (isEdit ? "updated" : "published") + " 🎉";
+          const url = "/" + state.type + "/" + slug;
           const link = $("success-link");
-          link.href = "/news/" + slug;
-          link.textContent = "/news/" + slug;
+          link.href = url;
+          link.textContent = url;
+          const viewLink = $("success-view-link");
+          viewLink.href = url;
+          viewLink.textContent = "View " + (state.type === "news" ? "news post" : "event");
         }
 
-        // ---- events ------------------------------------------------------------
-        ["w-title", "w-date", "w-author", "w-excerpt", "w-body"].forEach((id) => {
+        // ---- edit mode --------------------------------------------------------------
+        async function loadArticle() {
+          try {
+            const res = await fetch(
+              "/api/content?type=" + encodeURIComponent(state.type) + "&slug=" + encodeURIComponent(state.slug)
+            );
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              window.alert((data && data.error) || "Could not load the article.");
+              showView("list");
+              fetchList();
+              return;
+            }
+            state.sha = data.sha || null;
+            state.title = typeof data.title === "string" ? data.title : "";
+            state.date = typeof data.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(data.date) ? data.date : today;
+            if (state.type === "news") {
+              state.author = typeof data.author === "string" ? data.author : "Swansea Esports";
+              state.excerpt = typeof data.excerpt === "string" ? data.excerpt : "";
+            } else {
+              state.endDate = typeof data.endDate === "string" ? data.endDate : "";
+              state.location = typeof data.location === "string" ? data.location : "";
+              state.game = typeof data.game === "string" ? data.game : "";
+              state.link = typeof data.link === "string" ? data.link : "";
+              state.description = typeof data.description === "string" ? data.description : "";
+            }
+            state.image = typeof data.image === "string" ? data.image : "";
+            state.blocks = parseBlocks(typeof data.body === "string" ? data.body : "");
+            syncTypeFields();
+            syncInputs();
+            showStep(1);
+          } catch (e) {
+            window.alert("Network error — could not load the article.");
+            showView("list");
+            fetchList();
+          }
+        }
+
+        // ---- event wiring ------------------------------------------------------------
+        const FIELD_MAP = {
+          "w-title": "title",
+          "w-date": "date",
+          "w-author": "author",
+          "w-excerpt": "excerpt",
+          "w-desc": "description",
+          "w-enddate": "endDate",
+          "w-location": "location",
+          "w-game": "game",
+          "w-link": "link",
+        };
+
+        Object.keys(FIELD_MAP).forEach((id) => {
           $(id).addEventListener("input", (e) => {
-            const key = { "w-title": "title", "w-date": "date", "w-author": "author", "w-excerpt": "excerpt", "w-body": "body" }[id];
-            state[key] = e.target.value;
+            state[FIELD_MAP[id]] = e.target.value;
             if (id === "w-title") updateSlugHint();
             saveDraft();
           });
+        });
+
+        $("w-thumb-input").addEventListener("change", async (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const status = $("w-thumb-status");
+          status.textContent = "Uploading…";
+          try {
+            const url = await uploadFile(file);
+            state.image = url;
+            updateThumbnailUI();
+            status.textContent = "";
+            saveDraft();
+            setError("");
+          } catch (err) {
+            status.textContent = "";
+            setError(err.message || "Upload failed — try again.");
+          }
+          e.target.value = "";
+        });
+
+        $("w-thumb-remove").addEventListener("click", () => {
+          state.image = "";
+          updateThumbnailUI();
+          saveDraft();
+        });
+
+        $("add-text-btn").addEventListener("click", () => {
+          state.blocks.push({ kind: "text", text: "" });
+          renderBlocks();
+          saveDraft();
+        });
+
+        $("add-image-btn").addEventListener("click", () => {
+          state.blocks.push({ kind: "image", url: "", caption: "" });
+          renderBlocks();
+          saveDraft();
+        });
+
+        $("new-news-btn").addEventListener("click", () => {
+          history.replaceState(null, "", "/admin/new");
+          startWizard("create", "news");
+        });
+
+        $("new-event-btn").addEventListener("click", () => {
+          history.replaceState(null, "", "/admin/new");
+          startWizard("create", "events");
+        });
+
+        $("success-back-btn").addEventListener("click", () => {
+          showView("list");
+          fetchList();
         });
 
         $("btn-next").addEventListener("click", () => {
@@ -470,15 +1115,20 @@ import "../../styles/global.css";
           }
         });
 
-        // ---- boot -----------------------------------------------------------------
+        // ---- boot ---------------------------------------------------------------------
         (async function init() {
-          loadDraft();
+          const params = new URLSearchParams(location.search);
+          const editType = params.get("type");
+          const editSlug = params.get("slug");
           try {
             const res = await fetch("/api/auth/me");
             if (res.ok) {
-              syncInputs();
-              showView("wizard");
-              showStep(1);
+              if (editType && editSlug && (editType === "news" || editType === "events")) {
+                startWizard("edit", editType, editSlug);
+              } else {
+                showView("list");
+                fetchList();
+              }
             } else {
               showView("login");
             }

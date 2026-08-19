@@ -9,7 +9,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, date, author, excerpt } = entry.data;
+const { title, date, author, excerpt, image } = entry.data;
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 ---
 
@@ -22,6 +22,7 @@ const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: 
       <span>·</span>
       <span>{author}</span>
     </div>
+    {image && <img src={image} alt="" width="1200" height="675" class="mt-8 aspect-video w-full rounded-lg border border-white/10 object-cover" />}
     <div class="prose prose-invert mt-8 max-w-none prose-a:text-brand">
       <Content />
     </div>
