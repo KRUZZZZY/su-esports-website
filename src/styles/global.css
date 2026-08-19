@@ -85,16 +85,6 @@
   color-scheme: light;
 }
 
-/* Keep the header dark in light mode (dark brand bar: white swan + light nav). */
-[data-theme="light"] header {
-  --color-ink: #0b0c0e;
-  --color-panel: #111215;
-  --color-panel-2: #1c1c1c;
-  --color-offwhite: #e9e9e9;
-  --color-line: #ffffff;
-  --color-brand: #e08f20;
-}
-
 /* Brand bands (hero, merch band, footer) become light in light mode. */
 [data-theme="light"] .bg-brand-gradient {
   background: linear-gradient(135deg, #ffffff 0%, #e8e8ea 100%);
@@ -105,9 +95,15 @@
     linear-gradient(135deg, #ffffff 0%, #e8e8ea 100%);
 }
 
-/* Invert white logos (hero wide swan, about crest, footer swan) to black on light. */
-[data-theme="light"] .logo-invert-dark {
-  filter: invert(1);
+/* Dark logo variants shown in light mode (white original shown in dark mode). */
+.theme-light {
+  display: none;
+}
+[data-theme="light"] .theme-light {
+  display: block;
+}
+[data-theme="light"] .theme-dark {
+  display: none;
 }
 
 /* Theme toggle icons: sun shown in dark mode, moon in light mode */
