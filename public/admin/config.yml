@@ -4,8 +4,9 @@
 
 backend:
   name: github
-  # TODO: set to the society's repo once it exists, e.g. SwanseaUniEsports/su-esports-website
-  repo: SwanseaUniEsports/su-esports-website
+  # Repo coordinates. Currently the personal account; migrate to a society org
+  # (e.g. SwanseaUniEsports/su-esports-website) once the org exists.
+  repo: KRUZZZZY/su-esports-website
   branch: main
 
 # Uploaded images land here and are served at /images/...
