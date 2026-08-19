@@ -14,7 +14,7 @@ const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "short", day: 
 const dateLabel = endDate ? `${fmt(date)} – ${fmt(endDate)}` : fmt(date);
 ---
 
-<a href={href} class="group flex flex-col overflow-hidden rounded-lg border border-white/10 bg-panel transition-colors hover:border-brand/60">
+<a href={href} class="group flex flex-col overflow-hidden rounded-lg border border-line/10 bg-panel transition-colors hover:border-brand/60">
   {
     image ? (
       <img src={image} alt="" width="640" height="360" class="aspect-video w-full object-cover" />
@@ -27,7 +27,7 @@ const dateLabel = endDate ? `${fmt(date)} – ${fmt(endDate)}` : fmt(date);
   <div class="flex flex-1 flex-col p-5">
     <div class="flex items-center justify-between gap-3">
       <time class="text-xs font-semibold uppercase tracking-wider text-brand">{dateLabel}</time>
-      {game && <span class="rounded bg-white/5 px-2 py-0.5 text-xs text-offwhite/70">{game}</span>}
+      {game && <span class="rounded bg-line/5 px-2 py-0.5 text-xs text-offwhite/70">{game}</span>}
     </div>
     <h3 class="mt-2 font-display text-2xl leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">{title}</h3>
     {location && <p class="mt-1 text-sm text-offwhite/60">{location}</p>}

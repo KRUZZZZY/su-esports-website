@@ -11,7 +11,7 @@ const { title, date, excerpt, image, href } = Astro.props;
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 ---
 
-<a href={href} class="group flex flex-col overflow-hidden rounded-lg border border-white/10 bg-panel transition-colors hover:border-brand/60">
+<a href={href} class="group flex flex-col overflow-hidden rounded-lg border border-line/10 bg-panel transition-colors hover:border-brand/60">
   {
     image ? (
       <img src={image} alt="" width="640" height="360" class="aspect-video w-full object-cover" />

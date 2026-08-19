@@ -25,7 +25,7 @@ const latestPlacements = placements
 ---
 
 <BaseLayout>
-  <section class="border-b border-white/10 bg-brand-glow">
+  <section class="border-b border-line/10 bg-brand-glow">
     <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:py-24">
       <div>
         <p class="font-display text-lg tracking-widest text-brand">{site.handle}</p>
@@ -40,7 +40,7 @@ const latestPlacements = placements
           <a href={site.studentsUnion} target="_blank" rel="noopener" class="rounded border border-brand/50 px-5 py-2.5 text-sm font-medium text-brand transition-colors hover:bg-brand/10">
             Students' Union
           </a>
-          <a href="/committee" class="rounded border border-white/20 px-5 py-2.5 text-sm font-medium text-offwhite transition-colors hover:border-brand hover:text-brand">
+          <a href="/committee" class="rounded border border-line/20 px-5 py-2.5 text-sm font-medium text-offwhite transition-colors hover:border-brand hover:text-brand">
             Meet the Committee
           </a>
         </div>
@@ -51,7 +51,7 @@ const latestPlacements = placements
     </div>
   </section>
 
-  <section class="border-b border-white/10 bg-brand-gradient">
+  <section class="border-b border-line/10 bg-brand-gradient">
     <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-6 sm:px-6 md:flex-row">
       <p class="font-display text-2xl tracking-wider text-offwhite">SUPPORT THE SOCIETY — GRAB THE MERCH</p>
       <a href={site.merch} target="_blank" rel="noopener" class="rounded bg-brand px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
@@ -96,7 +96,7 @@ const latestPlacements = placements
     }
   </section>
 
-  <section class="border-t border-white/10 bg-brand-gradient">
+  <section class="border-t border-line/10 bg-brand-gradient">
     <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-4 py-10 sm:px-6 md:flex-row md:items-center">
       <div>
         <h2 class="font-display text-3xl tracking-wide text-offwhite">{totalPlacements} national placements</h2>
@@ -104,7 +104,7 @@ const latestPlacements = placements
           Latest ({latestYear}): {latestPlacements.slice(0, 3).map((p) => `${p.data.medal} ${p.data.competition}`).join(" · ")}
         </p>
       </div>
-      <a href="/achievements" class="rounded border border-white/20 px-5 py-2.5 text-sm font-medium text-offwhite transition-colors hover:border-brand hover:text-brand">
+      <a href="/achievements" class="rounded border border-line/20 px-5 py-2.5 text-sm font-medium text-offwhite transition-colors hover:border-brand hover:text-brand">
         Full competitive history →
       </a>
     </div>

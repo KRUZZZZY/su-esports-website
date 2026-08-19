@@ -30,6 +30,7 @@
   --color-ink: #0b0c0e; /* page background (near-black) */
   --color-panel: #111215; /* panel bg — gradient top-right */
   --color-panel-2: #1c1c1c; /* panel bg — gradient bottom-left */
+  --color-line: #ffffff; /* semantic border/surface line (dark default) */
   --color-gold: #d4af37;
   --color-silver: #b8bcc4;
   --color-bronze: #cd7f32;
@@ -40,6 +41,7 @@
 
 @layer base {
   html {
+    /* dark is the default; [data-theme="light"] below flips color-scheme to light */
     color-scheme: dark;
     scroll-behavior: smooth;
   }
@@ -66,4 +68,45 @@
       radial-gradient(60% 50% at 80% 0%, rgba(224, 143, 32, 0.14) 0%, transparent 70%),
       linear-gradient(135deg, #1c1c1c 0%, #111215 100%);
   }
+}
+
+/* ============================================================
+   Light theme — plain unlayered CSS so it beats Tailwind's
+   layered @theme variables on :root.
+   ============================================================ */
+[data-theme="light"] {
+  --color-ink: #f5f5f6;
+  --color-panel: #ffffff;
+  --color-panel-2: #e8e8ea;
+  --color-offwhite: #1a1b1e;
+  --color-line: #1a1b1e;
+  --color-brand: #c07a16;
+  --color-brand-dark: #9a6211;
+  color-scheme: light;
+}
+
+/* Keep the dark brand bands (hero, merch band, footer) dark in light mode,
+   with light inner text/logo + orange accent, so the white swan logos
+   (swan-wide.png / logo-crest.png / footer swan-head.png) stay correct. */
+[data-theme="light"] .bg-brand-gradient,
+[data-theme="light"] .bg-brand-glow {
+  --color-offwhite: #e9e9e9;
+  --color-brand: #e08f20;
+  --color-line: #ffffff;
+}
+
+/* Header logo swap: white swan on dark header, black swan on light header */
+[data-theme="light"] .logo-white {
+  display: none;
+}
+[data-theme="light"] .logo-black {
+  display: block;
+}
+
+/* Theme toggle icons: sun shown in dark mode, moon in light mode */
+[data-theme="light"] .icon-sun {
+  display: none;
+}
+[data-theme="light"] .icon-moon {
+  display: block;
 }
