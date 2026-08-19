@@ -1,4 +1,4 @@
 ---
 game: TFT
-name: TBC
+name: Gamba
 ---

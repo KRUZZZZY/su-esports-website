@@ -4,7 +4,7 @@ import CommitteeCard from "../components/CommitteeCard.astro";
 import { getCollection } from "astro:content";
 import { site } from "../site.config";
 
-const committee = await getCollection("committee");
+const committee = (await getCollection("committee")).sort((a, b) => a.data.order - b.data.order);
 const reps = (await getCollection("reps")).sort((a, b) => a.data.game.localeCompare(b.data.game));
 ---
 
@@ -17,7 +17,7 @@ const reps = (await getCollection("reps")).sort((a, b) => a.data.game.localeComp
       or through the <a href={site.discord} target="_blank" rel="noopener" class="text-brand hover:underline">Discord</a>.
     </p>
 
-    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Committee 2025/26</h2>
+    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Committee 2026/27</h2>
     <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {committee.map((m) => (
         <CommitteeCard name={m.data.name} role={m.data.role} ign={m.data.ign} photo={m.data.photo} socials={m.data.socials} />
