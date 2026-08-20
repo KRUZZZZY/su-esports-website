@@ -1,40 +1,257 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SocialLinks from "../components/SocialLinks.astro";
+import DiscordIcon from "../components/DiscordIcon.astro";
 import { site } from "../site.config";
+
+const schedule = [
+  {
+    day: "Monday",
+    games: [
+      { name: "Splatoon", chip: "border-pink-400/40", dot: "bg-pink-400" },
+      { name: "Teamfight Tactics", chip: "border-violet-400/40", dot: "bg-violet-400" },
+      { name: "Valorant", chip: "border-red-400/40", dot: "bg-red-400" },
+    ],
+  },
+  {
+    day: "Tuesday",
+    games: [
+      { name: "League of Legends", chip: "border-amber-400/40", dot: "bg-amber-400" },
+      { name: "Marvel Rivals", chip: "border-indigo-400/40", dot: "bg-indigo-400" },
+      { name: "Rocket League", chip: "border-blue-400/40", dot: "bg-blue-400" },
+    ],
+  },
+  {
+    day: "Thursday",
+    games: [
+      { name: "Apex Legends", chip: "border-rose-400/40", dot: "bg-rose-400" },
+      { name: "Overwatch 2", chip: "border-orange-400/40", dot: "bg-orange-400" },
+      { name: "Rainbow Six Siege", chip: "border-sky-400/40", dot: "bg-sky-400" },
+    ],
+  },
+  {
+    day: "Sunday",
+    games: [{ name: "Counter-Strike 2", chip: "border-yellow-400/40", dot: "bg-yellow-400" }],
+  },
+];
+
+const steps = [
+  {
+    n: "01",
+    title: "Join the Discord",
+    body: "The whole community lives there — get verified, find your game and hear about trials first.",
+  },
+  {
+    n: "02",
+    title: "Find your game",
+    body: "Ten games run weekly in divisions for every skill level — pick yours from the schedule below.",
+  },
+  {
+    n: "03",
+    title: "Get involved",
+    body: "Grab a £2.99 membership, try out in trials and come along to the weekly social.",
+  },
+];
+
+const happenings = [
+  { title: "Weekly socials", body: "One in-person social every week — day to be determined. Members only." },
+  { title: "24-hour LANs", body: "Big overnight events in collaboration with the Swansea Gaming Society (SGS)." },
+  { title: "Tournaments", body: "We compete in NUEL, NSE, Belong Arena Clash and ESL — nationally and locally." },
+  { title: "Watch parties", body: "Viewing parties for big gaming events, from E3 to international finals." },
+  { title: "In-houses", body: "Casual lobbies organised by our Game Reps, whatever your skill level." },
+  { title: "UK trips", body: "Potential trips to student tournaments across the UK to cheer on our teams." },
+];
 ---
 
 <BaseLayout title="About">
-  <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-    <h1 class="font-display text-4xl tracking-wide text-offwhite">About us</h1>
-    <div class="mt-6 space-y-4 text-offwhite/80">
-      <p>
-        Swansea Esports is open to every Swansea student, from casual players to competitive regulars.
-        You don't need trials experience or a trophy cabinet to get involved.
-      </p>
-      <p>
-        Our team trials run in late September and October ahead of the winter season, with more chances
-        to join through the year if you miss them.
-      </p>
+  <section class="border-b border-line/25 bg-brand-glow">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:py-24">
+      <div>
+        <p class="font-display text-lg tracking-widest text-brand">{site.handle}</p>
+        <h1 class="mt-2 font-display text-5xl leading-[0.95] tracking-wide text-offwhite sm:text-6xl">
+          WHAT IS <span class="text-brand">SWANSEA ESPORTS?</span>
+        </h1>
+        <p class="mt-4 max-w-md text-offwhite/70">
+          We're the esports society at Swansea University — we compete in NSE and other university
+          tournaments, online, in divisions for every skill level. Open to every student, from
+          casual players to competitive regulars.
+        </p>
+        <div class="mt-6 flex flex-wrap items-start gap-2">
+          <a
+            href={site.discord}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2.5 rounded bg-brand px-8 py-3.5 text-base font-semibold text-black transition-colors hover:bg-brand-dark"
+          >
+            <DiscordIcon size={20} class="shrink-0" />
+            Join the Discord
+          </a>
+          <a
+            href="/committee"
+            class="rounded border border-line/35 px-6 py-3 text-base font-medium text-offwhite transition-colors hover:border-brand hover:text-brand"
+          >
+            Meet the Committee
+          </a>
+        </div>
+      </div>
+      <div class="hidden md:block">
+        <div class="swan-frame mx-auto flex h-72 w-72 items-center justify-center rounded-full">
+          <img src="/brand/logo-crest.png" alt="Swansea Esports crest" width="678" height="800" class="h-56 w-auto opacity-90" />
+        </div>
+      </div>
     </div>
+  </section>
 
-    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Games we play</h2>
-    <p class="mt-4 text-offwhite/80">
-      We field competitive teams in Valorant, League of Legends, Overwatch 2, Counter-Strike 2,
-      Rainbow Six Siege, Rocket League and Apex Legends. Our Game Reps also run Teamfight Tactics,
-      fighting games and casual in-houses, so there's usually something on whatever you play.
-    </p>
+  <section class="border-b border-line/25 bg-brand-gradient">
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <h2 class="font-display text-3xl tracking-wide text-offwhite">How it works</h2>
+      <div class="mt-8 grid gap-8 md:grid-cols-3">
+        {
+          steps.map((s) => (
+            <div>
+              <span class="font-display text-4xl tracking-wide text-brand">{s.n}</span>
+              <h3 class="mt-2 font-display text-xl tracking-wide text-offwhite">{s.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-offwhite/70">{s.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
 
-    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Our events</h2>
-    <ul class="mt-4 list-disc space-y-2 pl-5 text-offwhite/80">
-      <li>24 Hour LAN events in collaboration with the Swansea Gaming Society (SGS)</li>
-      <li>Esports tournaments (National University Esports League, National Students Esports, Belong Arena Clash, &amp; ESL)</li>
-      <li>Viewing parties for big gaming events (such as E3)</li>
-      <li>Inhouses organised by Game Reps</li>
-      <li>Potential trips to student tournaments across the UK</li>
-    </ul>
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="flex items-end justify-between">
+      <div>
+        <h2 class="font-display text-3xl tracking-wide text-offwhite">Match schedule</h2>
+        <p class="mt-1 text-sm text-offwhite/60">Ten games, every week, all between 7–9 PM GMT.</p>
+      </div>
+    </div>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        schedule.map((d) => (
+          <div class="rounded-xl border border-line/25 bg-panel p-5">
+            <h3 class="font-display text-2xl tracking-wide text-brand">{d.day}</h3>
+            <div class="mt-3 flex flex-col gap-2">
+              {
+                d.games.map((g) => (
+                  <span class={`inline-flex items-center gap-2 rounded border px-2.5 py-1.5 text-sm text-offwhite/80 ${g.chip}`}>
+                    <span class={`h-2 w-2 rounded-full ${g.dot}`} />
+                    {g.name}
+                  </span>
+                ))
+              }
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
 
-    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Contact us</h2>
+  <section class="border-y border-line/25 bg-brand-gradient">
+    <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-3">
+      <div>
+        <h3 class="font-display text-xl tracking-wide text-brand">Trials</h3>
+        <p class="mt-2 text-sm leading-relaxed text-offwhite/70">
+          Online trials run one week before NSE starts — exact dates not announced yet. Watch the
+          Discord for the call.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-display text-xl tracking-wide text-brand">Seasons</h3>
+        <p class="mt-2 text-sm leading-relaxed text-offwhite/70">
+          Each game runs in 4–7 week seasons, so there's always a fresh entry point through the year.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-display text-xl tracking-wide text-brand">Divisions</h3>
+        <p class="mt-2 text-sm leading-relaxed text-offwhite/70">
+          Every game is split into divisions for all skill levels — from first-timers to
+          competitive regulars.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="rounded-xl border border-line/25 bg-panel p-6">
+        <p class="font-display text-lg tracking-widest text-brand">MEMBERSHIP</p>
+        <p class="mt-2 font-display text-5xl tracking-wide text-offwhite">£2.99</p>
+        <p class="mt-3 text-sm leading-relaxed text-offwhite/70">
+          A Students' Union membership is required to join teams and come to socials. Buy it on the
+          Students' Union website — it's only £2.99.
+        </p>
+        <a
+          href={site.studentsUnion}
+          target="_blank"
+          rel="noopener"
+          class="mt-5 inline-block rounded bg-brand px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
+        >
+          Buy membership ↗
+        </a>
+      </div>
+      <div class="rounded-xl border border-brand/50 bg-brand/5 p-6">
+        <p class="font-display text-lg tracking-widest text-brand">FRESHERS WEEK QUIZ</p>
+        <p class="mt-2 font-display text-3xl leading-tight tracking-wide text-offwhite">
+          Win a free Battle Pass
+        </p>
+        <p class="mt-3 text-sm leading-relaxed text-offwhite/70">
+          Take on our Freshers Week quiz and the winner picks a free Battle Pass for a game of their
+          choice. You must be verified in the Discord to enter.
+        </p>
+        <a
+          href={site.discord}
+          target="_blank"
+          rel="noopener"
+          class="mt-5 inline-flex items-center gap-2 rounded bg-brand px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
+        >
+          <DiscordIcon size={16} class="shrink-0" />
+          Join the Discord
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="flex items-end justify-between">
+      <h2 class="font-display text-3xl tracking-wide text-offwhite">What we get up to</h2>
+      <a href="/events" class="text-sm font-medium text-brand transition-colors hover:text-brand-dark">All events →</a>
+    </div>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        happenings.map((h) => (
+          <div class="rounded-xl border border-line/25 bg-panel p-5">
+            <h3 class="font-display text-xl tracking-wide text-brand">{h.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-offwhite/70">{h.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="border-t border-line/25 bg-brand-gradient">
+    <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-4 py-10 sm:px-6 md:flex-row md:items-center">
+      <div>
+        <h2 class="font-display text-3xl tracking-wide text-offwhite">Ready to jump in?</h2>
+        <p class="mt-1 max-w-xl text-sm text-offwhite/60">
+          Trials run one week before NSE starts — dates not announced yet. Online trials, online
+          games, divisions for every skill level. The fastest way in is the Discord.
+        </p>
+      </div>
+      <a
+        href={site.discord}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2.5 rounded bg-brand px-6 py-3 text-base font-semibold text-black transition-colors hover:bg-brand-dark"
+      >
+        <DiscordIcon size={18} class="shrink-0" />
+        Join the Discord
+      </a>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <h2 class="font-display text-3xl tracking-wide text-offwhite">Contact us</h2>
     <div class="mt-4 space-y-3 text-offwhite/80">
       <p>
         Email the committee at{" "}
@@ -47,13 +264,9 @@ import { site } from "../site.config";
       </p>
     </div>
 
-    <h2 class="mt-10 font-display text-2xl tracking-wide text-brand">Follow us</h2>
+    <h2 class="mt-10 font-display text-3xl tracking-wide text-offwhite">Follow us</h2>
     <div class="mt-4">
       <SocialLinks />
-    </div>
-
-    <div class="swan-frame mx-auto mt-12 flex h-72 w-72 items-center justify-center rounded-full">
-      <img src="/brand/logo-crest.png" alt="Swansea Esports crest" width="678" height="800" class="h-56 w-auto opacity-90" />
     </div>
   </section>
 </BaseLayout>
