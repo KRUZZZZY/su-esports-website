@@ -48,7 +48,7 @@ const steps = [
   {
     n: "02",
     title: "Find your game",
-    body: "Ten games run weekly in divisions for every skill level. Pick yours from the schedule below.",
+    body: "10+ games run every week in divisions for every skill level. Pick yours from the schedule below.",
   },
   {
     n: "03",
@@ -58,19 +58,18 @@ const steps = [
 ];
 
 const stats = [
-  { value: String(totalPlacements), label: "National placements" },
-  { value: "10", label: "Games a week" },
+  { value: `${totalPlacements}+`, label: "National placements" },
+  { value: "10+", label: "Games a week" },
   { value: "£2.99", label: "Membership" },
 ];
 
 const happenings = [
   { title: "Welsh Varsity", body: "We take on Cardiff University across every game, in person, over two days.", featured: true },
-  { title: "Community events", body: "We run our own events for games that don't have NSE coverage, like Dead by Daylight and Minecraft speedrunning." },
+  { title: "Community events", body: "We run our own tournaments for games NSE doesn't cover, including Dead by Daylight and Minecraft speedrunning." },
   { title: "Weekly socials", body: "One in-person social every week. Day to be determined. Members only." },
-  { title: "Tournaments", body: "We compete in NUEL, NSE, Belong Arena Clash and ESL, nationally and locally." },
+  { title: "Tournaments", body: "We compete in NUEL, NSE and USS, nationally and locally." },
   { title: "Watch parties", body: "Viewing parties for big gaming events, from E3 to international finals." },
   { title: "In-houses", body: "Casual lobbies organised by our Game Reps, whatever your skill level." },
-  { title: "UK trips", body: "Potential trips to student tournaments across the UK to cheer on our teams." },
 ];
 ---
 
@@ -82,12 +81,10 @@ const happenings = [
         WHAT IS <span class="text-brand">SWANSEA ESPORTS?</span>
       </h1>
       <p class="mx-auto mt-5 max-w-2xl text-offwhite/70">
-        We're the esports society at Swansea University. We compete in NSE and other university
-        tournaments, online, in divisions for every skill level, and we've picked up
-        {totalPlacements} national placements along the way. There's a place in the society for
-        every facet of esports, from stream production to journalism and more, not just playing.
-        And when a game doesn't have an NSE event, we run our own, from Dead by Daylight to
-        Minecraft speedrunning.
+        We're the esports society at Swansea University, competing in NSE and other university
+        tournaments, with {totalPlacements}+ national placements to our name. There's room for
+        every facet of esports, whether you want to play, stream, produce or write about games.
+        When NSE doesn't cover a game, we run our own events.
       </p>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
         {
@@ -143,7 +140,7 @@ const happenings = [
     <div class="flex items-end justify-between">
       <div>
         <h2 class="font-display text-3xl tracking-wide text-offwhite">Match schedule</h2>
-        <p class="mt-1 text-sm text-offwhite/60">Ten games, every week, all between 7-9 PM GMT.</p>
+        <p class="mt-1 text-sm text-offwhite/60">10+ games, every week, all between 7-9 PM GMT.</p>
       </div>
     </div>
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -259,8 +256,8 @@ const happenings = [
       <div>
         <h2 class="font-display text-3xl tracking-wide text-offwhite">Ready to jump in?</h2>
         <p class="mt-1 max-w-xl text-sm text-offwhite/60">
-          Trials run one week before NSE starts. Dates not announced yet. Online trials, online
-          games, divisions for every skill level. The fastest way in is the Discord.
+          Trials run one week before NSE starts. Dates not announced yet. Everything runs online,
+          with a division for everyone. The fastest way in is the Discord.
         </p>
       </div>
       <a
