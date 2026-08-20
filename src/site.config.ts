@@ -1,6 +1,7 @@
 export interface Link {
   label: string;
   href: string;
+  icon?: string;
 }
 
 export const site = {
@@ -25,13 +26,13 @@ export const site = {
   ],
 
   socials: [
-    { label: "Discord", href: "https://discord.gg/swansea" },
+    { label: "Discord", href: "https://discord.gg/swansea", icon: "discord" },
     { label: "Students' Union", href: "https://www.swansea-union.co.uk/activities/society/swanseaesports/" },
     { label: "Merch Store", href: "https://esk.gg/collections/swansea-esports" },
-    { label: "Instagram", href: "https://instagram.com/swanseagg" },
-    { label: "Twitter / X", href: "https://twitter.com/swanseagg" },
-    { label: "Twitch", href: "https://twitch.tv/swanseagg" },
-    { label: "Steam", href: "https://steamcommunity.com/groups/SwanseaGG" }
+    { label: "Instagram", href: "https://instagram.com/swanseagg", icon: "instagram" },
+    { label: "Twitter / X", href: "https://twitter.com/swanseagg", icon: "x" },
+    { label: "Twitch", href: "https://twitch.tv/swanseagg", icon: "twitch" },
+    { label: "Steam", href: "https://steamcommunity.com/groups/SwanseaGG", icon: "steam" }
   ],
 
   competitions: [
