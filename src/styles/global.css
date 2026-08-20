@@ -104,6 +104,16 @@
   background: #000;
 }
 
+/* Orange pill buttons: white text in light mode (brand darkens to #c07a16 there) */
+[data-theme="light"] .bg-brand {
+  color: #fff;
+}
+
+/* Big swan art: pure white in light mode (off-white reads grey on the black frame) */
+[data-theme="light"] .swan-frame img {
+  filter: brightness(1.15);
+}
+
 /* Theme toggle icons: sun shown in dark mode, moon in light mode */
 [data-theme="light"] .icon-sun {
   display: none;

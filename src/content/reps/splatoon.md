@@ -1,0 +1,4 @@
+---
+game: Splatoon
+name: TBC
+---

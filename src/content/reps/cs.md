@@ -1,4 +1,5 @@
 ---
 game: CS
-name: TBC
+name: Nick
+ign: "xucifig"
 ---

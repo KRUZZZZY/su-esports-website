@@ -1,4 +1,4 @@
 ---
 game: Apex Legends
-name: TBC
+name: Alexander Parle
 ---
