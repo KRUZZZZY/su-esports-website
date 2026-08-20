@@ -95,6 +95,15 @@
     linear-gradient(135deg, #ffffff 0%, #e8e8ea 100%);
 }
 
+/* Hero swan frame: black card only in light mode; in dark mode the swan
+   floats directly on the brand gradient. */
+.swan-frame {
+  background: transparent;
+}
+[data-theme="light"] .swan-frame {
+  background: #000;
+}
+
 /* Theme toggle icons: sun shown in dark mode, moon in light mode */
 [data-theme="light"] .icon-sun {
   display: none;
