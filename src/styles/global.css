@@ -95,8 +95,8 @@
     linear-gradient(135deg, #ffffff 0%, #e8e8ea 100%);
 }
 
-/* Hero swan frame: black card only in light mode; in dark mode the swan
-   floats directly on the brand gradient. */
+/* Swan frames (hero card, header logo badge, about crest): black background
+   only in light mode; in dark mode swans float directly on the page. */
 .swan-frame {
   background: transparent;
 }
