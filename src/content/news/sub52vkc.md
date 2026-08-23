@@ -2,8 +2,11 @@
 title: Test draft
 date: "2026-08-23T22:48:00.000Z"
 author: KRUZZZZY
-excerpt: "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cill"
-image: /images/1787525625038-swan-wide.webp
+category: esports
+intro: "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cill"
+teaser: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+image: /images/1787525960463-swan-wide.webp
+thumbnail: /images/1787529154739-thumbnail-1787529154653.webp
 draft: false
 ready: true
 ---
