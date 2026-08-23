@@ -98,7 +98,16 @@ const latestPlacements = placements
       news.length > 0 ? (
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {news.map((n) => (
-            <NewsCard title={n.data.title} date={n.data.date} excerpt={n.data.excerpt} image={n.data.image} href={`/news/${n.id}`} />
+            <NewsCard
+              title={n.data.title}
+              date={n.data.date}
+              author={n.data.author}
+              category={n.data.category}
+              teaser={n.data.teaser || n.data.intro}
+              image={n.data.image}
+              thumbnail={n.data.thumbnail}
+              href={`/news/${n.id}`}
+            />
           ))}
         </div>
       ) : (
