@@ -14,7 +14,7 @@ import "../../styles/global.css";
   <body class="bg-ink text-offwhite">
     <div class="min-h-screen bg-brand-glow">
       <header class="border-b border-white/10 bg-ink/85 backdrop-blur">
-        <div class="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
           <div class="flex items-center gap-3">
             <img src="/brand/swan-head.png" alt="" width="36" height="36" class="h-9 w-9" />
             <span class="font-display text-xl tracking-widest text-offwhite">
@@ -39,7 +39,7 @@ import "../../styles/global.css";
         </div>
       </header>
 
-      <main class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <!-- ============ LOGIN ============ -->
         <section id="login-view" class="hidden">
           <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8">
@@ -73,6 +73,13 @@ import "../../styles/global.css";
           </div>
           <p id="list-status" class="mt-4 text-sm text-offwhite/50" aria-live="polite">Loading…</p>
 
+          <div class="mt-5">
+            <label for="list-search" class="block text-sm font-medium text-offwhite/80">Search content</label>
+            <input id="list-search" type="search" placeholder="Filter by title, author or organiser…"
+              class="mt-1 w-full max-w-md rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand" />
+            <p class="mt-1 text-xs text-offwhite/50">Filters both lists as you type.</p>
+          </div>
+
           <h2 class="mt-8 font-display text-xl tracking-wider text-offwhite">News</h2>
           <div class="mt-3 flex flex-wrap gap-2 text-xs text-offwhite/50">
             <span class="mr-1 py-1.5">Sort:</span>
@@ -81,7 +88,7 @@ import "../../styles/global.css";
             <button data-sort="news" data-key="author" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Author</button>
             <button data-sort="news" data-key="status" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Status</button>
           </div>
-          <div id="list-news" class="mt-3 space-y-2"></div>
+          <div id="list-news" class="mt-3 grid gap-3 sm:grid-cols-2"></div>
           <p id="list-news-empty" class="hidden mt-3 text-sm text-offwhite/50">No news posts yet.</p>
 
           <h2 class="mt-8 font-display text-xl tracking-wider text-offwhite">Events</h2>
@@ -92,7 +99,7 @@ import "../../styles/global.css";
             <button data-sort="events" data-key="author" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Organiser</button>
             <button data-sort="events" data-key="status" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Status</button>
           </div>
-          <div id="list-events" class="mt-3 space-y-2"></div>
+          <div id="list-events" class="mt-3 grid gap-3 sm:grid-cols-2"></div>
           <p id="list-events-empty" class="hidden mt-3 text-sm text-offwhite/50">No events yet.</p>
         </section>
 
@@ -100,7 +107,7 @@ import "../../styles/global.css";
         <section id="create-view" class="hidden">
           <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8">
             <h1 id="create-heading" class="font-display text-3xl tracking-wider text-brand">New news post</h1>
-            <p class="mt-2 text-sm text-offwhite/60">Name and author are required before we create the draft.</p>
+            <p class="mt-2 text-sm text-offwhite/60">Name and author/organiser are required before we create the draft.</p>
             <form id="create-form" class="mt-6 space-y-4">
               <div>
                 <label for="c-title" class="block text-sm font-medium text-offwhite/80">Name / title</label>
@@ -108,7 +115,7 @@ import "../../styles/global.css";
                   class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
               </div>
               <div>
-                <label for="c-author" class="block text-sm font-medium text-offwhite/80">Author</label>
+                <label for="c-author" id="c-author-label" class="block text-sm font-medium text-offwhite/80">Author</label>
                 <input id="c-author" type="text" maxlength="100" required placeholder="Your name"
                   class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
               </div>
@@ -193,6 +200,20 @@ import "../../styles/global.css";
                 <input id="w-author" type="text" maxlength="100" placeholder="Swansea Esports"
                   class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
               </div>
+              <div id="w-category-wrap" class="hidden">
+                <label for="w-category" class="block text-sm font-medium text-offwhite/80">Category (optional)</label>
+                <input id="w-category" type="text" maxlength="60" list="cat-suggestions" placeholder="e.g. Announcement"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+                <datalist id="cat-suggestions">
+                  <option value="Announcement"></option>
+                  <option value="Match Report"></option>
+                  <option value="Results"></option>
+                  <option value="Community"></option>
+                  <option value="Esports News"></option>
+                  <option value="Other"></option>
+                </datalist>
+                <p class="mt-1 text-xs text-offwhite/50">Shown as a badge on news cards. Max 60 characters.</p>
+              </div>
               <div id="w-organiser-wrap" class="hidden">
                 <label for="w-organiser" class="block text-sm font-medium text-offwhite/80">Event organiser (optional)</label>
                 <input id="w-organiser" type="text" maxlength="100" placeholder="e.g. Lewis Dasilva"
@@ -227,12 +248,18 @@ import "../../styles/global.css";
               </div>
             </div>
 
-            <!-- Excerpt / description -->
-            <div id="w-excerpt-wrap" class="mt-6">
-              <label for="w-excerpt" class="block text-sm font-medium text-offwhite/80">Excerpt (optional)</label>
-              <textarea id="w-excerpt" rows="2" maxlength="300" placeholder="One or two sentences summarising the post…"
+            <!-- Intro / teaser (news) + description (events) -->
+            <div id="w-intro-wrap" class="mt-6">
+              <label for="w-intro" class="block text-sm font-medium text-offwhite/80">Introduction (optional)</label>
+              <textarea id="w-intro" rows="2" maxlength="300" placeholder="One or two sentences shown at the top of the article…"
                 class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"></textarea>
               <p class="mt-1 text-xs text-offwhite/50">Max 300 characters.</p>
+            </div>
+            <div id="w-teaser-wrap" class="mt-6">
+              <label for="w-teaser" class="block text-sm font-medium text-offwhite/80">Teaser (optional)</label>
+              <textarea id="w-teaser" rows="2" maxlength="160" placeholder="A punchy hook for the news card…"
+                class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"></textarea>
+              <p class="mt-1 text-xs text-offwhite/50">Shown on cards before you click through. Max 160 characters.</p>
             </div>
             <div id="w-desc-wrap" class="mt-6 hidden">
               <label for="w-desc" class="block text-sm font-medium text-offwhite/80">Description (optional)</label>
@@ -241,16 +268,25 @@ import "../../styles/global.css";
               <p class="mt-1 text-xs text-offwhite/50">Max 200 characters.</p>
             </div>
 
-            <!-- Thumbnail -->
+            <!-- Intro image -->
+            <div class="mt-6">
+              <span class="block text-sm font-medium text-offwhite/80">Intro image (optional)</span>
+              <p class="mt-0.5 text-xs text-offwhite/50">The hero image at the top of the article. Defaults to the swan banner.</p>
+              <div class="mt-2 flex flex-wrap items-center gap-3">
+                <img id="w-image-preview" alt="Intro image preview" class="hidden h-20 w-36 rounded-lg border border-white/10 object-cover" />
+                <button id="w-image-pick" type="button" class="rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Choose image</button>
+                <button id="w-image-remove" class="hidden rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Remove</button>
+              </div>
+              <p id="w-image-status" class="mt-2 text-xs text-offwhite/50"></p>
+            </div>
+
+            <!-- Thumbnail (16:9 crop) -->
             <div class="mt-6">
               <span class="block text-sm font-medium text-offwhite/80">Thumbnail (optional)</span>
-              <p class="mt-0.5 text-xs text-offwhite/50">Automatically converted to WebP to save space.</p>
+              <p class="mt-0.5 text-xs text-offwhite/50">The card image — cropped to 16:9 and converted to WebP.</p>
               <div class="mt-2 flex flex-wrap items-center gap-3">
                 <img id="w-thumb-preview" alt="Thumbnail preview" class="hidden h-20 w-36 rounded-lg border border-white/10 object-cover" />
-                <label class="cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
-                  Upload image
-                  <input id="w-thumb-input" type="file" accept="image/*" class="hidden" />
-                </label>
+                <button id="w-thumb-pick" type="button" class="rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Choose thumbnail</button>
                 <button id="w-thumb-remove" class="hidden rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Remove</button>
               </div>
               <p id="w-thumb-status" class="mt-2 text-xs text-offwhite/50"></p>
@@ -268,6 +304,62 @@ import "../../styles/global.css";
             </div>
           </div>
         </section>
+
+        <!-- ============ MEDIA PICKER MODAL ============ -->
+        <div id="media-modal" class="hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Media library">
+          <div id="media-overlay" class="absolute inset-0 bg-black/70"></div>
+          <div class="relative mx-auto mt-16 w-[calc(100%-2rem)] max-w-3xl rounded-xl border border-white/10 bg-panel p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 class="font-display text-xl tracking-wider text-brand">Media library</h2>
+                <p id="media-status" class="mt-1 text-xs text-offwhite/50" aria-live="polite">Loading images…</p>
+              </div>
+              <div class="flex gap-2">
+                <label class="cursor-pointer rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
+                  ＋ Upload new
+                  <input id="media-file" type="file" accept="image/*" class="hidden" />
+                </label>
+                <button id="media-close" type="button" class="rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Close</button>
+              </div>
+            </div>
+            <div id="media-grid" class="mt-4 grid max-h-[55vh] grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4"></div>
+            <p id="media-empty" class="hidden mt-4 text-sm text-offwhite/50">No images yet — upload one to get started.</p>
+          </div>
+        </div>
+
+        <!-- ============ THUMBNAIL CROP MODAL ============ -->
+        <div id="crop-modal" class="hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Crop thumbnail">
+          <div id="crop-overlay" class="absolute inset-0 bg-black/70"></div>
+          <div class="relative mx-auto mt-10 w-[calc(100%-2rem)] max-w-2xl rounded-xl border border-white/10 bg-panel p-5 sm:p-6">
+            <div class="flex items-center justify-between gap-3">
+              <h2 class="font-display text-xl tracking-wider text-brand">Crop thumbnail</h2>
+              <button id="crop-close" type="button" class="rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Cancel</button>
+            </div>
+            <p class="mt-1 text-xs text-offwhite/50">Drag to pan, use the slider to zoom. The crop is 16:9.</p>
+            <div id="crop-stage" class="relative mt-4 aspect-video w-full select-none overflow-hidden rounded-lg border border-white/10 bg-black">
+              <img id="crop-img" alt="Source image for cropping" draggable="false"
+                class="absolute max-w-none cursor-grab active:cursor-grabbing" style="left:0;top:0" />
+            </div>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="crop-zoom" class="block text-sm font-medium text-offwhite/80">Zoom</label>
+                <input id="crop-zoom" type="range" min="100" max="400" step="1" value="100" class="mt-2 w-full accent-[#e08f20]" />
+                <label class="mt-3 block cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-center text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
+                  Upload a different image
+                  <input id="crop-file" type="file" accept="image/*" class="hidden" />
+                </label>
+              </div>
+              <div>
+                <span class="block text-sm font-medium text-offwhite/80">Live preview</span>
+                <canvas id="crop-preview" width="320" height="180" class="mt-2 aspect-video w-full rounded-lg border border-white/10 bg-black"></canvas>
+              </div>
+            </div>
+            <p class="mt-3 text-xs text-offwhite/50">Minimum 800px wide recommended.</p>
+            <div class="mt-4 flex gap-3">
+              <button id="crop-apply" type="button" class="flex-1 rounded-lg bg-brand px-4 py-2.5 font-semibold text-black transition-colors hover:bg-brand-dark">Apply crop</button>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
 
@@ -291,15 +383,18 @@ import "../../styles/global.css";
           title: "",
           date: "",
           author: "Swansea Esports",
+          category: "",
+          intro: "",
+          teaser: "",
           organiser: "",
           startDate: "",
           endDate: "",
-          excerpt: "",
           description: "",
           location: "",
           game: "",
           link: "",
           image: "",
+          thumbnail: "",
           blocks: [],
         };
 
@@ -393,18 +488,49 @@ import "../../styles/global.css";
           const container = $(type === "news" ? "list-news" : "list-events");
           const empty = $(type === "news" ? "list-news-empty" : "list-events-empty");
           container.textContent = "";
-          const items = sortItems(type);
+          const q = ($("list-search").value || "").trim().toLowerCase();
+          let items = sortItems(type);
+          if (q) {
+            items = items.filter((it) => {
+              const hay = [it.title, it.author, it.organiser, it.category].filter(Boolean).join(" ").toLowerCase();
+              return hay.includes(q);
+            });
+          }
           empty.classList.toggle("hidden", items.length > 0);
           items.forEach((item) => {
-            const row = document.createElement("div");
-            row.className = "flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-panel px-4 py-3";
+            const card = document.createElement("div");
+            card.className = "flex flex-col overflow-hidden rounded-lg border border-white/10 bg-panel";
 
-            const info = document.createElement("div");
-            info.className = "min-w-0";
+            // Thumbnail (16:9) or branded placeholder.
+            const thumbSrc = item.thumbnail || item.image;
+            if (thumbSrc) {
+              const thumbWrap = document.createElement("div");
+              thumbWrap.className = "aspect-video w-full overflow-hidden bg-black/30";
+              const img = document.createElement("img");
+              img.src = thumbSrc;
+              img.alt = "";
+              img.loading = "lazy";
+              img.className = "h-full w-full object-cover";
+              thumbWrap.append(img);
+              card.append(thumbWrap);
+            } else {
+              const placeholder = document.createElement("div");
+              placeholder.className = "flex aspect-video w-full items-center justify-center bg-brand-gradient";
+              const swan = document.createElement("img");
+              swan.src = "/brand/swan-head-clean.png";
+              swan.alt = "";
+              swan.className = "h-12 w-12 object-contain opacity-40";
+              placeholder.append(swan);
+              card.append(placeholder);
+            }
+
+            const body = document.createElement("div");
+            body.className = "flex flex-1 flex-col p-4";
+
             const titleRow = document.createElement("div");
-            titleRow.className = "flex items-center gap-2";
+            titleRow.className = "flex flex-wrap items-center gap-2";
             const title = document.createElement("p");
-            title.className = "truncate font-medium text-offwhite";
+            title.className = "min-w-0 truncate font-medium text-offwhite";
             title.textContent = item.title || "(untitled)";
             titleRow.append(title);
             const badge = document.createElement("span");
@@ -423,34 +549,94 @@ import "../../styles/global.css";
               sp.className = "shrink-0 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-offwhite/50";
               titleRow.append(sp);
             }
+            if (item.category) {
+              const cat = document.createElement("span");
+              cat.textContent = item.category;
+              cat.className = "shrink-0 rounded-full border border-brand/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand";
+              titleRow.append(cat);
+            }
+
             const meta = document.createElement("p");
-            meta.className = "mt-0.5 text-xs text-offwhite/50";
-            const authorName = item.author || item.organiser || "";
-            meta.textContent = (item.date ? formatDate(item.date) : "—") + (authorName ? " · " + authorName : "");
-            info.append(titleRow, meta);
+            meta.className = "mt-1.5 text-xs text-offwhite/50";
+            const who = type === "news" ? item.author : item.organiser;
+            meta.textContent = (item.date ? formatDate(item.date) : "—") + (who ? " · " + who : "");
+            body.append(titleRow, meta);
 
             const actions = document.createElement("div");
-            actions.className = "flex shrink-0 gap-2";
-            const editBtn = document.createElement("button");
-            editBtn.type = "button";
-            editBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
-            editBtn.textContent = "Edit";
-            editBtn.addEventListener("click", () => openEditor(type, item.slug));
-            const previewBtn = document.createElement("button");
-            previewBtn.type = "button";
-            previewBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
-            previewBtn.textContent = "Preview";
-            previewBtn.addEventListener("click", () => window.open(`/api/preview?type=${encodeURIComponent(type)}&slug=${encodeURIComponent(item.slug)}`, "_blank"));
-            const delBtn = document.createElement("button");
-            delBtn.type = "button";
-            delBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-red-400/80 transition-colors hover:border-red-400/50 hover:text-red-400";
-            delBtn.textContent = "Delete";
-            delBtn.addEventListener("click", () => deleteArticle(type, item.slug, item.title || item.slug));
-            actions.append(editBtn, previewBtn, delBtn);
+            actions.className = "mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3";
+            const mkAct = (txt, cls, onClick) => {
+              const b = document.createElement("button");
+              b.type = "button";
+              b.className =
+                "rounded border border-white/15 px-2.5 py-1 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite" +
+                (cls ? " " + cls : "");
+              b.textContent = txt;
+              b.addEventListener("click", onClick);
+              return b;
+            };
+            actions.append(
+              mkAct("Edit", "", () => openEditor(type, item.slug)),
+              mkAct("Preview", "", () => window.open(`/api/preview?type=${encodeURIComponent(type)}&slug=${encodeURIComponent(item.slug)}`, "_blank")),
+              mkAct("Duplicate", "", () => duplicateFromList(type, item)),
+              mkAct("Delete", "hover:border-red-400/50 hover:text-red-400", () => deleteArticle(type, item.slug, item.title || item.slug))
+            );
+            body.append(actions);
 
-            row.append(info, actions);
-            container.append(row);
+            card.append(body);
+            container.append(card);
           });
+        }
+
+        async function duplicateFromList(type, item) {
+          try {
+            const res = await fetch(`${API}?type=${encodeURIComponent(type)}&slug=${encodeURIComponent(item.slug)}`);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              window.alert((data && data.error) || "Could not load the article to duplicate.");
+              return;
+            }
+            const slug = randomSlug();
+            const payload = {
+              type,
+              slug,
+              title: ((item.title || "Untitled").trim()) + " (copy)",
+              date: todayLocal(),
+              body: typeof data.body === "string" ? data.body : "",
+              draft: true,
+              ready: false,
+              sponsored: data.sponsored === true || data.sponsored === "true",
+            };
+            if (type === "news") {
+              payload.author = data.author || "Swansea Esports";
+              if (data.category) payload.category = data.category;
+              if (data.intro) payload.intro = data.intro;
+              if (data.teaser) payload.teaser = data.teaser;
+            } else {
+              if (data.organiser) payload.organiser = data.organiser;
+              ["startDate", "endDate", "location", "game", "link", "description"].forEach((k) => {
+                if (data[k]) payload[k] = data[k];
+              });
+            }
+            if (data.image) payload.image = data.image;
+            if (data.thumbnail) payload.thumbnail = data.thumbnail;
+            const r = await fetch(API, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const rd = await r.json().catch(() => ({}));
+            if (!r.ok) {
+              window.alert((rd && rd.error) || "Could not duplicate the article.");
+              return;
+            }
+            state.mode = "edit";
+            state.type = type;
+            state.slug = rd.slug || slug;
+            showView("editor");
+            await loadArticle();
+          } catch (e) {
+            window.alert("Network error — could not duplicate the article.");
+          }
         }
 
         async function deleteArticle(type, slug, title) {
@@ -476,13 +662,17 @@ import "../../styles/global.css";
           createType = type;
           $("create-heading").textContent = type === "news" ? "New news post" : "New event";
           $("c-title").value = "";
-          $("c-author").value = role === "admin" ? "" : "";
+          $("c-author").value = "";
+          // Events credit the organiser instead of an author.
+          const isNews = type === "news";
+          $("c-author-label").textContent = isNews ? "Author" : "Organiser";
+          $("c-author").placeholder = isNews ? "Your name" : "Who is running it?";
           $("create-error").classList.add("hidden");
           showView("create");
           setTimeout(() => $("c-title").focus(), 50);
         }
 
-        async function createArticle(type, name, author) {
+        async function createArticle(type, name, authorOrOrganiser) {
           try {
             const slug = randomSlug();
             const payload = {
@@ -494,8 +684,12 @@ import "../../styles/global.css";
               draft: true,
               ready: false,
               sponsored: false,
-              author: author || "Swansea Esports",
             };
+            if (type === "news") {
+              payload.author = authorOrOrganiser || "Swansea Esports";
+            } else {
+              payload.organiser = authorOrOrganiser || "";
+            }
             const res = await fetch(API, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -518,15 +712,33 @@ import "../../styles/global.css";
           }
         }
 
-        // Duplicate: copy the current article to a fresh random-slug draft.
+        // Duplicate: copy the current article (content + fields) to a fresh
+        // random-slug draft and open it in the editor.
         async function duplicateArticle() {
           if (!state.slug) return;
-          const suffix = " (copy)";
-          state.title = (state.title.trim() ? state.title.trim() : "Untitled") + suffix;
-          // createArticle POSTs with the suffixed title, then loadArticle()
-          // loads the fresh copy into the editor (state.title is overwritten
-          // by the copy's own title — no restore needed).
-          await createArticle(state.type, state.title, state.author);
+          try {
+            const payload = collectPayload();
+            payload.slug = randomSlug();
+            payload.title = (payload.title.trim() ? payload.title.trim() : "Untitled") + " (copy)";
+            payload.draft = true;
+            payload.ready = false;
+            payload.date = todayLocal();
+            const res = await fetch(API, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              window.alert((data && data.error) || "Could not duplicate the article.");
+              return;
+            }
+            state.mode = "edit";
+            state.slug = data.slug;
+            await loadArticle();
+          } catch (e) {
+            window.alert("Network error — could not duplicate the article.");
+          }
         }
 
         // Publish now: sets publish time to this moment + ready, then saves.
@@ -568,7 +780,9 @@ import "../../styles/global.css";
             state.draft = data.draft === true || data.draft === "true";
             if (state.type === "news") {
               state.author = typeof data.author === "string" ? data.author : "Swansea Esports";
-              state.excerpt = typeof data.excerpt === "string" ? data.excerpt : "";
+              state.category = typeof data.category === "string" ? data.category : "";
+              state.intro = typeof data.intro === "string" ? data.intro : "";
+              state.teaser = typeof data.teaser === "string" ? data.teaser : "";
             } else {
               state.startDate = typeof data.startDate === "string" ? data.startDate : "";
               state.endDate = typeof data.endDate === "string" ? data.endDate : "";
@@ -576,10 +790,10 @@ import "../../styles/global.css";
               state.game = typeof data.game === "string" ? data.game : "";
               state.link = typeof data.link === "string" ? data.link : "";
               state.description = typeof data.description === "string" ? data.description : "";
-              state.author = typeof data.author === "string" ? data.author : "";
               state.organiser = typeof data.organiser === "string" ? data.organiser : "";
             }
             state.image = typeof data.image === "string" ? data.image : "";
+            state.thumbnail = typeof data.thumbnail === "string" ? data.thumbnail : "";
             state.blocks = parseBlocks(typeof data.body === "string" ? data.body : "");
             syncTypeFields();
             syncInputs();
@@ -662,15 +876,17 @@ import "../../styles/global.css";
 
         function syncTypeFields() {
           const isNews = state.type === "news";
-          // Author is shown for BOTH types (events credit the writer too).
-          $("w-author-wrap").classList.remove("hidden");
+          // Author and category are news-only; events credit the organiser instead.
+          $("w-author-wrap").classList.toggle("hidden", !isNews);
+          $("w-category-wrap").classList.toggle("hidden", !isNews);
           $("w-organiser-wrap").classList.toggle("hidden", isNews);
           $("w-startdate-wrap").classList.toggle("hidden", isNews);
           $("w-enddate-wrap").classList.toggle("hidden", isNews);
           $("w-location-wrap").classList.toggle("hidden", isNews);
           $("w-game-wrap").classList.toggle("hidden", isNews);
           $("w-link-wrap").classList.toggle("hidden", isNews);
-          $("w-excerpt-wrap").classList.toggle("hidden", !isNews);
+          $("w-intro-wrap").classList.toggle("hidden", !isNews);
+          $("w-teaser-wrap").classList.toggle("hidden", !isNews);
           $("w-desc-wrap").classList.toggle("hidden", isNews);
         }
 
@@ -678,29 +894,53 @@ import "../../styles/global.css";
           $("w-title").value = state.title;
           $("w-date").value = state.date;
           $("w-author").value = state.author;
+          $("w-category").value = state.category;
+          $("w-intro").value = state.intro;
+          $("w-teaser").value = state.teaser;
           $("w-organiser").value = state.organiser;
           $("w-startdate").value = state.startDate;
           $("w-enddate").value = state.endDate;
-          $("w-excerpt").value = state.excerpt;
           $("w-desc").value = state.description;
           $("w-location").value = state.location;
           $("w-game").value = state.game;
           $("w-link").value = state.link;
           $("w-sponsored").checked = state.sponsored;
+          updateImageUI();
           updateThumbnailUI();
           renderBlocks();
         }
 
-        function updateThumbnailUI() {
-          const preview = $("w-thumb-preview");
+        const SWAN_WIDE = "/brand/swan-wide.png";
+
+        function updateImageUI() {
+          const preview = $("w-image-preview");
+          const status = $("w-image-status");
           if (state.image) {
             preview.src = state.image;
             preview.classList.remove("hidden");
+            $("w-image-remove").classList.remove("hidden");
+            status.textContent = "";
+          } else {
+            // Empty intro image falls back to the swan banner.
+            preview.src = SWAN_WIDE;
+            preview.classList.remove("hidden");
+            $("w-image-remove").classList.add("hidden");
+            status.textContent = "Defaults to the swan banner.";
+          }
+        }
+
+        function updateThumbnailUI() {
+          const preview = $("w-thumb-preview");
+          if (state.thumbnail) {
+            preview.src = state.thumbnail;
+            preview.classList.remove("hidden");
             $("w-thumb-remove").classList.remove("hidden");
+            $("w-thumb-status").textContent = "";
           } else {
             preview.removeAttribute("src");
             preview.classList.add("hidden");
             $("w-thumb-remove").classList.add("hidden");
+            $("w-thumb-status").textContent = "No thumbnail — cards will fall back to the intro image or swan banner.";
           }
         }
 
@@ -756,10 +996,12 @@ import "../../styles/global.css";
             draft: !state.ready, // ready = live; everything else is a draft
             ready: state.ready,
             sponsored: state.sponsored,
-            author: state.author.trim() || "Swansea Esports",
           };
           if (state.type === "news") {
-            payload.excerpt = state.excerpt.trim();
+            payload.author = state.author.trim() || "Swansea Esports";
+            payload.category = state.category.trim();
+            payload.intro = state.intro.trim();
+            payload.teaser = state.teaser.trim();
           } else {
             payload.startDate = state.startDate.trim();
             payload.endDate = state.endDate.trim();
@@ -769,18 +1011,32 @@ import "../../styles/global.css";
             payload.description = state.description.trim();
             payload.organiser = state.organiser.trim();
           }
-          payload.image = state.image.trim();
+          // Empty intro image = the swan banner (the site's default hero).
+          payload.image = state.image.trim() || SWAN_WIDE;
+          if (state.thumbnail.trim()) payload.thumbnail = state.thumbnail.trim();
           return payload;
         }
 
         // ---- blocks ---------------------------------------------------------------
+        const BLOCK_SIZES = ["small", "medium", "large", "full"];
+
         function serializeBlocks() {
           return state.blocks
             .map((b) => {
-              if (b.kind === "text") return b.text;
+              if (b.kind === "text") {
+                const text = String(b.text || "").trim();
+                if (!text) return "";
+                // Wide text blocks are wrapped in a raw-HTML div the article
+                // stylesheet expands beyond the prose column.
+                return b.wide ? `<div class="wide">\n\n${text}\n\n</div>` : text;
+              }
               if (!b.url) return "";
               const alt = b.caption || "";
-              return "![" + alt + "](" + b.url + ")";
+              const size = BLOCK_SIZES.includes(b.size) ? b.size : "full";
+              // Markdown title attribute = display size (omitted for the default).
+              return size === "full"
+                ? "![" + alt + "](" + b.url + ")"
+                : "![" + alt + "](" + b.url + ' "' + size + '")';
             })
             .join("\n\n");
         }
@@ -788,24 +1044,37 @@ import "../../styles/global.css";
         function parseBlocks(md) {
           const blocks = [];
           let text = [];
+          let wide = false; // inside a <div class="wide">…</div> wrapper
           const flushText = () => {
             const t = text.join("\n").trim();
-            if (t) blocks.push({ kind: "text", text: t });
+            if (t) blocks.push({ kind: "text", text: t, wide: wide });
             text = [];
+            wide = false;
           };
           String(md || "")
             .split("\n")
             .forEach((line) => {
-              const m = /^!\[([^\]]*)\]\(([^)]+)\)$/.exec(line.trim());
-              if (m) {
+              const trimmed = line.trim();
+              const img = /^!\[([^\]]*)\]\(([^)]+?)(?:\s+"([^"]*)")?\)$/.exec(trimmed);
+              if (img) {
                 flushText();
-                blocks.push({ kind: "image", url: m[2], caption: m[1] });
-              } else {
-                text.push(line);
+                const size = BLOCK_SIZES.includes(img[3]) ? img[3] : "full";
+                blocks.push({ kind: "image", url: img[2], caption: img[1], size });
+                return;
               }
+              if (/^<div class="wide">\s*$/.test(trimmed)) {
+                flushText();
+                wide = true;
+                return;
+              }
+              if (/^<\/div>\s*$/.test(trimmed)) {
+                flushText();
+                return;
+              }
+              text.push(line);
             });
           flushText();
-          return blocks.length ? blocks : [{ kind: "text", text: "" }];
+          return blocks.length ? blocks : [{ kind: "text", text: "", wide: false }];
         }
 
         function renderBlocks() {
@@ -824,7 +1093,23 @@ import "../../styles/global.css";
             head.append(label);
 
             const controls = document.createElement("div");
-            controls.className = "flex gap-2";
+            controls.className = "flex flex-wrap items-center gap-2";
+            if (block.kind === "text") {
+              const wideLabel = document.createElement("label");
+              wideLabel.className =
+                "flex cursor-pointer items-center gap-1.5 rounded border border-white/15 px-2 py-1 text-xs text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
+              wideLabel.title = "Expand this block beyond the prose column";
+              const wideBox = document.createElement("input");
+              wideBox.type = "checkbox";
+              wideBox.className = "h-3.5 w-3.5 accent-[#e08f20]";
+              wideBox.checked = !!block.wide;
+              wideBox.addEventListener("change", () => {
+                state.blocks[i].wide = wideBox.checked;
+                markDirty();
+              });
+              wideLabel.append(wideBox, document.createTextNode("Wide"));
+              controls.append(wideLabel);
+            }
             const mkBtn = (txt, cls, onClick) => {
               const b = document.createElement("button");
               b.type = "button";
@@ -890,35 +1175,39 @@ import "../../styles/global.css";
                 const img = document.createElement("img");
                 img.src = block.previewUrl || block.url;
                 img.alt = "";
-                img.className = "mt-3 h-28 w-full rounded-lg border border-white/10 object-cover";
+                // object-contain so the whole image is visible (never cropped).
+                img.className = "mt-3 h-28 w-full rounded-lg border border-white/10 bg-black/30 object-contain";
                 row.append(img);
               }
               const bar = document.createElement("div");
               bar.className = "mt-3 flex flex-wrap items-center gap-2";
-              const fileLabel = document.createElement("label");
-              fileLabel.className =
-                "cursor-pointer rounded border border-white/15 px-3 py-1.5 text-xs text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
-              fileLabel.textContent = block.url ? "Replace image" : "Upload image";
-              const fileInput = document.createElement("input");
-              fileInput.type = "file";
-              fileInput.accept = "image/*";
-              fileInput.className = "hidden";
-              fileInput.addEventListener("change", async () => {
-                const file = fileInput.files && fileInput.files[0];
-                if (!file) return;
-                try {
-                  const { url, previewUrl } = await uploadFile(file);
-                  state.blocks[i].url = url;
-                  state.blocks[i].previewUrl = previewUrl;
-                  renderBlocks();
-                  markDirty();
-                  setError("");
-                } catch (err) {
-                  setError(err.message || "Upload failed — try again.");
-                }
+              const pickBtn = document.createElement("button");
+              pickBtn.type = "button";
+              pickBtn.className =
+                "rounded border border-white/15 px-3 py-1.5 text-xs text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
+              pickBtn.textContent = block.url ? "Replace image" : "Choose image";
+              pickBtn.addEventListener("click", () => openMediaPicker({ kind: "block", index: i }));
+              bar.append(pickBtn);
+
+              const sizeSelect = document.createElement("select");
+              sizeSelect.className =
+                "rounded border border-white/15 bg-ink px-2 py-1.5 text-xs text-offwhite/70 outline-none transition-colors focus:border-brand";
+              sizeSelect.title = "Display size of this image";
+              BLOCK_SIZES.forEach((s) => {
+                const o = document.createElement("option");
+                o.value = s;
+                o.textContent = s[0].toUpperCase() + s.slice(1);
+                sizeSelect.append(o);
               });
-              fileLabel.append(fileInput);
-              bar.append(fileLabel);
+              sizeSelect.value = BLOCK_SIZES.includes(block.size) ? block.size : "full";
+              sizeSelect.addEventListener("change", () => {
+                state.blocks[i].size = sizeSelect.value;
+                markDirty();
+              });
+              const sizeLabel = document.createElement("span");
+              sizeLabel.className = "text-xs text-offwhite/50";
+              sizeLabel.textContent = "Size:";
+              bar.append(sizeLabel, sizeSelect);
               row.append(bar);
 
               const cap = document.createElement("input");
@@ -1023,15 +1312,260 @@ import "../../styles/global.css";
           });
         }
 
+        // ---- media picker + thumbnail crop --------------------------------------
+        // Uploads a raw data URL (already WebP) straight to /api/upload.
+        async function uploadDataUrl(dataUrl, filename) {
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename, data: dataUrl, contentType: "image/webp" }),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error((json && json.error) || "Upload failed — try again.");
+          return json.url;
+        }
+
+        let mediaTarget = null; // { kind: "image" } | { kind: "thumbnail" } | { kind: "block", index }
+        let mediaOpener = null; // element to return focus to on close
+
+        async function openMediaPicker(target) {
+          mediaTarget = target;
+          mediaOpener = document.activeElement;
+          $("media-modal").classList.remove("hidden");
+          $("media-status").textContent = "Loading images…";
+          $("media-grid").textContent = "";
+          $("media-empty").classList.add("hidden");
+          try {
+            const res = await fetch("/api/media");
+            const data = await res.json().catch(() => ({}));
+            renderMediaGrid(Array.isArray(data.items) ? data.items : []);
+          } catch (e) {
+            $("media-status").textContent = "Could not load the media library.";
+            renderMediaGrid([]);
+          }
+        }
+
+        function closeMediaPicker() {
+          $("media-modal").classList.add("hidden");
+          if (mediaOpener && typeof mediaOpener.focus === "function") mediaOpener.focus();
+          mediaOpener = null;
+          mediaTarget = null;
+        }
+
+        function renderMediaGrid(items) {
+          const grid = $("media-grid");
+          grid.textContent = "";
+          $("media-empty").classList.toggle("hidden", items.length > 0);
+          $("media-status").textContent = items.length
+            ? items.length + (items.length === 1 ? " image" : " images") + " available."
+            : "No images yet — upload one to get started.";
+          items.forEach((item) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className =
+              "group overflow-hidden rounded-lg border border-white/10 bg-ink text-left transition-colors hover:border-brand/60";
+            btn.title = item.name;
+            btn.setAttribute("aria-label", "Use " + item.name);
+            const img = document.createElement("img");
+            img.src = item.url;
+            img.alt = "";
+            img.loading = "lazy";
+            img.className = "aspect-video w-full object-cover transition-opacity group-hover:opacity-90";
+            const name = document.createElement("span");
+            name.className = "block truncate px-2 py-1.5 text-[10px] text-offwhite/50";
+            name.textContent = item.name;
+            btn.append(img, name);
+            btn.addEventListener("click", () => handleMediaPick(item.url));
+            grid.append(btn);
+          });
+          const first = grid.querySelector("button");
+          if (first) first.focus();
+          else $("media-close").focus();
+        }
+
+        function handleMediaPick(url) {
+          const target = mediaTarget;
+          if (!target) return;
+          if (target.kind === "thumbnail") {
+            closeMediaPicker();
+            openCropUI(url);
+            return;
+          }
+          if (target.kind === "image") {
+            state.image = url;
+            closeMediaPicker();
+            updateImageUI();
+          } else if (target.kind === "block") {
+            state.blocks[target.index].url = url;
+            state.blocks[target.index].previewUrl = null;
+            closeMediaPicker();
+            renderBlocks();
+          }
+          markDirty();
+          setError("");
+        }
+
+        // ---- thumbnail crop ------------------------------------------------------
+        const crop = {
+          url: "",
+          img: null, // the <img> element inside the stage
+          naturalW: 0,
+          naturalH: 0,
+          coverScale: 1, // scale at which the image exactly covers the stage
+          zoomMult: 1, // 1 = cover
+          panX: 0,
+          panY: 0,
+          drag: null, // { startX, startY, panX, panY }
+          raf: 0,
+          opener: null,
+        };
+
+        function openCropUI(url) {
+          crop.opener = document.activeElement;
+          crop.url = url;
+          crop.zoomMult = 1;
+          crop.panX = 0;
+          crop.panY = 0;
+          crop.drag = null;
+          const img = $("crop-img");
+          crop.img = img;
+          img.onload = () => {
+            crop.naturalW = img.naturalWidth;
+            crop.naturalH = img.naturalHeight;
+            layoutCrop();
+            drawCropPreview();
+          };
+          img.onerror = () => {
+            /* leave the stage empty; the status line below the modal explains the crop */
+          };
+          img.src = url;
+          $("crop-zoom").value = 100;
+          $("crop-modal").classList.remove("hidden");
+          setTimeout(() => $("crop-apply").focus(), 50);
+        }
+
+        function closeCropUI() {
+          $("crop-modal").classList.add("hidden");
+          if (crop.img) crop.img.onload = null;
+          if (crop.opener && typeof crop.opener.focus === "function") crop.opener.focus();
+          crop.opener = null;
+        }
+
+        function layoutCrop() {
+          const stage = $("crop-stage");
+          const W = stage.clientWidth;
+          const H = stage.clientHeight;
+          if (!W || !H || !crop.naturalW || !crop.naturalH) return;
+          crop.coverScale = Math.max(W / crop.naturalW, H / crop.naturalH);
+          const scale = crop.coverScale * crop.zoomMult;
+          const imgW = crop.naturalW * scale;
+          const imgH = crop.naturalH * scale;
+          const maxPanX = Math.max(0, (imgW - W) / 2);
+          const maxPanY = Math.max(0, (imgH - H) / 2);
+          crop.panX = Math.max(-maxPanX, Math.min(maxPanX, crop.panX));
+          crop.panY = Math.max(-maxPanY, Math.min(maxPanY, crop.panY));
+          crop.img.style.width = imgW + "px";
+          crop.img.style.height = imgH + "px";
+          crop.img.style.left = (W - imgW) / 2 + crop.panX + "px";
+          crop.img.style.top = (H - imgH) / 2 + crop.panY + "px";
+        }
+
+        function drawCropPreview() {
+          const stage = $("crop-stage");
+          const canvas = $("crop-preview");
+          const ctx = canvas.getContext("2d");
+          const W = stage.clientWidth;
+          const H = stage.clientHeight;
+          if (!W || !H || !crop.naturalW || !crop.naturalH) return;
+          const scale = crop.coverScale * crop.zoomMult;
+          const imgW = crop.naturalW * scale;
+          const imgH = crop.naturalH * scale;
+          const left = (W - imgW) / 2 + crop.panX;
+          const top = (H - imgH) / 2 + crop.panY;
+          // Visible region in natural image coordinates.
+          const sx = Math.max(0, -left / scale);
+          const sy = Math.max(0, -top / scale);
+          const sw = Math.min(crop.naturalW - sx, W / scale);
+          const sh = Math.min(crop.naturalH - sy, H / scale);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (sw <= 0 || sh <= 0) return;
+          ctx.drawImage(crop.img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+        }
+
+        function scheduleCropRender() {
+          if (crop.raf) return;
+          crop.raf = requestAnimationFrame(() => {
+            crop.raf = 0;
+            layoutCrop();
+            drawCropPreview();
+          });
+        }
+
+        async function applyCrop() {
+          const stage = $("crop-stage");
+          const W = stage.clientWidth;
+          const H = stage.clientHeight;
+          if (!W || !H || !crop.naturalW || !crop.naturalH) return;
+          const scale = crop.coverScale * crop.zoomMult;
+          const imgW = crop.naturalW * scale;
+          const imgH = crop.naturalH * scale;
+          const left = (W - imgW) / 2 + crop.panX;
+          const top = (H - imgH) / 2 + crop.panY;
+          const sx = Math.max(0, -left / scale);
+          const sy = Math.max(0, -top / scale);
+          const sw = Math.min(crop.naturalW - sx, W / scale);
+          const sh = Math.min(crop.naturalH - sy, H / scale);
+          if (sw <= 0 || sh <= 0) return;
+          const cw = Math.max(1, Math.round(sw));
+          const ch = Math.max(1, Math.round(sh));
+          const canvas = document.createElement("canvas");
+          canvas.width = cw;
+          canvas.height = ch;
+          canvas.getContext("2d").drawImage(crop.img, sx, sy, sw, sh, 0, 0, cw, ch);
+          const dataUrl = await new Promise((resolve) => {
+            canvas.toBlob(
+              (blob) => {
+                if (!blob) return resolve(null);
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => resolve(null);
+                reader.readAsDataURL(blob);
+              },
+              "image/webp",
+              0.82
+            );
+          });
+          if (!dataUrl) {
+            setError("Could not encode the crop — try a smaller image.");
+            return;
+          }
+          const status = $("w-thumb-status");
+          status.textContent = "Uploading cropped thumbnail…";
+          try {
+            const url = await uploadDataUrl(dataUrl, "thumbnail-" + Date.now() + ".webp");
+            state.thumbnail = url;
+            status.textContent = "Thumbnail appears on cards once the rebuild finishes.";
+            closeCropUI();
+            updateThumbnailUI();
+            markDirty();
+            setError("");
+          } catch (err) {
+            status.textContent = "";
+            setError(err.message || "Upload failed — try again.");
+          }
+        }
+
         // ---- event wiring -----------------------------------------------------------
         const FIELD_MAP = {
           "w-title": "title",
           "w-date": "date",
           "w-author": "author",
+          "w-category": "category",
+          "w-intro": "intro",
+          "w-teaser": "teaser",
           "w-organiser": "organiser",
           "w-startdate": "startDate",
           "w-enddate": "endDate",
-          "w-excerpt": "excerpt",
           "w-desc": "description",
           "w-location": "location",
           "w-game": "game",
@@ -1056,33 +1590,105 @@ import "../../styles/global.css";
           markDirty();
         });
 
-        $("w-thumb-input").addEventListener("change", async (e) => {
+        $("w-image-pick").addEventListener("click", () => openMediaPicker({ kind: "image" }));
+        $("w-image-remove").addEventListener("click", () => {
+          state.image = "";
+          updateImageUI();
+          markDirty();
+        });
+
+        $("w-thumb-pick").addEventListener("click", () => openMediaPicker({ kind: "thumbnail" }));
+
+        $("w-thumb-remove").addEventListener("click", () => {
+          state.thumbnail = "";
+          updateThumbnailUI();
+          markDirty();
+        });
+
+        // Media picker modal wiring.
+        $("media-close").addEventListener("click", closeMediaPicker);
+        $("media-overlay").addEventListener("click", closeMediaPicker);
+        $("media-file").addEventListener("change", async (e) => {
           const file = e.target.files && e.target.files[0];
           if (!file) return;
-          const status = $("w-thumb-status");
-          const preview = $("w-thumb-preview");
-          preview.src = URL.createObjectURL(file);
-          preview.classList.remove("hidden");
+          const status = $("media-status");
           status.textContent = "Uploading…";
           try {
             const { url } = await uploadFile(file);
-            state.image = url;
-            updateThumbnailUI();
-            status.textContent = "Thumbnail appears on the live page once the rebuild finishes.";
-            markDirty();
-            setError("");
+            status.textContent = "Uploaded — refreshing the library.";
+            const res = await fetch("/api/media");
+            const data = await res.json().catch(() => ({}));
+            renderMediaGrid(Array.isArray(data.items) ? data.items : []);
+            // Jump straight to the crop when picking a thumbnail source.
+            if (mediaTarget && mediaTarget.kind === "thumbnail") {
+              closeMediaPicker();
+              openCropUI(url);
+            }
           } catch (err) {
-            status.textContent = "";
-            preview.classList.add("hidden");
-            setError(err.message || "Upload failed — try again.");
+            status.textContent = err.message || "Upload failed — try again.";
           }
           e.target.value = "";
         });
 
-        $("w-thumb-remove").addEventListener("click", () => {
-          state.image = "";
-          updateThumbnailUI();
-          markDirty();
+        // Crop modal wiring.
+        $("crop-close").addEventListener("click", closeCropUI);
+        $("crop-overlay").addEventListener("click", closeCropUI);
+        $("crop-zoom").addEventListener("input", (e) => {
+          crop.zoomMult = Number(e.target.value) / 100;
+          scheduleCropRender();
+        });
+        $("crop-file").addEventListener("change", async (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          try {
+            const webp = await fileToWebP(file);
+            const src = webp ? webp.dataUrl : URL.createObjectURL(file);
+            crop.zoomMult = 1;
+            crop.panX = 0;
+            crop.panY = 0;
+            crop.img.src = src;
+          } catch (err) {
+            setError(err.message || "Could not read that image.");
+          }
+          e.target.value = "";
+        });
+        $("crop-apply").addEventListener("click", () => applyCrop());
+
+        // Drag to pan the crop stage.
+        const stage = $("crop-stage");
+        stage.addEventListener("pointerdown", (e) => {
+          if (!crop.naturalW) return;
+          crop.drag = { startX: e.clientX, startY: e.clientY, panX: crop.panX, panY: crop.panY };
+          stage.setPointerCapture(e.pointerId);
+        });
+        stage.addEventListener("pointermove", (e) => {
+          if (!crop.drag) return;
+          crop.panX = crop.drag.panX + (e.clientX - crop.drag.startX);
+          crop.panY = crop.drag.panY + (e.clientY - crop.drag.startY);
+          scheduleCropRender();
+        });
+        stage.addEventListener("pointerup", (e) => {
+          crop.drag = null;
+          try {
+            stage.releasePointerCapture(e.pointerId);
+          } catch (err) {
+            /* already released */
+          }
+        });
+        stage.addEventListener("pointercancel", () => {
+          crop.drag = null;
+        });
+
+        // Esc closes the topmost modal; focus returns to the opener.
+        document.addEventListener("keydown", (e) => {
+          if (e.key !== "Escape") return;
+          if (!$("crop-modal").classList.contains("hidden")) {
+            e.preventDefault();
+            closeCropUI();
+          } else if (!$("media-modal").classList.contains("hidden")) {
+            e.preventDefault();
+            closeMediaPicker();
+          }
         });
 
         $("add-text-btn").addEventListener("click", () => {
@@ -1118,6 +1724,12 @@ import "../../styles/global.css";
           });
         });
 
+        // Live search across both lists.
+        $("list-search").addEventListener("input", () => {
+          renderList("news");
+          renderList("events");
+        });
+
         $("new-news-btn").addEventListener("click", () => {
           history.replaceState(null, "", "/admin/new");
           showCreateDialog("news");
@@ -1139,7 +1751,7 @@ import "../../styles/global.css";
           const author = $("c-author").value.trim();
           const err = $("create-error");
           if (!name || !author) {
-            err.textContent = "Name and author are both required.";
+            err.textContent = "Name and author/organiser are both required.";
             err.classList.remove("hidden");
             return;
           }
