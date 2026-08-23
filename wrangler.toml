@@ -10,5 +10,5 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "track_db"
 database_name = "su-esports-track"
-database_id = "00000000-0000-0000-0000-000000000000" # replaced by `wrangler d1 create`
+database_id = "4e41d989-e087-4953-937c-ea61090a0c7b"
 migrations_dir = "migrations"
