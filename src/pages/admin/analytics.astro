@@ -1,0 +1,368 @@
+---
+import "../../styles/global.css";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Link analytics · Swansea Esports</title>
+    <meta name="description" content="Swansea Esports link click analytics." />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="robots" content="noindex" />
+  </head>
+  <body class="bg-ink text-offwhite">
+    <div class="min-h-screen bg-brand-glow">
+      <header class="border-b border-white/10 bg-ink/85 backdrop-blur">
+        <div class="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
+          <div class="flex items-center gap-3">
+            <img src="/brand/swan-head.png" alt="" width="36" height="36" class="h-9 w-9" />
+            <span class="font-display text-xl tracking-widest text-offwhite">
+              SWANSEA <span class="text-brand">ESPORTS</span>
+              <span class="text-offwhite/50">— Link analytics</span>
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <a
+              href="/admin/new"
+              class="rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+            >
+              Content
+            </a>
+            <button
+              id="signout-btn"
+              class="hidden rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+        <!-- ============ LOGIN ============ -->
+        <section id="login-view" class="hidden">
+          <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8">
+            <h1 class="font-display text-3xl tracking-wider text-brand">Sign in</h1>
+            <p class="mt-2 text-sm text-offwhite/60">Admin access for Swansea Esports committee members.</p>
+            <form id="login-form" class="mt-6 space-y-4">
+              <div>
+                <label for="login-email" class="block text-sm font-medium text-offwhite/80">Email</label>
+                <input
+                  id="login-email"
+                  type="email"
+                  required
+                  autocomplete="username"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand"
+                />
+              </div>
+              <div>
+                <label for="login-password" class="block text-sm font-medium text-offwhite/80">Password</label>
+                <input
+                  id="login-password"
+                  type="password"
+                  required
+                  autocomplete="current-password"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand"
+                />
+              </div>
+              <p id="login-error" class="hidden text-sm text-red-400" aria-live="polite"></p>
+              <button
+                type="submit"
+                id="login-btn"
+                class="w-full rounded-lg bg-brand px-4 py-2.5 font-semibold text-black transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Sign in
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ============ ANALYTICS ============ -->
+        <section id="analytics-view" class="hidden">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 class="font-display text-3xl tracking-wider text-brand">Link clicks</h1>
+              <p id="range-label" class="mt-1 text-sm text-offwhite/50" aria-live="polite">Loading…</p>
+            </div>
+            <form id="range-form" class="flex flex-wrap items-end gap-2">
+              <div>
+                <label for="days-input" class="block text-xs font-medium uppercase tracking-wider text-offwhite/50">Days</label>
+                <input
+                  id="days-input"
+                  type="number"
+                  min="1"
+                  max="365"
+                  value="30"
+                  class="mt-1 w-24 rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand"
+                />
+              </div>
+              <button
+                type="submit"
+                id="apply-btn"
+                class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
+              >
+                Apply
+              </button>
+              <div class="flex gap-1.5">
+                <button type="button" data-preset="7" aria-pressed="false" class="rounded-lg border border-white/15 px-4 py-2 text-sm text-offwhite/70 transition-colors hover:border-brand hover:text-brand">7d</button>
+                <button type="button" data-preset="14" aria-pressed="false" class="rounded-lg border border-white/15 px-4 py-2 text-sm text-offwhite/70 transition-colors hover:border-brand hover:text-brand">14d</button>
+                <button type="button" data-preset="30" aria-pressed="false" class="rounded-lg border border-white/15 px-4 py-2 text-sm text-offwhite/70 transition-colors hover:border-brand hover:text-brand">30d</button>
+                <button type="button" data-preset="90" aria-pressed="false" class="rounded-lg border border-white/15 px-4 py-2 text-sm text-offwhite/70 transition-colors hover:border-brand hover:text-brand">90d</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="mt-6 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-xl border border-white/10 bg-panel p-4">
+              <p class="text-xs font-medium uppercase tracking-wider text-offwhite/50">Total clicks</p>
+              <p id="stat-total" class="mt-1 font-display text-4xl tracking-wide text-brand">–</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-panel p-4">
+              <p class="text-xs font-medium uppercase tracking-wider text-offwhite/50">Unique links</p>
+              <p id="stat-links" class="mt-1 font-display text-4xl tracking-wide text-brand">–</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-panel p-4">
+              <p class="text-xs font-medium uppercase tracking-wider text-offwhite/50">Top link</p>
+              <p id="stat-top" class="mt-2 truncate text-lg font-medium text-offwhite" title="">–</p>
+              <p id="stat-top-count" class="text-sm text-offwhite/50">–</p>
+            </div>
+          </div>
+
+          <div class="mt-6 overflow-x-auto rounded-xl border border-white/10 bg-panel">
+            <table class="w-full min-w-max text-sm">
+              <caption class="sr-only">Clicks per link per day for the selected range</caption>
+              <thead>
+                <tr id="table-head" class="border-b border-white/10 text-left text-xs uppercase tracking-wider text-offwhite/50"></tr>
+              </thead>
+              <tbody id="table-body"></tbody>
+            </table>
+            <p id="table-empty" class="hidden px-6 py-10 text-center text-sm text-offwhite/50" role="status" aria-live="polite">
+              No clicks recorded in this range yet. Clicks are counted from when the tracker went live.
+            </p>
+          </div>
+
+          <p class="mt-4 text-xs text-offwhite/40">
+            Days are bucketed in UTC. Bots/spiders are filtered server-side. No cookies, no personal data —
+            just label + href + page + timestamp.
+          </p>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" is:inline>
+      "use strict";
+
+      const $ = (id) => document.getElementById(id);
+
+      function showView(name) {
+        $("login-view").classList.toggle("hidden", name !== "login");
+        $("analytics-view").classList.toggle("hidden", name !== "analytics");
+        $("signout-btn").classList.toggle("hidden", name !== "login");
+      }
+
+      $("signout-btn").addEventListener("click", async () => {
+        try {
+          await fetch("/api/auth/logout", { method: "POST" });
+        } catch (e) {
+          /* ignore — reload regardless */
+        }
+        location.reload();
+      });
+
+      $("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = $("login-btn");
+        const err = $("login-error");
+        btn.disabled = true;
+        btn.textContent = "Signing in…";
+        err.classList.add("hidden");
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: $("login-email").value.trim(),
+              password: $("login-password").value,
+            }),
+          });
+          if (res.ok) {
+            location.reload();
+            return;
+          }
+          const data = await res.json().catch(() => ({}));
+          err.textContent = (data && data.error) || "Invalid credentials";
+          err.classList.remove("hidden");
+        } catch (e2) {
+          err.textContent = "Network error — try again.";
+          err.classList.remove("hidden");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Sign in";
+        }
+      });
+
+      // ---- analytics ---------------------------------------------------------
+
+      function fmtDay(iso) {
+        const [, m, d] = iso.split("-");
+        return `${d}/${m}`;
+      }
+
+      // pad ISO day to 2 digits for the column header
+      function dayLabel(iso) {
+        const [, m, d] = iso.split("-");
+        return `${d.padStart(2, "0")}/${m}`;
+      }
+
+      function daysBetween(fromDay, toDay) {
+        const days = [];
+        const cursor = new Date(fromDay + "T00:00:00Z");
+        const end = new Date(toDay + "T00:00:00Z");
+        while (cursor <= end) {
+          days.push(cursor.toISOString().slice(0, 10));
+          cursor.setUTCDate(cursor.getUTCDate() + 1);
+        }
+        return days;
+      }
+
+      async function loadAnalytics(days) {
+        $("apply-btn").disabled = true;
+        $("apply-btn").textContent = "Loading…";
+        $("range-label").textContent = "Loading…";
+        try {
+          const res = await fetch(`/api/analytics?days=${encodeURIComponent(days)}`);
+          if (res.status === 401) {
+            showView("login");
+            return;
+          }
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            $("range-label").textContent = (data && data.error) || "Failed to load analytics";
+            return;
+          }
+          render(await res.json());
+        } catch (e) {
+          $("range-label").textContent = "Network error — try again.";
+        } finally {
+          $("apply-btn").disabled = false;
+          $("apply-btn").textContent = "Apply";
+        }
+      }
+
+      function render(data) {
+        $("range-label").textContent = `${fmtDay(data.fromDay)} → ${fmtDay(data.toDay)} (${data.days} days, UTC)`;
+        $("stat-total").textContent = String(data.totalClicks);
+        $("stat-links").textContent = String(data.links.length);
+
+        const top = data.links[0];
+        if (top) {
+          $("stat-top").textContent = top.label;
+          $("stat-top").title = top.href || top.label;
+          $("stat-top-count").textContent = `${top.total} clicks`;
+        } else {
+          $("stat-top").textContent = "–";
+          $("stat-top-count").textContent = "";
+        }
+
+        const days = daysBetween(data.fromDay, data.toDay);
+
+        // header: Label | page | one column per day | total
+        const head = $("table-head");
+        head.innerHTML = "";
+        const cells = [
+          `<th scope="col" class="sticky left-0 z-10 bg-panel px-4 py-2.5">Link</th>`,
+          `<th scope="col" class="px-4 py-2.5">Page</th>`,
+          ...days.map((d) => `<th scope="col" class="px-2 py-2.5 text-right font-medium">${dayLabel(d)}</th>`),
+          `<th scope="col" class="px-4 py-2.5 text-right">Total</th>`,
+        ];
+        head.innerHTML = cells.join("");
+
+        const body = $("table-body");
+        body.innerHTML = "";
+        $("table-empty").classList.toggle("hidden", data.links.length > 0);
+
+        for (const link of data.links) {
+          const tr = document.createElement("tr");
+          tr.className = "border-b border-white/5 hover:bg-white/5";
+
+          const labelCell = document.createElement("td");
+          labelCell.className = "sticky left-0 max-w-[220px] bg-panel px-4 py-2 hover:bg-white/5";
+          const labelSpan = document.createElement("span");
+          labelSpan.className = "block truncate font-medium text-offwhite";
+          labelSpan.textContent = link.label;
+          labelSpan.title = link.href ? `${link.href}` : link.label;
+          labelCell.appendChild(labelSpan);
+          tr.appendChild(labelCell);
+
+          const pageCell = document.createElement("td");
+          pageCell.className = "px-4 py-2 text-offwhite/50";
+          pageCell.textContent = link.page || "–";
+          tr.appendChild(pageCell);
+
+          let sum = 0;
+          for (const d of days) {
+            const n = link.byDay[d] || 0;
+            sum += n;
+            const td = document.createElement("td");
+            td.className = "px-2 py-2 text-right tabular-nums";
+            td.textContent = n > 0 ? String(n) : "·";
+            if (n > 0) td.className += " text-offwhite";
+            else td.className += " text-offwhite/50";
+            tr.appendChild(td);
+          }
+
+          const totalTd = document.createElement("td");
+          totalTd.className = "px-4 py-2 text-right font-semibold tabular-nums text-brand";
+          totalTd.textContent = String(sum);
+          tr.appendChild(totalTd);
+
+          body.appendChild(tr);
+        }
+      }
+
+      $("range-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const raw = parseInt($("days-input").value, 10);
+        const days = Number.isNaN(raw) ? 30 : Math.min(365, Math.max(1, raw));
+        $("days-input").value = String(days);
+        setActivePreset(days);
+        loadAnalytics(days);
+      });
+
+      function setActivePreset(days) {
+        document.querySelectorAll("[data-preset]").forEach((btn) => {
+          const on = parseInt(btn.dataset.preset, 10) === days;
+          btn.setAttribute("aria-pressed", String(on));
+          btn.classList.toggle("border-brand", on);
+          btn.classList.toggle("text-brand", on);
+        });
+      }
+
+      document.querySelectorAll("[data-preset]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const days = parseInt(btn.dataset.preset, 10);
+          $("days-input").value = String(days);
+          setActivePreset(days);
+          loadAnalytics(days);
+        });
+      });
+
+      // ---- boot ----------------------------------------------------------------
+      (async function init() {
+        try {
+          const res = await fetch("/api/auth/me");
+          if (res.ok) {
+            showView("analytics");
+            setActivePreset(30);
+            loadAnalytics(30);
+          } else {
+            showView("login");
+          }
+        } catch (e) {
+          showView("login");
+        }
+      })();
+    </script>
+  </body>
+</html>

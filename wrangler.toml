@@ -1,0 +1,14 @@
+name = "su-esports-website"
+compatibility_date = "2024-11-01"
+pages_build_output_dir = "dist"
+
+# Local dev: `wrangler pages dev` binds track_db from here.
+# Production: the D1 binding is added in the Cloudflare dashboard
+# (Pages → su-esports-website → Settings → Functions → D1 database bindings,
+#  variable name `track_db`, database `su-esports-track`) because this site
+# deploys via git push, not `wrangler pages deploy`.
+[[d1_databases]]
+binding = "track_db"
+database_name = "su-esports-track"
+database_id = "00000000-0000-0000-0000-000000000000" # replaced by `wrangler d1 create`
+migrations_dir = "migrations"

@@ -36,6 +36,70 @@ const fullTitle = title ? `${title} · ${site.shortName}` : `${site.name} — ${
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url.href} />
+    <link rel="canonical" href={Astro.url.href} />
+    <script is:inline>
+      // Link-click tracker: fires a sendBeacon to /api/track on every anchor
+      // click. Label = data-track attribute when present, else the link text,
+      // else the href. No cookies, no personal data — just label + href +
+      // page + server-side UTC date.
+      (function () {
+        try {
+          if (window.__suTrackLoaded) return;
+          window.__suTrackLoaded = true;
+
+          function track(e) {
+            var el = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+            if (!el) return;
+            var href = el.getAttribute("href") || "";
+            if (href.charAt(0) === "#" || /^javascript:/i.test(href)) return;
+
+            // Don't store mailto addresses verbatim — send the label only.
+            var cleanHref = /^mailto:/i.test(href) ? "mailto:" : href;
+
+            var label =
+              el.getAttribute("data-track") ||
+              (el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 60) ||
+              href;
+
+            var payload = JSON.stringify({
+              label: label,
+              href: cleanHref,
+              page: window.location.pathname
+            });
+
+            var ok = false;
+            if (navigator.sendBeacon) {
+              try {
+                ok = navigator.sendBeacon(
+                  "/api/track",
+                  new Blob([payload], { type: "application/json" })
+                );
+              } catch (err) {}
+            }
+            if (!ok) {
+              try {
+                fetch("/api/track", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: payload,
+                  keepalive: true
+                }).catch(function () {});
+              } catch (err) {}
+            }
+          }
+
+          // click fires for the primary button; auxclick for middle/right.
+          document.addEventListener("click", function (e) {
+            if (e.button === 0) track(e);
+          }, true);
+          document.addEventListener("auxclick", function (e) {
+            if (e.button === 1) track(e); // middle-click opens a new tab — count it
+          }, true);
+        } catch (err) {
+          /* tracking must never break the page */
+        }
+      })();
+    </script>
   </head>
   <body class="flex min-h-screen flex-col">
     <Header />

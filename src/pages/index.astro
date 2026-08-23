@@ -36,13 +36,13 @@ const latestPlacements = placements
         <p class="mt-4 max-w-md text-offwhite/70">{site.description}</p>
         <div class="mt-6 flex flex-wrap items-start gap-2">
           <div class="flex flex-col items-start gap-2">
-            <a href={site.discord} target="_blank" rel="noopener" class="inline-flex items-center gap-2.5 rounded bg-brand px-8 py-3.5 text-base font-semibold text-black transition-colors hover:bg-brand-dark">
+            <a href={site.discord} target="_blank" rel="noopener" data-track="join-discord-hero" class="inline-flex items-center gap-2.5 rounded bg-brand px-8 py-3.5 text-base font-semibold text-black transition-colors hover:bg-brand-dark">
               <DiscordIcon size={20} class="shrink-0" />
               Join the Discord
             </a>
             <p class="text-sm leading-snug text-offwhite/70">Everything happens here!</p>
           </div>
-          <a href={site.studentsUnion} target="_blank" rel="noopener" class="rounded border border-brand/50 px-6 py-3 text-base font-medium text-brand transition-colors hover:bg-brand/10">
+          <a href={site.studentsUnion} target="_blank" rel="noopener" data-track="students-union-hero" class="rounded border border-brand/50 px-6 py-3 text-base font-medium text-brand transition-colors hover:bg-brand/10">
             Students' Union
           </a>
         </div>
@@ -52,6 +52,7 @@ const latestPlacements = placements
           href={site.discord}
           target="_blank"
           rel="noopener"
+          data-track="swan-discord-hero"
           aria-label="Join the Swansea Esports Discord"
           class="swan-frame block rounded-3xl p-6 transition-opacity hover:opacity-80"
         >
@@ -64,7 +65,7 @@ const latestPlacements = placements
   <section class="border-b border-line/25 bg-brand-gradient">
     <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-6 sm:px-6 md:flex-row">
       <p class="font-display text-2xl tracking-wider text-offwhite">SUPPORT THE SOCIETY — GRAB THE MERCH</p>
-      <a href={site.merch} target="_blank" rel="noopener" class="rounded bg-brand px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
+      <a href={site.merch} target="_blank" rel="noopener" data-track="merch-banner" class="rounded bg-brand px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
         Shop the Merch Store ↗
       </a>
     </div>

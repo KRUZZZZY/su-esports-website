@@ -20,6 +20,7 @@ const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.s
         site.nav.map((item) => (
           <a
             href={item.href}
+            data-track={`nav-${item.label.toLowerCase()}`}
             class:list={[
               "text-sm font-medium tracking-wide transition-colors",
               isActive(item.href) ? "text-brand" : "text-offwhite/80 hover:text-offwhite"
@@ -47,6 +48,7 @@ const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.s
         href={site.discord}
         target="_blank"
         rel="noopener"
+        data-track="join-discord-header"
         class="inline-flex items-center gap-1.5 rounded bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
       >
         <DiscordIcon size={16} class="shrink-0" />
@@ -80,6 +82,7 @@ const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.s
             site.nav.map((item) => (
               <a
                 href={item.href}
+                data-track={`nav-${item.label.toLowerCase()}`}
                 class:list={[
                   "block rounded px-3 py-2 text-sm font-medium",
                   isActive(item.href) ? "text-brand" : "text-offwhite/80 hover:bg-line/5 hover:text-offwhite"
@@ -93,6 +96,7 @@ const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.s
             href={site.discord}
             target="_blank"
             rel="noopener"
+            data-track="join-discord-header-mobile"
             class="mt-1 flex items-center justify-center gap-1.5 rounded bg-brand px-3 py-2 text-sm font-semibold text-black hover:bg-brand-dark"
           >
             <DiscordIcon size={16} class="shrink-0" />

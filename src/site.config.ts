@@ -10,7 +10,7 @@ export const site = {
   handle: "SwanseaGG",
   url: "https://swanseauniesports.co.uk",
   description:
-    "Swansea University Esports (SwanseaGG). Competitive teams in Valorant, League of Legends, Overwatch 2, CS2, Rainbow Six Siege, Rocket League and Apex Legends, plus socials, LANs and watch parties.",
+    "Swansea University Esports (SwanseaGG). Competitive teams in Valorant, League of Legends, Overwatch 2, CS2, Rainbow Six Siege, Rocket League, and Apex Legends, plus socials, LANs and watch parties.",
   discord: "https://discord.gg/swansea",
   studentsUnion: "https://www.swansea-union.co.uk/activities/society/swanseaesports/",
   merch: "https://esk.gg/collections/swansea-esports",

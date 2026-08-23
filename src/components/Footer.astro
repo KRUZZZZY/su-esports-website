@@ -23,7 +23,7 @@ import SocialLinks from "./SocialLinks.astro";
           {
             site.nav.map((item) => (
               <li>
-                <a href={item.href} class="text-offwhite/70 transition-colors hover:text-offwhite">{item.label}</a>
+                <a href={item.href} data-track={`nav-${item.label.toLowerCase()}`} class="text-offwhite/70 transition-colors hover:text-offwhite">{item.label}</a>
               </li>
             ))
           }
@@ -36,15 +36,15 @@ import SocialLinks from "./SocialLinks.astro";
           {
             site.competitions.map((item) => (
               <li>
-                <a href={item.href} target="_blank" rel="noopener" class="text-offwhite/70 transition-colors hover:text-offwhite">{item.label}</a>
+                <a href={item.href} target="_blank" rel="noopener" data-track={`footer-${item.label.toLowerCase()}`} class="text-offwhite/70 transition-colors hover:text-offwhite">{item.label}</a>
               </li>
             ))
           }
           <li>
-            <a href={site.studentsUnion} target="_blank" rel="noopener" class="text-offwhite/70 transition-colors hover:text-offwhite">Students' Union</a>
+            <a href={site.studentsUnion} target="_blank" rel="noopener" data-track="footer-students-union" class="text-offwhite/70 transition-colors hover:text-offwhite">Students' Union</a>
           </li>
           <li>
-            <a href={site.merch} target="_blank" rel="noopener" class="text-offwhite/70 transition-colors hover:text-offwhite">Merch Store</a>
+            <a href={site.merch} target="_blank" rel="noopener" data-track="footer-merch-store" class="text-offwhite/70 transition-colors hover:text-offwhite">Merch Store</a>
           </li>
         </ul>
       </div>

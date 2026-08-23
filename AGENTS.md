@@ -46,11 +46,16 @@ The committee edits content via Sveltia CMS at `/admin` (`public/admin/index.htm
 
 `functions/` holds **Cloudflare Pages Functions** (Pages Functions module syntax — the site stays `output: static`, no adapter needed; Functions co-deploy with the build): `functions/api/auth/{login,me,logout}.js` implement the single-admin login (email + password from secrets, HMAC-SHA256-signed HttpOnly session cookie) and `functions/api/news.js` validates a news post and commits it to GitHub via the Contents API, which triggers the Pages auto-rebuild. Shared helpers live in `functions/_lib/` (underscore-prefixed = not routed). The step-based news wizard is `src/pages/admin/new.astro` → `/admin/new`. Local secrets live in **`.dev.vars`** (git-ignored — never commit it); set the same variables as Pages secrets for production. Test Functions locally with `npx wrangler pages dev dist` after `npm run build` — `astro dev` does not run Functions.
 
+## Link-click analytics note
+
+The site tracks link clicks (per-link per-day, user-selectable range) via `functions/api/track.js` (public beacon ingest → D1 `clicks` table, bot-filtered + per-IP rate-capped) and `functions/api/analytics.js` (admin-auth'd `?days=X` pivot). Report UI at `/admin/analytics`; the client click handler lives in `src/layouts/BaseLayout.astro` (sendBeacon, `data-track` labels). D1 binding `track_db` (database `su-esports-track`) — see `docs/analytics.md` for deployment + label conventions.
+
 ## Docs
 
 - `README.md` — overview, stack, local dev, folder structure
 - `CONTENT-EDITING.md` — guide for non-technical committee members
 - `DEPLOY.md` — deploy runbook (domain, Cloudflare Pages, CMS auth)
 - `SPEC.md` — site spec: pages, content model, design tokens, acceptance criteria
+- `docs/analytics.md` — link-click tracker: how it works, D1 deployment, label conventions
 
 Keep these docs accurate when you change the site.
