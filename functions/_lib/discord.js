@@ -13,9 +13,8 @@ export const SITE_URL = "https://swanseauniesports.co.uk";
 
 const CONTENT_RE = /^src\/content\/(events|news)\/([^/]+)\.md$/;
 // Conservative draft set: zod rejects non-boolean draft, but never announce
-// content that might not be live. Only news can be a draft (events schema has
-// no draft field — zod strips unknown keys, so an event with draft:true is
-// still published and SHOULD be announced).
+// content that might not be live. Applies to BOTH news and events (events
+// gained a draft field in the same schema update).
 const DRAFT_VALUES = new Set(["true", "yes", "on", "1"]);
 
 /** Is this path a publishable events/news markdown file? Returns null or { type, slug }. */
@@ -37,7 +36,7 @@ export function parseContentFile(path, raw) {
     slug: hit.slug,
     meta: data,
     body,
-    isDraft: hit.type === "news" && DRAFT_VALUES.has(String(data.draft).toLowerCase()),
+    isDraft: DRAFT_VALUES.has(String(data.draft).toLowerCase()),
   };
 }
 

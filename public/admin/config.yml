@@ -43,6 +43,7 @@ collections:
       - { name: link, label: "Sign-up link", widget: string, required: false }
       - { name: description, label: "Short description", widget: string, required: false }
       - { name: body, label: "Details", widget: markdown, required: false }
+      - { name: draft, label: "Draft (hidden from site)", widget: boolean, default: false, required: false }
 
   - name: news
     label: "News"

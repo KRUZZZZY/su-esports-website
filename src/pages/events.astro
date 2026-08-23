@@ -4,7 +4,7 @@ import EventCard from "../components/EventCard.astro";
 import { getCollection } from "astro:content";
 
 const now = new Date();
-const all = await getCollection("events");
+const all = (await getCollection("events")).filter((e) => !e.data.draft);
 const upcoming = all
   .filter((e) => e.data.date >= now || (e.data.endDate && e.data.endDate >= now))
   .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());

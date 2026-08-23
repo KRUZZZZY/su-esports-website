@@ -24,6 +24,12 @@ import "../../styles/global.css";
           </div>
           <div class="flex items-center gap-2">
             <a
+              href="/"
+              class="rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+            >
+              View site ↗
+            </a>
+            <a
               href="/admin/analytics"
               class="rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
             >
@@ -112,8 +118,16 @@ import "../../styles/global.css";
         <section id="wizard-view" class="hidden">
           <div class="rounded-xl border border-white/10 bg-panel p-6 sm:p-8">
             <div class="flex items-center justify-between">
-              <h1 id="wizard-heading" class="font-display text-3xl tracking-wider text-brand">New news post</h1>
-              <span id="step-label" class="text-sm text-offwhite/50">Step 1 of 5</span>
+              <div>
+                <a href="#" id="wizard-back-link" class="text-sm text-offwhite/60 transition-colors hover:text-offwhite">
+                  ← Back to content
+                </a>
+                <h1 id="wizard-heading" class="mt-1 font-display text-3xl tracking-wider text-brand">New news post</h1>
+              </div>
+              <div class="flex items-center gap-3">
+                <span id="wizard-status" class="hidden rounded-full border px-3 py-1 text-xs font-semibold"></span>
+                <span id="step-label" class="text-sm text-offwhite/50">Step 1 of 5</span>
+              </div>
             </div>
 
             <!-- progress dots -->
@@ -293,7 +307,7 @@ import "../../styles/global.css";
             <p id="step-error" class="mt-6 hidden text-sm text-red-400" aria-live="polite"></p>
 
             <!-- nav buttons -->
-            <div class="mt-6 flex items-center justify-between gap-3">
+            <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
               <button
                 id="btn-back"
                 class="hidden rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
@@ -301,6 +315,18 @@ import "../../styles/global.css";
                 Back
               </button>
               <span class="flex-1"></span>
+              <button
+                id="btn-preview"
+                class="hidden rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+              >
+                Preview
+              </button>
+              <button
+                id="btn-save-draft"
+                class="hidden rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
+              >
+                Save draft
+              </button>
               <button
                 id="btn-next"
                 class="hidden rounded-lg bg-brand px-6 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
@@ -350,7 +376,7 @@ import "../../styles/global.css";
         "use strict";
 
         const $ = (id) => document.getElementById(id);
-        const STORAGE_KEY = "su-admin-draft";
+        const SESSION_KEY = "su-admin-unsaved"; // session-only crash recovery
 
         const now = new Date();
         const today =
@@ -366,6 +392,7 @@ import "../../styles/global.css";
           type: "news", // news | events
           slug: null, // original slug when editing
           sha: null,
+          draft: false, // draft:true = hidden from the public site
           step: 1,
           title: "",
           date: today,
@@ -402,6 +429,7 @@ import "../../styles/global.css";
             type: "news",
             slug: null,
             sha: null,
+            draft: false,
             step: 1,
             title: "",
             date: today,
@@ -417,14 +445,19 @@ import "../../styles/global.css";
           };
         }
 
-        // ---- draft persistence (create mode only) ---------------------------
-        function saveDraft() {
-          if (state.mode !== "create") return;
+        // ---- session-only crash recovery -----------------------------------
+        // The REAL draft lives server-side (frontmatter draft: true). This
+        // sessionStorage snapshot only protects against an accidental tab
+        // close mid-edit — it dies with the tab and is restored only on an
+        // explicit "Restore?" confirm. Never silently autosaves.
+        function snapshot() {
           try {
-            localStorage.setItem(
-              STORAGE_KEY,
+            sessionStorage.setItem(
+              SESSION_KEY,
               JSON.stringify({
+                mode: state.mode,
                 type: state.type,
+                slug: state.slug,
                 title: state.title,
                 date: state.date,
                 author: state.author,
@@ -439,40 +472,43 @@ import "../../styles/global.css";
               })
             );
           } catch (e) {
-            /* storage unavailable — ignore */
+            /* ignore */
           }
         }
 
-        function loadDraft() {
+        function clearSnapshot() {
           try {
-            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-            if (saved && typeof saved === "object") {
-              // NOTE: the draft's type is intentionally NOT restored — the
-              // caller (startWizard) picks the type from the button clicked.
-              if (typeof saved.title === "string") state.title = saved.title;
-              if (typeof saved.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(saved.date)) state.date = saved.date;
-              if (typeof saved.author === "string") state.author = saved.author;
-              if (typeof saved.excerpt === "string") state.excerpt = saved.excerpt;
-              if (typeof saved.description === "string") state.description = saved.description;
-              if (typeof saved.endDate === "string") state.endDate = saved.endDate;
-              if (typeof saved.location === "string") state.location = saved.location;
-              if (typeof saved.game === "string") state.game = saved.game;
-              if (typeof saved.link === "string") state.link = saved.link;
-              if (typeof saved.image === "string") state.image = saved.image;
-              if (Array.isArray(saved.blocks) && saved.blocks.length) {
-                state.blocks = saved.blocks
-                  .filter((b) => b && (b.kind === "text" || b.kind === "image"))
-                  .map((b) =>
-                    b.kind === "image"
-                      ? { kind: "image", url: typeof b.url === "string" ? b.url : "", caption: typeof b.caption === "string" ? b.caption : "" }
-                      : { kind: "text", text: typeof b.text === "string" ? b.text : "" }
-                  );
-              }
-            }
+            sessionStorage.removeItem(SESSION_KEY);
           } catch (e) {
-            /* corrupted draft — ignore */
+            /* ignore */
           }
         }
+
+        function applySnapshot(saved) {
+          if (!saved || typeof saved !== "object") return false;
+          if (typeof saved.title === "string") state.title = saved.title;
+          if (typeof saved.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(saved.date)) state.date = saved.date;
+          if (typeof saved.author === "string") state.author = saved.author;
+          if (typeof saved.excerpt === "string") state.excerpt = saved.excerpt;
+          if (typeof saved.description === "string") state.description = saved.description;
+          if (typeof saved.endDate === "string") state.endDate = saved.endDate;
+          if (typeof saved.location === "string") state.location = saved.location;
+          if (typeof saved.game === "string") state.game = saved.game;
+          if (typeof saved.link === "string") state.link = saved.link;
+          if (typeof saved.image === "string") state.image = saved.image;
+          if (Array.isArray(saved.blocks) && saved.blocks.length) {
+            state.blocks = saved.blocks
+              .filter((b) => b && (b.kind === "text" || b.kind === "image"))
+              .map((b) =>
+                b.kind === "image"
+                  ? { kind: "image", url: typeof b.url === "string" ? b.url : "", caption: typeof b.caption === "string" ? b.caption : "" }
+                  : { kind: "text", text: typeof b.text === "string" ? b.text : "" }
+              );
+          }
+          return true;
+        }
+
+        window.addEventListener("beforeunload", snapshot);
 
         // ---- views -----------------------------------------------------------
         function showView(name) {
@@ -514,13 +550,22 @@ import "../../styles/global.css";
 
             const info = document.createElement("div");
             info.className = "min-w-0";
+            const titleRow = document.createElement("div");
+            titleRow.className = "flex items-center gap-2";
             const title = document.createElement("p");
             title.className = "truncate font-medium text-offwhite";
             title.textContent = item.title || "(untitled)";
+            titleRow.append(title);
+            if (item.draft) {
+              const badge = document.createElement("span");
+              badge.className = "shrink-0 rounded-full border border-amber-400/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300";
+              badge.textContent = "Draft";
+              titleRow.append(badge);
+            }
             const meta = document.createElement("p");
             meta.className = "mt-0.5 text-xs text-offwhite/50";
             meta.textContent = item.date ? formatDate(item.date) : "—";
-            info.append(title, meta);
+            info.append(titleRow, meta);
 
             const actions = document.createElement("div");
             actions.className = "flex shrink-0 gap-2";
@@ -529,12 +574,17 @@ import "../../styles/global.css";
             editBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
             editBtn.textContent = "Edit";
             editBtn.addEventListener("click", () => startWizard("edit", type, item.slug));
+            const previewBtn = document.createElement("button");
+            previewBtn.type = "button";
+            previewBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
+            previewBtn.textContent = "Preview";
+            previewBtn.addEventListener("click", () => window.open(`/api/preview?type=${encodeURIComponent(type)}&slug=${encodeURIComponent(item.slug)}`, "_blank"));
             const delBtn = document.createElement("button");
             delBtn.type = "button";
             delBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-red-400/80 transition-colors hover:border-red-400/50 hover:text-red-400";
             delBtn.textContent = "Delete";
             delBtn.addEventListener("click", () => deleteArticle(type, item.slug, item.title || item.slug));
-            actions.append(editBtn, delBtn);
+            actions.append(editBtn, previewBtn, delBtn);
 
             row.append(info, actions);
             container.append(row);
@@ -566,10 +616,23 @@ import "../../styles/global.css";
           if (mode === "edit") {
             state.slug = slug || null;
           } else {
-            loadDraft();
+            // Offer to restore an unsaved session draft, but never silently.
+            try {
+              const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
+              if (saved && saved.mode === "create" && (saved.title || (Array.isArray(saved.blocks) && saved.blocks.some((b) => b.text || b.url)))) {
+                if (window.confirm("You have an unsaved draft from this session. Restore it?")) {
+                  applySnapshot(saved);
+                } else {
+                  clearSnapshot();
+                }
+              }
+            } catch (e) {
+              /* ignore */
+            }
             if (!state.blocks.length) state.blocks = [{ kind: "text", text: "" }];
           }
           updateWizardHeading();
+          updateWizardStatus();
           showView("wizard");
           syncTypeFields();
           syncInputs();
@@ -584,6 +647,22 @@ import "../../styles/global.css";
           const verb = state.mode === "edit" ? "Edit" : "New";
           const noun = state.type === "news" ? "news post" : "event";
           $("wizard-heading").textContent = verb + " " + noun;
+        }
+
+        function updateWizardStatus() {
+          const badge = $("wizard-status");
+          if (state.mode === "edit") {
+            if (state.draft) {
+              badge.textContent = "Draft";
+              badge.className = "rounded-full border border-amber-400/50 px-3 py-1 text-xs font-semibold text-amber-300";
+            } else {
+              badge.textContent = "Live";
+              badge.className = "rounded-full border border-emerald-400/50 px-3 py-1 text-xs font-semibold text-emerald-300";
+            }
+            badge.classList.remove("hidden");
+          } else {
+            badge.classList.add("hidden");
+          }
         }
 
         function syncTypeFields() {
@@ -645,7 +724,16 @@ import "../../styles/global.css";
           $("btn-back").classList.toggle("hidden", n === 1);
           $("btn-next").classList.toggle("hidden", n === 5);
           $("btn-publish").classList.toggle("hidden", n !== 5);
-          $("btn-publish").textContent = state.mode === "edit" ? "Update" : "Publish";
+          // Save draft is available on every step (relaxed validation — a
+          // skeleton draft only needs a title); Preview needs step 5 content.
+          $("btn-save-draft").classList.remove("hidden");
+          $("btn-preview").classList.toggle("hidden", n !== 5);
+          // Edit-mode labels: a draft's Publish makes it live; a live item's
+          // "Save as draft" hides it again. Editing a draft never auto-publishes.
+          $("btn-publish").textContent =
+            state.mode === "edit" ? (state.draft ? "Publish" : "Update") : "Publish";
+          $("btn-save-draft").textContent =
+            state.mode === "edit" && !state.draft ? "Save as draft" : "Save draft";
           $("step-label").textContent = "Step " + n + " of 5";
           if (n === 4) renderBlocks();
           if (n === 5) renderPreview();
@@ -761,13 +849,13 @@ import "../../styles/global.css";
               ta.value = block.text;
               ta.addEventListener("input", () => {
                 state.blocks[i].text = ta.value;
-                saveDraft();
+                snapshot();
               });
               row.append(ta);
             } else {
-              if (block.url) {
+              if (block.url || block.previewUrl) {
                 const img = document.createElement("img");
-                img.src = block.url;
+                img.src = block.previewUrl || block.url;
                 img.alt = "";
                 img.className = "mt-3 h-28 w-full rounded-lg border border-white/10 object-cover";
                 row.append(img);
@@ -786,10 +874,12 @@ import "../../styles/global.css";
                 const file = fileInput.files && fileInput.files[0];
                 if (!file) return;
                 try {
-                  const url = await uploadFile(file);
+                  // Preview the local file instantly; persist the server URL.
+                  const { url, previewUrl } = await uploadFile(file);
                   state.blocks[i].url = url;
+                  state.blocks[i].previewUrl = previewUrl;
                   renderBlocks();
-                  saveDraft();
+                  snapshot();
                   setError("");
                 } catch (err) {
                   setError(err.message || "Upload failed — try again.");
@@ -813,7 +903,7 @@ import "../../styles/global.css";
               cap.value = block.caption || "";
               cap.addEventListener("input", () => {
                 state.blocks[i].caption = cap.value;
-                saveDraft();
+                snapshot();
               });
               row.append(cap);
             }
@@ -829,7 +919,7 @@ import "../../styles/global.css";
           state.blocks[i] = state.blocks[j];
           state.blocks[j] = tmp;
           renderBlocks();
-          saveDraft();
+          snapshot();
         }
 
         function removeBlock(i) {
@@ -839,10 +929,13 @@ import "../../styles/global.css";
             state.blocks[0] = { kind: "text", text: "" };
           }
           renderBlocks();
-          saveDraft();
+          snapshot();
         }
 
         // ---- image upload ---------------------------------------------------------
+        // Returns { url, previewUrl }: url is the server path for frontmatter;
+        // previewUrl is a local data URL shown immediately (the server URL
+        // 404s until the Pages rebuild lands, so preview from the local file).
         async function uploadFile(file) {
           const data = await new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -861,7 +954,7 @@ import "../../styles/global.css";
           });
           const json = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error((json && json.error) || "Upload failed — try again.");
-          return json.url;
+          return { url: json.url, previewUrl: data };
         }
 
         // ---- preview ---------------------------------------------------------------
@@ -892,6 +985,7 @@ import "../../styles/global.css";
             title: state.title.trim(),
             date: state.date,
             body: serializeBlocks(),
+            draft: !!state.draft,
           };
           if (state.type === "news") {
             payload.author = state.author.trim() || "Swansea Esports";
@@ -907,38 +1001,98 @@ import "../../styles/global.css";
           return payload;
         }
 
+        // Shared POST (create) / PUT (edit) that returns { ok, slug, error }.
+        async function saveContent(asDraft) {
+          state.draft = asDraft;
+          const isEdit = state.mode === "edit";
+          const url = isEdit
+            ? "/api/content?type=" + encodeURIComponent(state.type) + "&slug=" + encodeURIComponent(state.slug)
+            : "/api/content";
+          const res = await fetch(url, {
+            method: isEdit ? "PUT" : "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(collectPayload()),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.slug) {
+            // After a create, future saves become edits of the new slug.
+            state.mode = "edit";
+            state.slug = data.slug;
+            state.sha = data.sha || state.sha;
+            return { ok: true, slug: data.slug };
+          }
+          return { ok: false, error: (data && data.error) || (isEdit ? "Update failed — try again." : "Save failed — try again.") };
+        }
+
         async function publish() {
           const btn = $("btn-publish");
-          const isEdit = state.mode === "edit";
+          const wasEdit = state.mode === "edit";
           btn.disabled = true;
-          btn.textContent = isEdit ? "Updating…" : "Publishing…";
+          btn.textContent = "Publishing…";
           setError("");
           try {
-            const url = isEdit
-              ? "/api/content?type=" + encodeURIComponent(state.type) + "&slug=" + encodeURIComponent(state.slug)
-              : "/api/content";
-            const res = await fetch(url, {
-              method: isEdit ? "PUT" : "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(collectPayload()),
-            });
-            const data = await res.json().catch(() => ({}));
-            if (res.ok && data.slug) {
-              try {
-                localStorage.removeItem(STORAGE_KEY);
-              } catch (e) {
-                /* ignore */
-              }
-              showSuccess(data.slug, isEdit);
+            const result = await saveContent(false);
+            if (result.ok) {
+              clearSnapshot();
+              updateWizardStatus();
+              showSuccess(result.slug, wasEdit);
             } else {
-              setError((data && data.error) || (isEdit ? "Update failed — try again." : "Publish failed — try again."));
+              setError(result.error);
             }
           } catch (e) {
             setError("Network error — check your connection and try again.");
           } finally {
             btn.disabled = false;
-            btn.textContent = isEdit ? "Update" : "Publish";
+            btn.textContent = wasEdit ? (state.draft ? "Publish" : "Update") : "Publish";
           }
+        }
+
+        // Save as a hidden draft (draft: true in frontmatter). Relaxed
+        // validation — title is enough to get a slug.
+        async function saveAsDraft() {
+          const btn = $("btn-save-draft");
+          btn.disabled = true;
+          btn.textContent = "Saving…";
+          setError("");
+          try {
+            if (!state.title.trim()) {
+              setError("Give the post a title before saving a draft.");
+              return;
+            }
+            const result = await saveContent(true);
+            if (result.ok) {
+              updateWizardStatus();
+              setError("");
+              btn.textContent = "Saved ✓";
+              setTimeout(() => {
+                btn.textContent = "Save draft";
+                btn.disabled = false;
+              }, 1500);
+            } else {
+              setError(result.error);
+              btn.disabled = false;
+              btn.textContent = "Save draft";
+            }
+          } catch (e) {
+            setError("Network error — check your connection and try again.");
+            btn.disabled = false;
+            btn.textContent = "Save draft";
+          }
+        }
+
+        // Open the gated preview page (requires the admin session cookie).
+        async function preview() {
+          setError("");
+          // Ensure a draft exists server-side so the preview has content.
+          if (state.mode === "create" && !state.slug) {
+            const result = await saveContent(true);
+            if (!result.ok) {
+              setError(result.error);
+              return;
+            }
+          }
+          const url = "/api/preview?type=" + encodeURIComponent(state.type) + "&slug=" + encodeURIComponent(state.slug);
+          window.open(url, "_blank");
         }
 
         function showSuccess(slug, isEdit) {
@@ -970,6 +1124,7 @@ import "../../styles/global.css";
             state.sha = data.sha || null;
             state.title = typeof data.title === "string" ? data.title : "";
             state.date = typeof data.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(data.date) ? data.date : today;
+            state.draft = data.draft === true || data.draft === "true";
             if (state.type === "news") {
               state.author = typeof data.author === "string" ? data.author : "Swansea Esports";
               state.excerpt = typeof data.excerpt === "string" ? data.excerpt : "";
@@ -984,6 +1139,7 @@ import "../../styles/global.css";
             state.blocks = parseBlocks(typeof data.body === "string" ? data.body : "");
             syncTypeFields();
             syncInputs();
+            updateWizardStatus();
             showStep(1);
           } catch (e) {
             window.alert("Network error — could not load the article.");
@@ -1009,7 +1165,7 @@ import "../../styles/global.css";
           $(id).addEventListener("input", (e) => {
             state[FIELD_MAP[id]] = e.target.value;
             if (id === "w-title") updateSlugHint();
-            saveDraft();
+            snapshot();
           });
         });
 
@@ -1017,16 +1173,22 @@ import "../../styles/global.css";
           const file = e.target.files && e.target.files[0];
           if (!file) return;
           const status = $("w-thumb-status");
+          // Show the local image immediately — the server URL 404s until the
+          // Pages rebuild finishes.
+          const preview = $("w-thumb-preview");
+          preview.src = URL.createObjectURL(file);
+          preview.classList.remove("hidden");
           status.textContent = "Uploading…";
           try {
-            const url = await uploadFile(file);
+            const { url } = await uploadFile(file);
             state.image = url;
             updateThumbnailUI();
-            status.textContent = "";
-            saveDraft();
+            status.textContent = "Thumbnail appears on the live page once the rebuild finishes.";
+            snapshot();
             setError("");
           } catch (err) {
             status.textContent = "";
+            preview.classList.add("hidden");
             setError(err.message || "Upload failed — try again.");
           }
           e.target.value = "";
@@ -1035,19 +1197,19 @@ import "../../styles/global.css";
         $("w-thumb-remove").addEventListener("click", () => {
           state.image = "";
           updateThumbnailUI();
-          saveDraft();
+          snapshot();
         });
 
         $("add-text-btn").addEventListener("click", () => {
           state.blocks.push({ kind: "text", text: "" });
           renderBlocks();
-          saveDraft();
+          snapshot();
         });
 
         $("add-image-btn").addEventListener("click", () => {
           state.blocks.push({ kind: "image", url: "", caption: "" });
           renderBlocks();
-          saveDraft();
+          snapshot();
         });
 
         $("new-news-btn").addEventListener("click", () => {
@@ -1081,6 +1243,25 @@ import "../../styles/global.css";
         });
 
         $("btn-publish").addEventListener("click", publish);
+
+        $("btn-save-draft").addEventListener("click", saveAsDraft);
+
+        $("btn-preview").addEventListener("click", preview);
+
+        $("wizard-back-link").addEventListener("click", (e) => {
+          e.preventDefault();
+          const dirty =
+            state.title.trim() ||
+            state.excerpt.trim() ||
+            state.description.trim() ||
+            state.blocks.some((b) => (b.text && b.text.trim()) || b.url);
+          if (dirty && !window.confirm("Leave this editor? Unsaved changes will be lost (saved drafts are kept on the site).")) {
+            return;
+          }
+          history.replaceState(null, "", "/admin/new");
+          showView("list");
+          fetchList();
+        });
 
         $("signout-btn").addEventListener("click", async () => {
           try {

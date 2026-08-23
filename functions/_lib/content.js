@@ -60,8 +60,8 @@ export function yamlString(value) {
  * Assemble a markdown file: YAML frontmatter matching the zod schemas in
  * src/content.config.ts, a blank line, then the body.
  *
- * news:   title, date, author (default "Swansea Esports"), excerpt?, image?, draft: false
- * events: title, date, endDate?, location?, game?, image?, link?, description?
+ * news:   title, date, author (default "Swansea Esports"), excerpt?, image?, draft (default false)
+ * events: title, date, endDate?, location?, game?, image?, link?, description?, draft (default false)
  */
 export function buildMarkdown(type, fields, body = "") {
   const f = fields || {};
@@ -73,7 +73,7 @@ export function buildMarkdown(type, fields, body = "") {
     lines.push(`author: ${yamlString(f.author || "Swansea Esports")}`);
     if (f.excerpt) lines.push(`excerpt: ${yamlString(f.excerpt)}`);
     if (f.image) lines.push(`image: ${yamlString(f.image)}`);
-    lines.push("draft: false");
+    lines.push(`draft: ${f.draft ? "true" : "false"}`);
   } else if (type === "events") {
     lines.push(`title: ${yamlString(f.title || "")}`);
     lines.push(`date: ${yamlString(f.date || "")}`);
@@ -83,6 +83,7 @@ export function buildMarkdown(type, fields, body = "") {
     if (f.image) lines.push(`image: ${yamlString(f.image)}`);
     if (f.link) lines.push(`link: ${yamlString(f.link)}`);
     if (f.description) lines.push(`description: ${yamlString(f.description)}`);
+    lines.push(`draft: ${f.draft ? "true" : "false"}`);
   } else {
     throw new Error(`Unknown content type: ${type}`);
   }

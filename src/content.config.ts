@@ -36,7 +36,8 @@ const events = defineCollection({
     game: z.string().optional(),
     image: z.string().optional(),
     link: z.string().optional(),
-    description: z.string().optional()
+    description: z.string().optional(),
+    draft: z.boolean().default(false)
   })
 });
 

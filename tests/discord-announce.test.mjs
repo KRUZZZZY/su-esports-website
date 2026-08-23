@@ -80,9 +80,9 @@ test("draft: yes/on/1 are treated as drafts (conservative — never announce)", 
   assert.equal(parseContentFile("src/content/news/draft-yes.md", NEWS_DRAFT_YES.replace("yes", "1")).isDraft, true);
 });
 
-test("events with draft:true are NOT treated as drafts (schema has no draft field — they are live)", () => {
+test("events with draft:true ARE treated as drafts (events gained a draft field)", () => {
   const f = parseContentFile("src/content/events/event-draft.md", EVENT_DRAFT_TRUE);
-  assert.equal(f.isDraft, false);
+  assert.equal(f.isDraft, true);
 });
 
 test("parseContentFile returns null for non-content paths", () => {

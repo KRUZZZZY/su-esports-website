@@ -30,10 +30,39 @@ no per-admin wiring needed. Zero new hosting, zero cost (all free tiers).
 - **Edits** re-announce with an "(updated)" marker so date changes get noticed.
   Deletes are ignored.
 - News with a truthy `draft` (`true`/`yes`/`on`/`1`) is **never** announced.
-  Events have no draft field (schema strips it), so an event with `draft: true`
-  is live on the site and IS announced — don't use it to hide events.
+  Events also support `draft: true|false` — a draft event is hidden from the
+  site and not announced (the webhook skips drafts for both types).
 - Emoji in Discord messages (📢 📰 📅 📍 🎮 ✍️ 🔗) is intentional — Discord is
   a chat surface, not site copy; the site's no-emoji rule applies to the site.
+
+## Draft workflow (create hidden → preview → publish)
+
+Both **news** and **events** support drafts via `draft: true|false` frontmatter.
+Drafts are committed to the repo (so they survive any browser/machine) but are
+filtered out of every public page.
+
+Editor flow in the admin wizard (`/admin/new`):
+
+1. **New news/event** → fill in the wizard. **Save draft** is available on
+   every step (only a title is required) and writes the post with
+   `draft: true` — hidden from the site.
+2. **Preview** (step 5, or the list's Preview button) opens the gated preview
+   at `/api/preview?type=…&slug=…` — requires the admin session cookie (401
+   otherwise), shows a "PREVIEW — not published yet" banner, and renders the
+   article in the site's style. Images may 404 until the Pages rebuild lands.
+3. **Publish** flips `draft` to `false` → the page appears after the rebuild
+   (~30–60s). **Unpublish**: edit a live post → "Save as draft".
+4. The content list badges drafts (amber "Draft") vs live items, and every
+   row has a Preview link.
+
+Editing a draft **never auto-publishes it** — the wizard preserves the loaded
+draft state. Draft events with `draft: true` are hidden from the homepage,
+the events page, and the event detail page. Sveltia CMS (`/admin`) also has
+the draft field for both collections.
+
+**Crash recovery:** the wizard keeps a sessionStorage snapshot (dies with the
+tab) and offers an explicit "Restore?" prompt — no silent autosave, no
+cross-session persistence.
 
 ## Role pings (configurable per game)
 

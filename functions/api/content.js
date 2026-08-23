@@ -51,6 +51,9 @@ function validate(type, body) {
 
   const fields = { title, date };
 
+  // Draft flag: accept boolean or "true"/"false" strings, default false.
+  fields.draft = body.draft === true || body.draft === "true";
+
   if (type === "news") {
     const author = typeof body.author === "string" ? body.author.trim() : "";
     if (!author) return fail("Author is required");
@@ -105,7 +108,7 @@ export async function onRequestGet({ request, env }) {
     if (file.status === 404) return json({ error: "Not found" }, 404);
     if (file.status !== 200) return json({ error: "Could not read from GitHub" }, 502);
     const { data, body } = parseMarkdown(file.content);
-    return json({ slug, sha: file.sha, ...data, body });
+    return json({ slug, sha: file.sha, ...data, draft: data.draft === "true", body });
   }
 
   const entries = await listDir(env, `src/content/${type}`);
@@ -115,7 +118,7 @@ export async function onRequestGet({ request, env }) {
     const file = await getFile(env, `src/content/${type}/${entry.name}`);
     if (file.status !== 200) continue;
     const { data } = parseMarkdown(file.content);
-    items.push({ slug: entry.name.replace(/\.md$/, ""), title: data.title || "", date: data.date || "", ...data });
+    items.push({ slug: entry.name.replace(/\.md$/, ""), title: data.title || "", date: data.date || "", ...data, draft: data.draft === "true" });
   }
   items.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   return json({ items });
@@ -154,7 +157,14 @@ export async function onRequestPost({ request, env }) {
   }
 
   if (res.status === 201 || res.status === 200) {
-    return json({ slug, url: `/${type}/${slug}` }, 201);
+    let sha = null;
+    try {
+      const created = await res.json();
+      sha = created && created.content ? created.content.sha : null;
+    } catch {
+      /* body not JSON — sha stays null; the wizard re-reads on next edit anyway */
+    }
+    return json({ slug, url: `/${type}/${slug}`, sha }, 201);
   }
   if (res.status === 409 || res.status === 422) {
     return json({ error: "An article with that title already exists — change the title" }, 409);
