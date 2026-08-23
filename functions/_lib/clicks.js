@@ -161,11 +161,12 @@ export async function totalClicks(env, fromDay, toDay) {
 }
 
 /**
- * Record (or clear) the unpublish gate for an article in D1. When an article
- * is ready, the middleware 404s it once now > unpublish_at — exact-time
- * unpublish that doesn't wait for a rebuild. ready=false clears the gate.
+ * Record (or clear) the publish gate for an article in D1. `date` is the
+ * PUBLISH time: when ready, the article is hidden (404) until now >= date,
+ * then goes live. "Publish" in the wizard sets date = now. ready=false clears
+ * the gate. Exact-time behaviour without waiting for a rebuild.
  */
-export async function setUnpublishGate(env, { type, slug, ready, unpublishAt }) {
+export async function setPublishGate(env, { type, slug, ready, publishAt }) {
   await ensureTable(env);
   await env.track_db
     .prepare(
@@ -177,13 +178,13 @@ export async function setUnpublishGate(env, { type, slug, ready, unpublishAt }) 
       )`
     )
     .run();
-  if (ready && unpublishAt) {
+  if (ready && publishAt) {
     await env.track_db
       .prepare(
         `INSERT INTO unpublish_gates (type, slug, unpublish_at) VALUES (?, ?, ?)
          ON CONFLICT(type, slug) DO UPDATE SET unpublish_at = excluded.unpublish_at`
       )
-      .bind(type, slug, unpublishAt)
+      .bind(type, slug, publishAt)
       .run();
   } else {
     await env.track_db
@@ -193,8 +194,8 @@ export async function setUnpublishGate(env, { type, slug, ready, unpublishAt }) 
   }
 }
 
-/** Read an article's unpublish gate (or null). */
-export async function getUnpublishGate(env, type, slug) {
+/** Read an article's publish gate (or null). */
+export async function getPublishGate(env, type, slug) {
   await ensureTable(env);
   const res = await env.track_db
     .prepare(`SELECT unpublish_at FROM unpublish_gates WHERE type = ? AND slug = ?`)

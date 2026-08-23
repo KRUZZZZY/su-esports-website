@@ -35,7 +35,8 @@ collections:
     create: true
     fields:
       - { name: title, label: "Title", widget: string }
-      - { name: date, label: "Unpublish date & time", widget: datetime, required: true }
+      - { name: date, label: "Publish date & time", widget: datetime, required: true }
+      - { name: startDate, label: "Event start date", widget: datetime, required: false }
       - { name: endDate, label: "End date", widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
       - { name: game, label: "Game", widget: string, required: false }
       - { name: location, label: "Location", widget: string, required: false }
@@ -56,7 +57,7 @@ collections:
     create: true
     fields:
       - { name: title, label: "Title", widget: string }
-      - { name: date, label: "Unpublish date & time", widget: datetime, required: true }
+      - { name: date, label: "Publish date & time", widget: datetime, required: true }
       - { name: author, label: "Author", widget: string, default: "Swansea Esports" }
       - { name: excerpt, label: "Excerpt", widget: string, required: false }
       - { name: image, label: "Image", widget: image, required: false }

@@ -79,6 +79,7 @@ export function buildMarkdown(type, fields, body = "") {
   } else if (type === "events") {
     lines.push(`title: ${yamlString(f.title || "")}`);
     lines.push(`date: ${yamlString(f.date || "")}`);
+    if (f.startDate) lines.push(`startDate: ${yamlString(f.startDate)}`);
     if (f.endDate) lines.push(`endDate: ${yamlString(f.endDate)}`);
     if (f.location) lines.push(`location: ${yamlString(f.location)}`);
     if (f.game) lines.push(`game: ${yamlString(f.game)}`);

@@ -87,22 +87,32 @@ function page(html, { title, isDraft }) {
 <title>${esc(title)} · Preview — Swansea Esports</title>
 <style>
   :root { color-scheme: dark; }
-  body { margin: 0; background: ${INK}; color: ${OFFWHITE}; font-family: system-ui, sans-serif; line-height: 1.7; }
-  .banner { background: ${BRAND}; color: #000; text-align: center; font-weight: 700; padding: 10px 16px; letter-spacing: 0.05em; }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 80px; }
-  h1 { font-size: 2.2rem; line-height: 1.2; margin: 24px 0 8px; }
-  .meta { color: rgba(233,233,233,0.6); font-size: 0.9rem; margin-bottom: 24px; }
-  img { max-width: 100%; border-radius: 10px; margin: 12px 0; }
-  a { color: ${BRAND}; }
-  .prose { font-size: 1.05rem; }
-  .prose h2 { margin-top: 32px; }
-  .prose p { margin: 14px 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: ${INK}; color: ${OFFWHITE}; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.7; }
+  .banner { background: ${BRAND}; color: #1a1206; text-align: center; font-weight: 700; padding: 10px 16px; letter-spacing: 0.04em; font-size: 0.9rem; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 80px; }
+  .back { display: inline-block; font-size: 0.85rem; color: ${BRAND}; text-decoration: none; margin-bottom: 8px; }
+  .back:hover { text-decoration: underline; }
+  h1 { font-family: "Bebas Neue", "Arial Narrow", sans-serif; font-size: 2.6rem; font-weight: 400; line-height: 1.1; margin: 16px 0 6px; letter-spacing: 0.02em; }
+  .meta { color: rgba(233,233,233,0.65); font-size: 0.92rem; margin: 0 0 20px; }
+  .hero { width: 100%; border-radius: 12px; margin: 0 0 24px; display: block; }
+  .excerpt { font-style: italic; color: rgba(233,233,233,0.8); font-size: 1.05rem; margin: 0 0 20px; }
+  .prose { font-size: 1.06rem; }
+  .prose h2 { font-size: 1.5rem; margin: 32px 0 10px; color: ${OFFWHITE}; }
+  .prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+  .prose p { margin: 16px 0; }
+  .prose ul { padding-left: 24px; }
+  .prose li { margin: 6px 0; }
+  .prose a { color: ${BRAND}; }
+  .prose img { max-width: 100%; border-radius: 10px; margin: 8px 0; }
+  .cta { display: inline-block; background: ${BRAND}; color: #1a1206; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 12px; }
+  .cta:hover { filter: brightness(1.1); }
 </style>
 </head>
 <body>
   <div class="banner">⚠️ PREVIEW — ${isDraft ? "not published yet" : "published content"}</div>
   <main class="wrap">
-    <a href="/admin/new" style="font-size:0.85rem;color:${BRAND}">← Back to admin</a>
+    <a class="back" href="/admin/new">← Back to admin</a>
     ${html}
   </main>
 </body>
@@ -131,23 +141,24 @@ export async function onRequestGet({ request, env }) {
   const isDraft = data.draft === "true";
   const title = data.title || slug;
 
-  const metaParts = [fmtDate(data.date)].filter(Boolean);
+  const metaParts = [fmtDate(data.startDate || data.date)].filter(Boolean);
   if (type === "news" && data.author) metaParts.push(data.author);
   if (type === "events") {
     if (data.endDate) metaParts.push(`until ${fmtDate(data.endDate)}`);
     if (data.game) metaParts.push(data.game);
     if (data.location) metaParts.push(data.location);
+    // Organiser is the credit for events; avoid "Organised by X · by X".
     if (data.organiser) metaParts.push(`Organised by ${data.organiser}`);
-    if (data.author) metaParts.push(`by ${data.author}`);
+    else if (data.author && data.author !== "Swansea Esports") metaParts.push(`by ${data.author}`);
   }
 
-  const hero = data.image ? `<img src="${esc(data.image)}" alt="" />` : "";
+  const hero = data.image ? `<img class="hero" src="${esc(data.image)}" alt="" />` : "";
   const link =
     type === "events" && data.link
-      ? `<p><a href="${esc(data.link)}" target="_blank" rel="noopener" style="display:inline-block;background:${BRAND};color:#000;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Sign up / more info</a></p>`
+      ? `<p><a class="cta" href="${esc(data.link)}" target="_blank" rel="noopener">Sign up / more info</a></p>`
       : "";
   const excerpt = data.excerpt || data.description
-    ? `<p style="font-style:italic;color:rgba(233,233,233,0.75)">${esc(data.excerpt || data.description)}</p>`
+    ? `<p class="excerpt">${esc(data.excerpt || data.description)}</p>`
     : "";
 
   const html = `<h1>${esc(title)}</h1>

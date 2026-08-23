@@ -4,13 +4,16 @@ import EventCard from "../components/EventCard.astro";
 import { getCollection } from "astro:content";
 
 const now = new Date();
-const all = (await getCollection("events")).filter((e) => !e.data.draft && e.data.ready && e.data.date > now);
+// Live = published (ready && date <= now). Upcoming/past is split by the
+// event's startDate (when it actually happens), falling back to date.
+const all = (await getCollection("events")).filter((e) => !e.data.draft && e.data.ready && e.data.date <= now);
+const starts = (e: { data: { startDate?: Date; date: Date } }) => e.data.startDate || e.data.date;
 const upcoming = all
-  .filter((e) => e.data.date >= now || (e.data.endDate && e.data.endDate >= now))
-  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+  .filter((e) => starts(e) >= now || (e.data.endDate && e.data.endDate >= now))
+  .sort((a, b) => starts(a).getTime() - starts(b).getTime());
 const past = all
-  .filter((e) => e.data.date < now && !(e.data.endDate && e.data.endDate >= now))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  .filter((e) => starts(e) < now && !(e.data.endDate && e.data.endDate >= now))
+  .sort((a, b) => starts(b).getTime() - starts(a).getTime());
 ---
 
 <BaseLayout title="Events">
@@ -23,7 +26,7 @@ const past = all
       upcoming.length > 0 ? (
         <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {upcoming.map((e) => (
-            <EventCard title={e.data.title} date={e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} href={`/events/${e.id}`} />
+            <EventCard title={e.data.title} date={e.data.startDate || e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} href={`/events/${e.id}`} />
           ))}
         </div>
       ) : (
@@ -36,7 +39,7 @@ const past = all
       past.length > 0 ? (
         <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {past.map((e) => (
-            <EventCard title={e.data.title} date={e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} href={`/events/${e.id}`} />
+            <EventCard title={e.data.title} date={e.data.startDate || e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} href={`/events/${e.id}`} />
           ))}
         </div>
       ) : (

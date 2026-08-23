@@ -1,9 +1,9 @@
 // functions/_middleware.js
 // Site-wide middleware for Cloudflare Pages Functions.
-// Gates article routes: when an article has an unpublish gate in D1 and the
-// time has passed, serve 404 — exact-time unpublish that doesn't wait for a
-// rebuild. Everything else passes through untouched.
-import { getUnpublishGate } from "./_lib/clicks.js";
+// Gates article routes: `date` is the PUBLISH time. When an article is ready
+// and the publish time hasn't arrived yet, serve 404 (it goes live at the
+// exact minute without waiting for a rebuild). Everything else passes through.
+import { getPublishGate } from "./_lib/clicks.js";
 
 const ARTICLE_RE = /^\/(news|events)\/([a-z0-9-]+)\/?$/;
 
@@ -18,8 +18,8 @@ export async function onRequest({ request, env, next }) {
   if (!env.track_db) return next();
 
   try {
-    const unpublishAt = await getUnpublishGate(env, m[1], m[2]);
-    if (unpublishAt && Date.now() > new Date(unpublishAt).getTime()) {
+    const publishAt = await getPublishGate(env, m[1], m[2]);
+    if (publishAt && Date.now() < new Date(publishAt).getTime()) {
       return new Response("Not found", { status: 404 });
     }
   } catch (e) {

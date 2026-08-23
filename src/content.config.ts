@@ -30,7 +30,8 @@ const events = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/events" }),
   schema: z.object({
     title: z.string(),
-    date: z.coerce.date(),
+    date: z.coerce.date(), // publish date (gate: live when ready && now >= date)
+    startDate: z.coerce.date().optional(), // when the event actually starts
     endDate: z.coerce.date().optional(),
     location: z.string().optional(),
     game: z.string().optional(),

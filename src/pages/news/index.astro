@@ -6,7 +6,7 @@ import { site } from "../../site.config";
 
 const now = new Date();
 const posts = (await getCollection("news"))
-  .filter((n) => !n.data.draft && n.data.ready && n.data.date > now)
+  .filter((n) => !n.data.draft && n.data.ready && n.data.date <= now)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const feedSocials = site.socials.filter((s) => ["Twitter / X", "Instagram", "Twitch"].includes(s.label));

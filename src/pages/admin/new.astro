@@ -96,6 +96,31 @@ import "../../styles/global.css";
           <p id="list-events-empty" class="hidden mt-3 text-sm text-offwhite/50">No events yet.</p>
         </section>
 
+        <!-- ============ CREATE DIALOG ============ -->
+        <section id="create-view" class="hidden">
+          <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8">
+            <h1 id="create-heading" class="font-display text-3xl tracking-wider text-brand">New news post</h1>
+            <p class="mt-2 text-sm text-offwhite/60">Name and author are required before we create the draft.</p>
+            <form id="create-form" class="mt-6 space-y-4">
+              <div>
+                <label for="c-title" class="block text-sm font-medium text-offwhite/80">Name / title</label>
+                <input id="c-title" type="text" maxlength="200" required placeholder="e.g. Freshers LAN 2026"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              </div>
+              <div>
+                <label for="c-author" class="block text-sm font-medium text-offwhite/80">Author</label>
+                <input id="c-author" type="text" maxlength="100" required placeholder="Your name"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              </div>
+              <p id="create-error" class="hidden text-sm text-red-400" aria-live="polite"></p>
+              <div class="flex gap-3">
+                <button type="submit" id="create-btn" class="flex-1 rounded-lg bg-brand px-4 py-2.5 font-semibold text-black transition-colors hover:bg-brand-dark">Create draft</button>
+                <button type="button" id="create-cancel" class="rounded-lg border border-white/15 px-4 py-2.5 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
         <!-- ============ EDITOR (single page, no steps) ============ -->
         <section id="editor-view" class="hidden">
           <div class="rounded-xl border border-white/10 bg-panel p-6 sm:p-8">
@@ -109,6 +134,13 @@ import "../../styles/global.css";
                 <span id="editor-views" class="hidden rounded-full border border-white/15 px-3 py-1 text-xs font-medium text-offwhite/50" title="Views (human / bot)"></span>
                 <a href="#" id="editor-preview-link" class="hidden rounded-full border border-white/15 px-3 py-1 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Preview ↗</a>
               </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button id="btn-save" class="rounded-lg bg-brand px-5 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">Save</button>
+              <button id="btn-duplicate" class="rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Duplicate</button>
+              <button id="btn-publish" class="rounded-lg border border-emerald-400/50 px-4 py-2 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-400/10">Publish now</button>
+              <span id="editor-hint" class="self-center text-xs text-offwhite/50"></span>
             </div>
 
             <p id="editor-error" class="mt-4 hidden rounded-lg border border-red-400/30 bg-red-400/5 px-4 py-2 text-sm text-red-300" aria-live="polite"></p>
@@ -125,11 +157,11 @@ import "../../styles/global.css";
             <div class="mt-6 rounded-lg border border-brand/30 bg-brand/5 p-4">
               <div class="flex items-start justify-between gap-4">
                 <div>
-                  <p class="font-medium text-offwhite">Ready to go live</p>
+                  <p class="font-medium text-offwhite">Publish settings</p>
                   <p class="mt-1 text-xs leading-relaxed text-offwhite/60">
-                    Tick this when the article is finished and you want it public. It goes live immediately
-                    and is automatically <strong>hidden again when the date below passes</strong> (your unpublish
-                    gate). Until ticked, the article is a private draft only you can see.
+                    Tick <strong>Ready</strong> when the article is finished. It will go live automatically at the
+                    <strong>publish date &amp; time</strong> below (hidden until then). <strong>Publish now</strong>
+                    sets the publish time to this moment. Until it's live, the article is a private draft.
                   </p>
                 </div>
                 <label class="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-white/15 px-3 py-2">
@@ -139,10 +171,10 @@ import "../../styles/global.css";
               </div>
               <div class="mt-3 grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label for="w-date" class="block text-sm font-medium text-offwhite/80">Unpublish date &amp; time</label>
+                  <label for="w-date" class="block text-sm font-medium text-offwhite/80">Publish date &amp; time</label>
                   <input id="w-date" type="datetime-local"
                     class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
-                  <p class="mt-1 text-xs text-offwhite/50">The article automatically unpublishes (disappears) at this time. Set it far in the future to keep it up.</p>
+                  <p class="mt-1 text-xs text-offwhite/50">The article goes live at this time (if Ready is ticked).</p>
                 </div>
                 <div>
                   <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-white/15 px-3 py-2.5">
@@ -167,9 +199,15 @@ import "../../styles/global.css";
                   class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
                 <p class="mt-1 text-xs text-offwhite/50">Who is running this event.</p>
               </div>
+              <div id="w-startdate-wrap" class="hidden">
+                <label for="w-startdate" class="block text-sm font-medium text-offwhite/80">Start date (optional)</label>
+                <input id="w-startdate" type="datetime-local"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+                <p class="mt-1 text-xs text-offwhite/50">When the event actually starts (shown on the event page).</p>
+              </div>
               <div id="w-enddate-wrap" class="hidden">
                 <label for="w-enddate" class="block text-sm font-medium text-offwhite/80">End date (optional)</label>
-                <input id="w-enddate" type="date"
+                <input id="w-enddate" type="datetime-local"
                   class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
               </div>
               <div id="w-location-wrap" class="hidden">
@@ -254,9 +292,10 @@ import "../../styles/global.css";
           date: "",
           author: "Swansea Esports",
           organiser: "",
+          startDate: "",
+          endDate: "",
           excerpt: "",
           description: "",
-          endDate: "",
           location: "",
           game: "",
           link: "",
@@ -264,7 +303,6 @@ import "../../styles/global.css";
           blocks: [],
         };
 
-        let saveTimer = null;
         let dirty = false;
 
         // ---- helpers ----------------------------------------------------------
@@ -302,7 +340,7 @@ import "../../styles/global.css";
         // ---- views -------------------------------------------------------------
         function showView(name) {
           state.view = name;
-          ["login", "list", "editor"].forEach((v) => {
+          ["login", "list", "create", "editor"].forEach((v) => {
             $(v + "-view").classList.toggle("hidden", v !== name);
           });
           $("signout-btn").classList.toggle("hidden", name === "login");
@@ -431,19 +469,32 @@ import "../../styles/global.css";
         }
 
         // ---- editor ---------------------------------------------------------------
-        // Create = immediately POST a draft with a random slug, then edit it.
-        async function createArticle(type) {
+        let createType = "news"; // which type the create dialog is for
+
+        // Create = dialog (force name + author) → POST draft with a random slug → editor.
+        function showCreateDialog(type) {
+          createType = type;
+          $("create-heading").textContent = type === "news" ? "New news post" : "New event";
+          $("c-title").value = "";
+          $("c-author").value = role === "admin" ? "" : "";
+          $("create-error").classList.add("hidden");
+          showView("create");
+          setTimeout(() => $("c-title").focus(), 50);
+        }
+
+        async function createArticle(type, name, author) {
           try {
             const slug = randomSlug();
             const payload = {
               type,
               slug,
-              title: "",
+              title: name,
               date: todayLocal(),
               body: "",
               draft: true,
               ready: false,
               sponsored: false,
+              author: author || "Swansea Esports",
             };
             const res = await fetch(API, {
               method: "POST",
@@ -453,15 +504,42 @@ import "../../styles/global.css";
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
               window.alert((data && data.error) || "Could not create the article.");
-              return;
+              return false;
             }
-            // Reload into the editor as an edit of the new slug.
+            // Go straight to the editor for the new draft.
             state.mode = "edit";
             state.type = type;
             state.slug = data.slug;
             await loadArticle();
+            return true;
           } catch (e) {
             window.alert("Network error — could not create the article.");
+            return false;
+          }
+        }
+
+        // Duplicate: copy the current article to a fresh random-slug draft.
+        async function duplicateArticle() {
+          if (!state.slug) return;
+          const suffix = " (copy)";
+          state.title = (state.title.trim() ? state.title.trim() : "Untitled") + suffix;
+          // createArticle POSTs with the suffixed title, then loadArticle()
+          // loads the fresh copy into the editor (state.title is overwritten
+          // by the copy's own title — no restore needed).
+          await createArticle(state.type, state.title, state.author);
+        }
+
+        // Publish now: sets publish time to this moment + ready, then saves.
+        async function publishNow() {
+          state.ready = true;
+          state.date = todayLocal();
+          $("w-ready").checked = true;
+          $("w-date").value = state.date;
+          const r = await saveNow();
+          if (r.ok) {
+            setStatus("Published ✓");
+            $("editor-hint").textContent = "Live now (after the rebuild).";
+            updateReadyUI();
           }
         }
 
@@ -492,6 +570,7 @@ import "../../styles/global.css";
               state.author = typeof data.author === "string" ? data.author : "Swansea Esports";
               state.excerpt = typeof data.excerpt === "string" ? data.excerpt : "";
             } else {
+              state.startDate = typeof data.startDate === "string" ? data.startDate : "";
               state.endDate = typeof data.endDate === "string" ? data.endDate : "";
               state.location = typeof data.location === "string" ? data.location : "";
               state.game = typeof data.game === "string" ? data.game : "";
@@ -586,6 +665,7 @@ import "../../styles/global.css";
           // Author is shown for BOTH types (events credit the writer too).
           $("w-author-wrap").classList.remove("hidden");
           $("w-organiser-wrap").classList.toggle("hidden", isNews);
+          $("w-startdate-wrap").classList.toggle("hidden", isNews);
           $("w-enddate-wrap").classList.toggle("hidden", isNews);
           $("w-location-wrap").classList.toggle("hidden", isNews);
           $("w-game-wrap").classList.toggle("hidden", isNews);
@@ -599,9 +679,10 @@ import "../../styles/global.css";
           $("w-date").value = state.date;
           $("w-author").value = state.author;
           $("w-organiser").value = state.organiser;
+          $("w-startdate").value = state.startDate;
+          $("w-enddate").value = state.endDate;
           $("w-excerpt").value = state.excerpt;
           $("w-desc").value = state.description;
-          $("w-enddate").value = state.endDate;
           $("w-location").value = state.location;
           $("w-game").value = state.game;
           $("w-link").value = state.link;
@@ -623,16 +704,14 @@ import "../../styles/global.css";
           }
         }
 
-        // ---- autosave --------------------------------------------------------------
+        // ---- explicit save (no autosave) ---------------------------------------
         function markDirty() {
           dirty = true;
           setStatus("Unsaved changes…");
-          clearTimeout(saveTimer);
-          saveTimer = setTimeout(saveNow, 900);
         }
 
         async function saveNow() {
-          if (!state.slug || !dirty) return;
+          if (!state.slug) return { ok: false, error: "No slug" };
           setStatus("Saving…");
           try {
             const payload = collectPayload();
@@ -645,14 +724,16 @@ import "../../styles/global.css";
             if (!res.ok) {
               setError((data && data.error) || "Save failed — try again.");
               setStatus("Save failed");
-              return;
+              return { ok: false, error: (data && data.error) || "Save failed" };
             }
             state.sha = data.sha || state.sha;
             dirty = false;
             setError("");
             setStatus("Saved ✓");
+            return { ok: true };
           } catch (e) {
             setStatus("Save failed — offline?");
+            return { ok: false, error: "Network error" };
           }
         }
 
@@ -680,6 +761,7 @@ import "../../styles/global.css";
           if (state.type === "news") {
             payload.excerpt = state.excerpt.trim();
           } else {
+            payload.startDate = state.startDate.trim();
             payload.endDate = state.endDate.trim();
             payload.location = state.location.trim();
             payload.game = state.game.trim();
@@ -762,16 +844,47 @@ import "../../styles/global.css";
             row.append(head);
 
             if (block.kind === "text") {
+              // Formatting toolbar (markdown shortcuts — wraps selection).
+              const toolbar = document.createElement("div");
+              toolbar.className = "mt-3 flex flex-wrap gap-1";
+              const fmt = (label, before, after, placeholder) => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.title = placeholder || label;
+                b.className =
+                  "rounded border border-white/15 px-2 py-1 text-xs text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
+                b.textContent = label;
+                b.addEventListener("click", () => {
+                  const ta = row.querySelector("textarea");
+                  const start = ta.selectionStart;
+                  const end = ta.selectionEnd;
+                  const sel = ta.value.slice(start, end) || placeholder || "";
+                  ta.value = ta.value.slice(0, start) + before + sel + after + ta.value.slice(end);
+                  ta.focus();
+                  ta.setSelectionRange(start + before.length, start + before.length + sel.length);
+                  state.blocks[i].text = ta.value;
+                  markDirty();
+                });
+                return b;
+              };
+              toolbar.append(
+                fmt("B", "**", "**", "bold text"),
+                fmt("I", "*", "*", "italic text"),
+                fmt("H2", "\n## ", "\n", "Heading"),
+                fmt("🔗", "[", "](https://example.com)", "link text"),
+                fmt("•", "\n- ", "\n", "List item"),
+                fmt("❝", "\n> ", "\n", "Quote"),
+              );
               const ta = document.createElement("textarea");
               ta.rows = 4;
-              ta.className = "mt-3 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 font-mono text-sm text-offwhite outline-none transition-colors focus:border-brand";
+              ta.className = "mt-2 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 font-mono text-sm text-offwhite outline-none transition-colors focus:border-brand";
               ta.placeholder = "Write a paragraph or two… (markdown allowed)";
               ta.value = block.text;
               ta.addEventListener("input", () => {
                 state.blocks[i].text = ta.value;
                 markDirty();
               });
-              row.append(ta);
+              row.append(toolbar, ta);
             } else {
               if (block.url || block.previewUrl) {
                 const img = document.createElement("img");
@@ -916,9 +1029,10 @@ import "../../styles/global.css";
           "w-date": "date",
           "w-author": "author",
           "w-organiser": "organiser",
+          "w-startdate": "startDate",
+          "w-enddate": "endDate",
           "w-excerpt": "excerpt",
           "w-desc": "description",
-          "w-enddate": "endDate",
           "w-location": "location",
           "w-game": "game",
           "w-link": "link",
@@ -1006,24 +1120,56 @@ import "../../styles/global.css";
 
         $("new-news-btn").addEventListener("click", () => {
           history.replaceState(null, "", "/admin/new");
-          createArticle("news");
+          showCreateDialog("news");
         });
 
         $("new-event-btn").addEventListener("click", () => {
           history.replaceState(null, "", "/admin/new");
-          createArticle("events");
+          showCreateDialog("events");
         });
+
+        $("create-cancel").addEventListener("click", () => {
+          showView("list");
+          fetchList();
+        });
+
+        $("create-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const name = $("c-title").value.trim();
+          const author = $("c-author").value.trim();
+          const err = $("create-error");
+          if (!name || !author) {
+            err.textContent = "Name and author are both required.";
+            err.classList.remove("hidden");
+            return;
+          }
+          err.classList.add("hidden");
+          const btn = $("create-btn");
+          btn.disabled = true;
+          btn.textContent = "Creating…";
+          const ok = await createArticle(createType, name, author);
+          btn.disabled = false;
+          btn.textContent = "Create draft";
+          if (ok) {
+            // createArticle already navigated to the editor via loadArticle.
+            showView("editor");
+          }
+        });
+
+        $("btn-save").addEventListener("click", () => saveNow());
+
+        $("btn-duplicate").addEventListener("click", () => duplicateArticle());
+
+        $("btn-publish").addEventListener("click", () => publishNow());
 
         $("editor-back-link").addEventListener("click", (e) => {
           e.preventDefault();
-          if (dirty && !window.confirm("You have unsaved changes. Save them before leaving?")) {
-            // still allow back — autosave will fire on next tick
+          if (dirty && !window.confirm("You have unsaved changes. Leave without saving?")) {
+            return;
           }
-          saveNow().then(() => {
-            history.replaceState(null, "", "/admin/new");
-            showView("list");
-            fetchList();
-          });
+          history.replaceState(null, "", "/admin/new");
+          showView("list");
+          fetchList();
         });
 
         $("signout-btn").addEventListener("click", async () => {

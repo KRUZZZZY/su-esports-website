@@ -78,10 +78,12 @@ function validate(type, body) {
     if (excerpt.length > 300) return fail("Excerpt must be 300 characters or fewer");
     if (excerpt) fields.excerpt = excerpt;
   } else {
-    if (body.endDate !== undefined && body.endDate !== "") {
-      const endDate = typeof body.endDate === "string" ? body.endDate.trim() : "";
-      if (!isValidDate(endDate)) return fail("End date must be a valid date or datetime");
-      fields.endDate = endDate;
+    for (const key of ["startDate", "endDate"]) {
+      if (body[key] !== undefined && body[key] !== "") {
+        const val = typeof body[key] === "string" ? body[key].trim() : "";
+        if (!isValidDate(val)) return fail(`${key} must be a valid date or datetime`);
+        fields[key] = val;
+      }
     }
     for (const key of ["location", "game", "link", "description", "author", "organiser"]) {
       const val = typeof body[key] === "string" ? body[key].trim() : "";
@@ -191,8 +193,8 @@ export async function onRequestPost({ request, env }) {
     }
     // Record the unpublish gate so the middleware 404s at the exact time.
     try {
-      const { setUnpublishGate } = await import("../_lib/clicks.js");
-      await setUnpublishGate(env, { type, slug, ready: result.fields.ready, unpublishAt: result.fields.date });
+      const { setPublishGate } = await import("../_lib/clicks.js");
+      await setPublishGate(env, { type, slug, ready: result.fields.ready, publishAt: result.fields.date });
     } catch (e) {
       /* gate table unavailable — fall back to rebuild-time filtering */
     }
@@ -249,8 +251,8 @@ export async function onRequestPut({ request, env }) {
   if (res.status === 200 || res.status === 201) {
     // Update the unpublish gate (ready articles expire at `date`).
     try {
-      const { setUnpublishGate } = await import("../_lib/clicks.js");
-      await setUnpublishGate(env, { type, slug, ready: result.fields.ready, unpublishAt: result.fields.date });
+      const { setPublishGate } = await import("../_lib/clicks.js");
+      await setPublishGate(env, { type, slug, ready: result.fields.ready, publishAt: result.fields.date });
     } catch (e) {
       /* gate table unavailable — fall back to rebuild-time filtering */
     }
@@ -290,8 +292,8 @@ export async function onRequestDelete({ request, env }) {
 
   if (res.status === 200) {
     try {
-      const { setUnpublishGate } = await import("../_lib/clicks.js");
-      await setUnpublishGate(env, { type, slug, ready: false, unpublishAt: null });
+      const { setPublishGate } = await import("../_lib/clicks.js");
+      await setPublishGate(env, { type, slug, ready: false, publishAt: null });
     } catch (e) {
       /* gate table unavailable */
     }

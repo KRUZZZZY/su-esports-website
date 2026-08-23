@@ -8,11 +8,11 @@ import { site } from "../site.config";
 
 const now = new Date();
 const upcoming = (await getCollection("events"))
-  .filter((e) => !e.data.draft && e.data.ready && e.data.date >= now)
-  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
+  .filter((e) => !e.data.draft && e.data.ready && e.data.date <= now && (e.data.startDate || e.data.date) >= now)
+  .sort((a, b) => (a.data.startDate || a.data.date).getTime() - (b.data.startDate || b.data.date).getTime())
   .slice(0, 3);
 const news = (await getCollection("news"))
-  .filter((n) => !n.data.draft)
+  .filter((n) => !n.data.draft && n.data.ready && n.data.date <= now)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
@@ -80,7 +80,7 @@ const latestPlacements = placements
       upcoming.length > 0 ? (
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {upcoming.map((e) => (
-            <EventCard title={e.data.title} date={e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} image={e.data.image} href={`/events/${e.id}`} />
+            <EventCard title={e.data.title} date={e.data.startDate || e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} image={e.data.image} href={`/events/${e.id}`} />
           ))}
         </div>
       ) : (
