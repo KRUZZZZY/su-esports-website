@@ -22,6 +22,13 @@ import { slugify } from "../_lib/slug.js";
 
 const TYPES = ["news", "events"];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{3}Z?)?)?)?$/;
+// Slugs are validated identically on every route (POST, GET, PUT, DELETE) —
+// prevents path traversal via %2F or .. in the GitHub Contents path.
+const SLUG_RE = /^[a-z0-9-]{4,64}$/;
+
+function validSlug(slug) {
+  return typeof slug === "string" && SLUG_RE.test(slug);
+}
 
 function isValidDate(str) {
   if (!DATE_RE.test(str)) return false;
@@ -53,7 +60,7 @@ function validate(type, body) {
 
   const date = typeof body.date === "string" ? body.date.trim() : "";
   if (date && !isValidDate(date)) return fail("Date must be a valid date or datetime (YYYY-MM-DD or YYYY-MM-DDTHH:MM)");
-  if (isReady && !date) return fail("Set the unpublish date before going live");
+  if (isReady && !date) return fail("Set the publish date before going live");
 
   const mdBody = typeof body.body === "string" ? body.body : "";
   if (!mdBody.trim() && !isDraft) return fail("Body is required");
@@ -77,12 +84,12 @@ function validate(type, body) {
     const category = typeof body.category === "string" ? body.category.trim() : "";
     if (category.length > 60) return fail("Category must be 60 characters or fewer");
     if (category) fields.category = category;
-    // intro = article display (300 max); teaser = card text (160 max).
+    // intro = article display (300 max); teaser = card text (120 max).
     const intro = typeof body.intro === "string" ? body.intro.trim() : "";
     if (intro.length > 300) return fail("Introduction must be 300 characters or fewer");
     if (intro) fields.intro = intro;
     const teaser = typeof body.teaser === "string" ? body.teaser.trim() : "";
-    if (teaser.length > 160) return fail("Teaser must be 160 characters or fewer");
+    if (teaser.length > 120) return fail("Teaser must be 120 characters or fewer");
     if (teaser) fields.teaser = teaser;
     const thumbnail = typeof body.thumbnail === "string" ? body.thumbnail.trim() : "";
     if (thumbnail.length > 500) return fail("Thumbnail must be 500 characters or fewer");
@@ -111,6 +118,11 @@ function validate(type, body) {
     if (image) fields.image = image;
   }
 
+  // The event sign-up link must be a safe http(s) URL — never javascript: etc.
+  if (fields.link && !/^https?:\/\//i.test(fields.link)) {
+    return fail("Sign-up link must start with https://");
+  }
+
   return { fields, body: mdBody };
 }
 export { validate };
@@ -132,6 +144,9 @@ export async function onRequestGet({ request, env }) {
   const slug = url.searchParams.get("slug");
   if (!type || !TYPES.includes(type)) {
     return json({ error: "Type must be news or events" }, 400);
+  }
+  if (slug && !validSlug(slug)) {
+    return json({ error: "Invalid slug" }, 400);
   }
 
   if (slug) {
@@ -232,6 +247,7 @@ export async function onRequestPut({ request, env }) {
   const slug = url.searchParams.get("slug");
   if (!type || !TYPES.includes(type)) return json({ error: "Type must be news or events" }, 400);
   if (!slug) return json({ error: "Missing slug query param" }, 400);
+  if (!validSlug(slug)) return json({ error: "Invalid slug" }, 400);
 
   let body;
   try {
@@ -243,15 +259,17 @@ export async function onRequestPut({ request, env }) {
   const result = validate(type, body);
   if (result.error) return json(result, 400);
 
-  // Flipping `ready` on (publish gate) is admin-only.
-  if (result.fields.ready && session.role !== "admin") {
-    return json({ error: "Only admins can make an article ready" }, 403);
-  }
-
   const path = `src/content/${type}/${slug}.md`;
   const current = await getFile(env, path);
   if (current.status === 404) return json({ error: "Not found" }, 404);
   if (current.status !== 200) return json({ error: "Could not read from GitHub" }, 502);
+
+  // Flipping `ready` OFF→ON (publishing) is admin-only. Editing an already
+  // live article keeps ready=true and must NOT 403 for editors.
+  const currentReady = parseMarkdown(current.content).data.ready === "true";
+  if (result.fields.ready && !currentReady && session.role !== "admin") {
+    return json({ error: "Only admins can make an article ready" }, 403);
+  }
 
   const markdown = buildMarkdown(type, result.fields, result.body);
   let res;
@@ -290,6 +308,7 @@ export async function onRequestDelete({ request, env }) {
   const slug = url.searchParams.get("slug");
   if (!type || !TYPES.includes(type)) return json({ error: "Type must be news or events" }, 400);
   if (!slug) return json({ error: "Missing slug query param" }, 400);
+  if (!validSlug(slug)) return json({ error: "Invalid slug" }, 400);
 
   const path = `src/content/${type}/${slug}.md`;
   const current = await getFile(env, path);

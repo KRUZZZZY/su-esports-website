@@ -75,7 +75,7 @@ import "../../styles/global.css";
 
           <div class="mt-5">
             <label for="list-search" class="block text-sm font-medium text-offwhite/80">Search content</label>
-            <input id="list-search" type="search" placeholder="Filter by title, author or organiser…"
+            <input id="list-search" type="search" placeholder="Filter by title, author, category or organiser…"
               class="mt-1 w-full max-w-md rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand" />
             <p class="mt-1 text-xs text-offwhite/50">Filters both lists as you type.</p>
           </div>
@@ -257,9 +257,9 @@ import "../../styles/global.css";
             </div>
             <div id="w-teaser-wrap" class="mt-6">
               <label for="w-teaser" class="block text-sm font-medium text-offwhite/80">Teaser (optional)</label>
-              <textarea id="w-teaser" rows="2" maxlength="160" placeholder="A punchy hook for the news card…"
+              <textarea id="w-teaser" rows="2" maxlength="120" placeholder="A punchy hook for the news card…"
                 class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"></textarea>
-              <p class="mt-1 text-xs text-offwhite/50">Shown on cards before you click through. Max 160 characters.</p>
+              <p class="mt-1 text-xs text-offwhite/50">Shown on cards before you click through. Max 120 characters — short enough to fit the card.</p>
             </div>
             <div id="w-desc-wrap" class="mt-6 hidden">
               <label for="w-desc" class="block text-sm font-medium text-offwhite/80">Description (optional)</label>
@@ -315,10 +315,8 @@ import "../../styles/global.css";
                 <p id="media-status" class="mt-1 text-xs text-offwhite/50" aria-live="polite">Loading images…</p>
               </div>
               <div class="flex gap-2">
-                <label class="cursor-pointer rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
-                  ＋ Upload new
-                  <input id="media-file" type="file" accept="image/*" class="hidden" />
-                </label>
+                <button id="media-upload-btn" type="button" class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">＋ Upload new</button>
+                <input id="media-file" type="file" accept="image/*" class="sr-only" tabindex="-1" aria-hidden="true" />
                 <button id="media-close" type="button" class="rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Close</button>
               </div>
             </div>
@@ -335,8 +333,8 @@ import "../../styles/global.css";
               <h2 class="font-display text-xl tracking-wider text-brand">Crop thumbnail</h2>
               <button id="crop-close" type="button" class="rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Cancel</button>
             </div>
-            <p class="mt-1 text-xs text-offwhite/50">Drag to pan, use the slider to zoom. The crop is 16:9.</p>
-            <div id="crop-stage" class="relative mt-4 aspect-video w-full select-none overflow-hidden rounded-lg border border-white/10 bg-black">
+            <p class="mt-1 text-xs text-offwhite/50">Drag to pan · arrow keys nudge · Shift+arrows for fine moves · slider zooms. The crop is 16:9.</p>
+            <div id="crop-stage" tabindex="0" role="application" aria-label="Crop area — drag or use arrow keys to pan, slider to zoom, then press Apply crop" class="relative mt-4 aspect-video w-full select-none overflow-hidden rounded-lg border border-white/10 bg-black focus:outline-2 focus:outline-brand">
               <img id="crop-img" alt="Source image for cropping" draggable="false"
                 class="absolute max-w-none cursor-grab active:cursor-grabbing" style="left:0;top:0" />
             </div>
@@ -344,10 +342,10 @@ import "../../styles/global.css";
               <div>
                 <label for="crop-zoom" class="block text-sm font-medium text-offwhite/80">Zoom</label>
                 <input id="crop-zoom" type="range" min="100" max="400" step="1" value="100" class="mt-2 w-full accent-[#e08f20]" />
-                <label class="mt-3 block cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-center text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
+                <button id="crop-upload-btn" type="button" class="mt-3 block w-full cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-center text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
                   Upload a different image
-                  <input id="crop-file" type="file" accept="image/*" class="hidden" />
-                </label>
+                </button>
+                <input id="crop-file" type="file" accept="image/*" class="sr-only" tabindex="-1" aria-hidden="true" />
               </div>
               <div>
                 <span class="block text-sm font-medium text-offwhite/80">Live preview</span>
@@ -595,10 +593,8 @@ import "../../styles/global.css";
               window.alert((data && data.error) || "Could not load the article to duplicate.");
               return;
             }
-            const slug = randomSlug();
             const payload = {
               type,
-              slug,
               title: ((item.title || "Untitled").trim()) + " (copy)",
               date: todayLocal(),
               body: typeof data.body === "string" ? data.body : "",
@@ -619,19 +615,30 @@ import "../../styles/global.css";
             }
             if (data.image) payload.image = data.image;
             if (data.thumbnail) payload.thumbnail = data.thumbnail;
-            const r = await fetch(API, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            });
-            const rd = await r.json().catch(() => ({}));
-            if (!r.ok) {
-              window.alert((rd && rd.error) || "Could not duplicate the article.");
+            // Retry on slug collision (randomSlug is 8 chars — collisions are
+            // rare but the error would otherwise mislead: "title already exists").
+            let rd = null;
+            for (let attempt = 0; attempt < 3; attempt++) {
+              payload.slug = randomSlug();
+              const r = await fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+              rd = await r.json().catch(() => ({}));
+              if (r.ok) break;
+              if (r.status !== 409 && r.status !== 422) {
+                window.alert((rd && rd.error) || "Could not duplicate the article.");
+                return;
+              }
+            }
+            if (!rd || !rd.slug) {
+              window.alert("Could not duplicate the article — the title already exists. Change the title and try again.");
               return;
             }
             state.mode = "edit";
             state.type = type;
-            state.slug = rd.slug || slug;
+            state.slug = rd.slug;
             showView("editor");
             await loadArticle();
           } catch (e) {
@@ -852,12 +859,18 @@ import "../../styles/global.css";
           // Editors cannot flip the ready gate (admin-only).
           const readyBox = $("w-ready");
           readyBox.checked = state.ready;
+          const publishBtn = $("btn-publish");
           if (role !== "admin") {
             readyBox.disabled = true;
             readyBox.title = "Only admins can make an article ready";
             $("w-ready").parentElement.querySelector("span").textContent = "Ready (admin only)";
+            // Editors can't publish — hide the button so they don't hit a 403.
+            publishBtn.classList.add("hidden");
+            $("editor-hint").textContent = "Editors can save drafts — an admin publishes.";
           } else {
             readyBox.disabled = false;
+            publishBtn.classList.remove("hidden");
+            $("editor-hint").textContent = "";
           }
         }
 
@@ -1019,19 +1032,38 @@ import "../../styles/global.css";
 
         // ---- blocks ---------------------------------------------------------------
         const BLOCK_SIZES = ["small", "medium", "large", "full"];
+        const DANGEROUS_URL_RE = /^(\s*(javascript|vbscript|data):)/i;
+
+        // Escape raw HTML in text-block content so stored markdown can never
+        // carry executable markup to the public page (Astro passes raw HTML in
+        // markdown through unescaped). The .wide wrapper is added by the
+        // serializer itself after escaping, so it stays the only raw HTML.
+        function escapeHtml(s) {
+          return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+        function unescapeHtml(s) {
+          return String(s).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+        }
+        // Neutralize javascript:/data:/vbscript: in markdown link destinations.
+        function safeMarkdownLinks(s) {
+          return String(s).replace(/\]\(\s*([^)]*)\)/g, (m, url) => {
+            return DANGEROUS_URL_RE.test(url) ? "](#)" : m;
+          });
+        }
 
         function serializeBlocks() {
           return state.blocks
             .map((b) => {
               if (b.kind === "text") {
-                const text = String(b.text || "").trim();
+                const text = escapeHtml(String(b.text || "").trim());
                 if (!text) return "";
                 // Wide text blocks are wrapped in a raw-HTML div the article
                 // stylesheet expands beyond the prose column.
-                return b.wide ? `<div class="wide">\n\n${text}\n\n</div>` : text;
+                const body = safeMarkdownLinks(text);
+                return b.wide ? `<div class="wide">\n\n${body}\n\n</div>` : body;
               }
               if (!b.url) return "";
-              const alt = b.caption || "";
+              const alt = escapeHtml(b.caption || "");
               const size = BLOCK_SIZES.includes(b.size) ? b.size : "full";
               // Markdown title attribute = display size (omitted for the default).
               return size === "full"
@@ -1047,7 +1079,7 @@ import "../../styles/global.css";
           let wide = false; // inside a <div class="wide">…</div> wrapper
           const flushText = () => {
             const t = text.join("\n").trim();
-            if (t) blocks.push({ kind: "text", text: t, wide: wide });
+            if (t) blocks.push({ kind: "text", text: unescapeHtml(t), wide: wide });
             text = [];
             wide = false;
           };
@@ -1055,19 +1087,23 @@ import "../../styles/global.css";
             .split("\n")
             .forEach((line) => {
               const trimmed = line.trim();
-              const img = /^!\[([^\]]*)\]\(([^)]+?)(?:\s+"([^"]*)")?\)$/.exec(trimmed);
+              // Match only the serializer's exact image shape: ![caption](url "size")
+              // with a no-space URL (upload.js sanitizes to [a-z0-9._-], so URLs
+              // never contain spaces or parens). Captions containing ] or URLs
+              // with ) fall through to text (hand-typed/legacy content stays text).
+              const img = /^!\[([^\]\n]*)\]\(([^)\s]+?)(?:\s+"([^"]*)")?\)$/.exec(trimmed);
               if (img) {
                 flushText();
                 const size = BLOCK_SIZES.includes(img[3]) ? img[3] : "full";
                 blocks.push({ kind: "image", url: img[2], caption: img[1], size });
                 return;
               }
-              if (/^<div class="wide">\s*$/.test(trimmed)) {
-                flushText();
+              // Only the serializer's exact wrapper lines start/end a wide block.
+              if (/^<div class="wide">\s*$/.test(trimmed) && text.length === 0) {
                 wide = true;
                 return;
               }
-              if (/^<\/div>\s*$/.test(trimmed)) {
+              if (/^<\/div>\s*$/.test(trimmed) && wide) {
                 flushText();
                 return;
               }
@@ -1250,7 +1286,15 @@ import "../../styles/global.css";
         // ---- image upload (WebP conversion) -----------------------------------------
         // Reads the file, converts to WebP via canvas (falls back to the
         // original if WebP is unsupported), then uploads. Returns { url, previewUrl }.
+        const MIN_IMAGE_WIDTH = 400; // reject tiny images (blurry cards)
+
         async function uploadFile(file) {
+          // Enforce a minimum width so card thumbnails / intro images aren't
+          // blurry — catch it before any network work.
+          const dims = await imageDimensions(file);
+          if (dims && dims.width < MIN_IMAGE_WIDTH) {
+            throw new Error(`Image is too small — ${dims.width}px wide. Minimum ${MIN_IMAGE_WIDTH}px (800px+ recommended).`);
+          }
           let data = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result);
@@ -1280,6 +1324,15 @@ import "../../styles/global.css";
           const json = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error((json && json.error) || "Upload failed — try again.");
           return { url: json.url, previewUrl: data };
+        }
+
+        function imageDimensions(file) {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+            img.onerror = () => resolve(null);
+            img.src = URL.createObjectURL(file);
+          });
         }
 
         function fileToWebP(file) {
@@ -1328,10 +1381,43 @@ import "../../styles/global.css";
         let mediaTarget = null; // { kind: "image" } | { kind: "thumbnail" } | { kind: "block", index }
         let mediaOpener = null; // element to return focus to on close
 
+        // ---- modal focus management (a11y) -------------------------------------
+        // Tracks focus inside the open modal: Esc closes, Tab loops within.
+        let modalStack = []; // element ids of open modals
+
+        function focusTrapKeydown(e) {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            const top = modalStack[modalStack.length - 1];
+            if (top === "media-modal") closeMediaPicker();
+            else if (top === "crop-modal") closeCropUI();
+            return;
+          }
+          if (e.key !== "Tab" || modalStack.length === 0) return;
+          const topId = modalStack[modalStack.length - 1];
+          const modal = $(topId);
+          if (!modal) return;
+          const focusables = modal.querySelectorAll(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusables.length === 0) return;
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+        document.addEventListener("keydown", focusTrapKeydown, true);
+
         async function openMediaPicker(target) {
           mediaTarget = target;
           mediaOpener = document.activeElement;
           $("media-modal").classList.remove("hidden");
+          modalStack.push("media-modal");
           $("media-status").textContent = "Loading images…";
           $("media-grid").textContent = "";
           $("media-empty").classList.add("hidden");
@@ -1347,6 +1433,7 @@ import "../../styles/global.css";
 
         function closeMediaPicker() {
           $("media-modal").classList.add("hidden");
+          modalStack = modalStack.filter((id) => id !== "media-modal");
           if (mediaOpener && typeof mediaOpener.focus === "function") mediaOpener.focus();
           mediaOpener = null;
           mediaTarget = null;
@@ -1441,14 +1528,37 @@ import "../../styles/global.css";
           img.src = url;
           $("crop-zoom").value = 100;
           $("crop-modal").classList.remove("hidden");
+          modalStack.push("crop-modal");
           setTimeout(() => $("crop-apply").focus(), 50);
         }
 
         function closeCropUI() {
           $("crop-modal").classList.add("hidden");
+          modalStack = modalStack.filter((id) => id !== "crop-modal");
           if (crop.img) crop.img.onload = null;
           if (crop.opener && typeof crop.opener.focus === "function") crop.opener.focus();
           crop.opener = null;
+        }
+
+        // Keyboard panning for the crop stage (arrow keys nudge the image).
+        function cropStageKeydown(e) {
+          const step = e.shiftKey ? 4 : 16;
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            crop.panX += step;
+          } else if (e.key === "ArrowRight") {
+            e.preventDefault();
+            crop.panX -= step;
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            crop.panY += step;
+          } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            crop.panY -= step;
+          } else {
+            return;
+          }
+          scheduleCropRender();
         }
 
         function layoutCrop() {
@@ -1516,12 +1626,26 @@ import "../../styles/global.css";
           const sw = Math.min(crop.naturalW - sx, W / scale);
           const sh = Math.min(crop.naturalH - sy, H / scale);
           if (sw <= 0 || sh <= 0) return;
-          const cw = Math.max(1, Math.round(sw));
-          const ch = Math.max(1, Math.round(sh));
+          // Clamp output: cap the LONG edge at 1600px so huge source images
+          // can't blow canvas limits or the 5MB upload cap.
+          const MAX_OUT = 1600;
+          let cw = Math.max(1, Math.round(sw));
+          let ch = Math.max(1, Math.round(sh));
+          const longest = Math.max(cw, ch);
+          if (longest > MAX_OUT) {
+            const k = MAX_OUT / longest;
+            cw = Math.max(1, Math.round(cw * k));
+            ch = Math.max(1, Math.round(ch * k));
+          }
           const canvas = document.createElement("canvas");
           canvas.width = cw;
           canvas.height = ch;
-          canvas.getContext("2d").drawImage(crop.img, sx, sy, sw, sh, 0, 0, cw, ch);
+          try {
+            canvas.getContext("2d").drawImage(crop.img, sx, sy, sw, sh, 0, 0, cw, ch);
+          } catch (e) {
+            setError("Could not crop this image — try a smaller one.");
+            return;
+          }
           const dataUrl = await new Promise((resolve) => {
             canvas.toBlob(
               (blob) => {
@@ -1608,6 +1732,8 @@ import "../../styles/global.css";
         // Media picker modal wiring.
         $("media-close").addEventListener("click", closeMediaPicker);
         $("media-overlay").addEventListener("click", closeMediaPicker);
+        $("media-upload-btn").addEventListener("click", () => $("media-file").click());
+
         $("media-file").addEventListener("change", async (e) => {
           const file = e.target.files && e.target.files[0];
           if (!file) return;
@@ -1637,6 +1763,10 @@ import "../../styles/global.css";
           crop.zoomMult = Number(e.target.value) / 100;
           scheduleCropRender();
         });
+        $("crop-upload-btn").addEventListener("click", () => $("crop-file").click());
+
+        $("crop-stage").addEventListener("keydown", cropStageKeydown);
+
         $("crop-file").addEventListener("change", async (e) => {
           const file = e.target.files && e.target.files[0];
           if (!file) return;
@@ -1714,11 +1844,13 @@ import "../../styles/global.css";
               cur.key = key;
               cur.dir = -1;
             }
-            // Active-state styling.
+            // Active-state styling + aria-pressed for screen readers.
             document.querySelectorAll(`[data-sort="${type}"]`).forEach((b) => {
               const on = b.dataset.key === cur.key;
               b.classList.toggle("border-brand", on);
               b.classList.toggle("text-brand", on);
+              b.setAttribute("aria-pressed", String(on));
+              b.setAttribute("aria-label", b.dataset.key === "author" && type === "events" ? `Sort by organiser (${cur.dir < 0 ? "descending" : "ascending"})` : `Sort by ${b.dataset.key} (${cur.dir < 0 ? "descending" : "ascending"})`);
             });
             renderList(type);
           });

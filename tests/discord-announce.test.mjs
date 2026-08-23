@@ -161,7 +161,7 @@ test("buildAnnouncement: news with no roles configured → no ping, escaped titl
 title: Big Win
 date: 2026-08-20
 author: Swansea Esports
-excerpt: We won nationals!
+teaser: We won nationals!
 ---
 Body.
 `;

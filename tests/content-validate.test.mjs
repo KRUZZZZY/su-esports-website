@@ -38,7 +38,7 @@ test("ready news requires title + date + body", () => {
   assert.equal(noFields.error, "Title is required");
 
   const noDate = validate("news", { title: "T", date: "", body: "b", draft: false, ready: true });
-  assert.equal(noDate.error, "Set the unpublish date before going live");
+  assert.equal(noDate.error, "Set the publish date before going live");
 
   const noBody = validate("news", { title: "T", date: "2026-09-20T12:00", body: "", draft: false, ready: true });
   assert.equal(noBody.error, "Body is required");

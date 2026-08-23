@@ -39,10 +39,15 @@ export function mdToHtml(md) {
       closeList();
       continue;
     }
+    const trimmed = line.trim();
+    // Skip the wizard's .wide wrapper markers (they're layout, not content).
+    if (trimmed === '<div class="wide">' || trimmed === "</div>") continue;
+
     const inline = (t) =>
       t
-        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />')
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        // Image with optional markdown title attribute (size): ![alt](url "size")
+        .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_, alt, url, size) => `<img src="${url}" alt="${alt}" title="${size || ""}" loading="lazy" />`)
+        .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>')
         .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
         .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 
@@ -105,7 +110,10 @@ function page(html, { title, isDraft }) {
   .prose ul { padding-left: 24px; }
   .prose li { margin: 6px 0; }
   .prose a { color: ${BRAND}; }
-  .prose img { max-width: 100%; border-radius: 10px; margin: 8px 0; }
+  .prose img { max-width: 100%; border-radius: 10px; margin: 8px auto; display: block; }
+  .prose img[title="small"] { width: 40%; }
+  .prose img[title="medium"] { width: 60%; }
+  .prose img[title="large"] { width: 80%; }
   .cta { display: inline-block; background: ${BRAND}; color: #1a1206; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 12px; }
   .cta:hover { filter: brightness(1.1); }
 </style>

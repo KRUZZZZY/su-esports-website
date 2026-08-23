@@ -38,6 +38,10 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
+  markdown: {
+    remarkPlugins: [allowOnlyWideHtml]
+  },
+
   integrations: [
     sitemap({
       filter: (page) => {
@@ -50,3 +54,33 @@ export default defineConfig({
     })
   ]
 });
+
+/**
+ * Remark plugin: strip ALL raw HTML from markdown EXCEPT the wizard's exact
+ * `.wide` block wrapper. Stored XSS defense-in-depth — Astro passes raw HTML
+ * in markdown through unescaped, so without this an injected <img onerror>
+ * would execute for every visitor. The wizard already escapes text on
+ * serialize; this also covers hand-authored/Sveltia content.
+ */
+function allowOnlyWideHtml() {
+  /** @param {any} tree */
+  return (tree) => {
+    const DANGEROUS = /^(\s*(javascript|vbscript|data):)/i;
+    /** @param {any} node */
+    const visit = (node) => {
+      if (node.type === 'html' && typeof node.value === 'string') {
+        const v = node.value.trim();
+        if (v === '<div class="wide">' || v === '</div>') return; // keep wrapper
+        // Turn everything else into escaped text so it renders visibly, not as markup.
+        node.type = 'text';
+        node.value = node.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      // Neutralize javascript:/data:/vbscript: markdown link destinations.
+      if (node.type === 'link' && typeof node.url === 'string' && DANGEROUS.test(node.url)) {
+        node.url = '#';
+      }
+      if (node.children) node.children.forEach(visit);
+    };
+    visit(tree);
+  };
+}

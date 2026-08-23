@@ -32,8 +32,6 @@ const cardImage = thumbnail || image;
     </div>
     <h3 class="mt-2 font-display text-xl leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">{title}</h3>
     {teaser && <p class="mt-2 text-sm text-offwhite/60 line-clamp-2">{teaser}</p>}
-    {author && author !== "Swansea Esports" && (
-      <p class="mt-auto pt-3 text-xs text-offwhite/50">by {author}</p>
-    )}
+    {author && <p class="mt-auto pt-3 text-xs text-offwhite/50">by {author}</p>}
   </div>
 </a>

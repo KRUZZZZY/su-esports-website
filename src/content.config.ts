@@ -53,7 +53,7 @@ const news = defineCollection({
     date: z.coerce.date(), // publish date (gate: live when ready && now >= date)
     author: z.string().default("Swansea Esports"),
     category: z.string().optional(),
-    // intro = shown on the article (max 300 chars); teaser = card text (max 160).
+    // intro = shown on the article (max 300 chars); teaser = card text (max 120).
     intro: z.string().optional(),
     teaser: z.string().optional(),
     image: z.string().optional(), // intro/hero image (defaults to swan-wide)

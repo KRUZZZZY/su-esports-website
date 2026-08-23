@@ -147,8 +147,17 @@
   margin-right: auto;
 }
 
-/* Wide text blocks (editor "Wide" toggle wraps text in <div class="wide">) */
+/* Wide text blocks (editor "Wide" toggle wraps text in <div class="wide">):
+   break out of the prose column to full viewport width, then clamp back so
+   the text itself stays readable. */
 .prose .wide {
   grid-column: 1 / -1;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+.prose .wide > * {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 

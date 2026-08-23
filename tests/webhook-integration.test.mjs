@@ -20,7 +20,7 @@ const NEWS_MD = `---
 title: Big Win
 date: 2026-08-20
 author: Swansea Esports
-excerpt: We won nationals!
+teaser: We won nationals!
 ready: true
 ---
 Body.

@@ -8,6 +8,9 @@ import { json, requireSession } from "../_lib/auth.js";
 import { uploadImage } from "../_lib/content.js";
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5MB
+// Only image extensions may be hosted — never .html/.svg/.js (arbitrary
+// same-origin file hosting is an admin-escalation vector).
+const ALLOWED_EXT = /\.(png|jpe?g|webp|gif|avif)$/i;
 
 export async function onRequestPost({ request, env }) {
   const session = await requireSession(request, env);
@@ -35,6 +38,12 @@ export async function onRequestPost({ request, env }) {
   // Defensively strip an optional data:image/...;base64, prefix.
   data = data.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "").replace(/\s+/g, "");
 
+  // Size cap BEFORE decoding — a huge body spikes worker memory otherwise.
+  // base64 inflates 4/3; approximate the decoded byte length cheaply.
+  if (data.length * 3 / 4 > MAX_BYTES) {
+    return json({ error: "Image must be 5MB or smaller" }, 400);
+  }
+
   let byteLength;
   try {
     byteLength = atob(data).length;
@@ -54,6 +63,11 @@ export async function onRequestPost({ request, env }) {
       .pop()
       .toLowerCase()
       .replace(/[^a-z0-9._-]/g, "") || "image";
+
+  // Enforce the image-extension whitelist on the FINAL stored name.
+  if (!ALLOWED_EXT.test(sanitized)) {
+    return json({ error: "Only image files (png, jpg, webp, gif, avif) can be uploaded" }, 400);
+  }
   const storedName = `${Date.now()}-${sanitized}`;
 
   let res;
