@@ -12,4 +12,4 @@ This is a test to see what everything looks like
 
 
 
-![Swan](/images/1787525659035-swan-wide.webp)
+![Swan wide](/images/1787525659035-swan-wide.webp)
