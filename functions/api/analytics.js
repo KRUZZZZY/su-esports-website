@@ -6,7 +6,7 @@
 //     days, fromDay, toDay, totalClicks,
 //     links: [ { label, href, page, total, byDay: { "2026-08-18": 5, ... } } ]
 //   }
-import { json, requireSession } from "../_lib/auth.js";
+import { json, requireAdmin } from "../_lib/auth.js";
 import { clicksByDay, totalClicks } from "../_lib/clicks.js";
 
 const MAX_DAYS = 365;
@@ -19,7 +19,8 @@ function toDayString(d) {
 }
 
 export async function onRequestGet({ request, env }) {
-  const session = await requireSession(request, env);
+  // Site-wide analytics are admin-only (editors see per-article views only).
+  const session = await requireAdmin(request, env);
   if (session instanceof Response) return session;
 
   const url = new URL(request.url);

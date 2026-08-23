@@ -14,7 +14,7 @@ import "../../styles/global.css";
   <body class="bg-ink text-offwhite">
     <div class="min-h-screen bg-brand-glow">
       <header class="border-b border-white/10 bg-ink/85 backdrop-blur">
-        <div class="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
+        <div class="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
           <div class="flex items-center gap-3">
             <img src="/brand/swan-head.png" alt="" width="36" height="36" class="h-9 w-9" />
             <span class="font-display text-xl tracking-widest text-offwhite">
@@ -23,16 +23,10 @@ import "../../styles/global.css";
             </span>
           </div>
           <div class="flex items-center gap-2">
-            <a
-              href="/"
-              class="rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
-            >
+            <a href="/" class="rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
               View site ↗
             </a>
-            <a
-              href="/admin/analytics"
-              class="rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
-            >
+            <a href="/admin/analytics" id="nav-analytics" class="rounded border border-white/15 px-3 py-1.5 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
               Analytics
             </a>
             <button
@@ -45,39 +39,23 @@ import "../../styles/global.css";
         </div>
       </header>
 
-      <main class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      <main class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
         <!-- ============ LOGIN ============ -->
         <section id="login-view" class="hidden">
           <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8">
             <h1 class="font-display text-3xl tracking-wider text-brand">Sign in</h1>
-            <p class="mt-2 text-sm text-offwhite/60">Admin access for Swansea Esports committee members.</p>
+            <p class="mt-2 text-sm text-offwhite/60">Admin or editor access for Swansea Esports committee members.</p>
             <form id="login-form" class="mt-6 space-y-4">
               <div>
                 <label for="login-email" class="block text-sm font-medium text-offwhite/80">Email</label>
-                <input
-                  id="login-email"
-                  type="email"
-                  required
-                  autocomplete="username"
-                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand"
-                />
+                <input id="login-email" type="email" required autocomplete="username" class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand" />
               </div>
               <div>
                 <label for="login-password" class="block text-sm font-medium text-offwhite/80">Password</label>
-                <input
-                  id="login-password"
-                  type="password"
-                  required
-                  autocomplete="current-password"
-                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand"
-                />
+                <input id="login-password" type="password" required autocomplete="current-password" class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2 text-offwhite outline-none transition-colors focus:border-brand" />
               </div>
               <p id="login-error" class="hidden text-sm text-red-400" aria-live="polite"></p>
-              <button
-                type="submit"
-                id="login-btn"
-                class="w-full rounded-lg bg-brand px-4 py-2.5 font-semibold text-black transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
-              >
+              <button type="submit" id="login-btn" class="w-full rounded-lg bg-brand px-4 py-2.5 font-semibold text-black transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60">
                 Sign in
               </button>
             </form>
@@ -89,18 +67,8 @@ import "../../styles/global.css";
           <div class="flex flex-wrap items-center justify-between gap-3">
             <h1 class="font-display text-3xl tracking-wider text-brand">Content</h1>
             <div class="flex gap-2">
-              <button
-                id="new-news-btn"
-                class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
-              >
-                ＋ New news post
-              </button>
-              <button
-                id="new-event-btn"
-                class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10"
-              >
-                ＋ New event
-              </button>
+              <button id="new-news-btn" class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">＋ New news post</button>
+              <button id="new-event-btn" class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10">＋ New event</button>
             </div>
           </div>
           <p id="list-status" class="mt-4 text-sm text-offwhite/50" aria-live="polite">Loading…</p>
@@ -114,257 +82,131 @@ import "../../styles/global.css";
           <p id="list-events-empty" class="hidden mt-3 text-sm text-offwhite/50">No events yet.</p>
         </section>
 
-        <!-- ============ WIZARD ============ -->
-        <section id="wizard-view" class="hidden">
+        <!-- ============ EDITOR (single page, no steps) ============ -->
+        <section id="editor-view" class="hidden">
           <div class="rounded-xl border border-white/10 bg-panel p-6 sm:p-8">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <a href="#" id="wizard-back-link" class="text-sm text-offwhite/60 transition-colors hover:text-offwhite">
-                  ← Back to content
-                </a>
-                <h1 id="wizard-heading" class="mt-1 font-display text-3xl tracking-wider text-brand">New news post</h1>
+                <a href="#" id="editor-back-link" class="text-sm text-offwhite/60 transition-colors hover:text-offwhite">← Back to content</a>
+                <h1 id="editor-heading" class="mt-1 font-display text-3xl tracking-wider text-brand">New news post</h1>
               </div>
               <div class="flex items-center gap-3">
-                <span id="wizard-status" class="hidden rounded-full border px-3 py-1 text-xs font-semibold"></span>
-                <span id="step-label" class="text-sm text-offwhite/50">Step 1 of 5</span>
+                <span id="editor-status" class="rounded-full border border-white/15 px-3 py-1 text-xs font-medium text-offwhite/50" role="status" aria-live="polite"></span>
+                <span id="editor-views" class="hidden rounded-full border border-white/15 px-3 py-1 text-xs font-medium text-offwhite/50" title="Views (human / bot)"></span>
+                <a href="#" id="editor-preview-link" class="hidden rounded-full border border-white/15 px-3 py-1 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Preview ↗</a>
               </div>
             </div>
 
-            <!-- progress dots -->
-            <div class="mt-6 flex items-center gap-2" aria-hidden="true">
-              <span id="dot-1" class="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-xs font-bold text-black">1</span>
-              <span class="h-px w-6 bg-white/15"></span>
-              <span id="dot-2" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-offwhite/60">2</span>
-              <span class="h-px w-6 bg-white/15"></span>
-              <span id="dot-3" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-offwhite/60">3</span>
-              <span class="h-px w-6 bg-white/15"></span>
-              <span id="dot-4" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-offwhite/60">4</span>
-              <span class="h-px w-6 bg-white/15"></span>
-              <span id="dot-5" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-offwhite/60">5</span>
+            <p id="editor-error" class="mt-4 hidden rounded-lg border border-red-400/30 bg-red-400/5 px-4 py-2 text-sm text-red-300" aria-live="polite"></p>
+
+            <!-- Title -->
+            <div class="mt-6">
+              <label for="w-title" class="block text-sm font-medium text-offwhite/80">Title</label>
+              <input id="w-title" type="text" maxlength="200" placeholder="e.g. Welcome to the new website"
+                class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              <p class="mt-1 text-xs text-offwhite/50">Page URL: <span id="w-slug-hint" class="text-brand">—</span></p>
             </div>
 
-            <!-- Step 1: title -->
-            <section id="step-1" class="mt-8">
-              <h2 class="font-display text-xl tracking-wider text-offwhite">1 · Title</h2>
-              <p class="mt-1 text-sm text-offwhite/60">What is this piece called?</p>
-              <input
-                id="w-title"
-                type="text"
-                maxlength="200"
-                placeholder="e.g. Welcome to the new website"
-                class="mt-4 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-              />
-              <p class="mt-2 text-xs text-offwhite/50">
-                Page URL: <span id="w-slug-hint" class="text-brand">—</span>
-              </p>
-            </section>
-
-            <!-- Step 2: details (type-specific fields toggled by JS) -->
-            <section id="step-2" class="mt-8 hidden">
-              <h2 id="step2-heading" class="font-display text-xl tracking-wider text-offwhite">2 · Date &amp; author</h2>
-              <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <!-- Publish gate -->
+            <div class="mt-6 rounded-lg border border-brand/30 bg-brand/5 p-4">
+              <div class="flex items-start justify-between gap-4">
                 <div>
-                  <label for="w-date" class="block text-sm font-medium text-offwhite/80">Date</label>
-                  <input
-                    id="w-date"
-                    type="date"
-                    class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-                  />
+                  <p class="font-medium text-offwhite">Ready to go live</p>
+                  <p class="mt-1 text-xs leading-relaxed text-offwhite/60">
+                    Tick this when the article is finished and you want it public. It goes live immediately
+                    and is automatically <strong>hidden again when the date below passes</strong> (your unpublish
+                    gate). Until ticked, the article is a private draft only you can see.
+                  </p>
                 </div>
-                <div id="w-author-wrap">
-                  <label for="w-author" class="block text-sm font-medium text-offwhite/80">Author</label>
-                  <input
-                    id="w-author"
-                    type="text"
-                    maxlength="100"
-                    placeholder="Swansea Esports"
-                    class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-                  />
+                <label class="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-white/15 px-3 py-2">
+                  <input id="w-ready" type="checkbox" class="h-4 w-4 accent-[#e08f20]" />
+                  <span class="text-sm font-semibold text-offwhite">Ready ✓</span>
+                </label>
+              </div>
+              <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label for="w-date" class="block text-sm font-medium text-offwhite/80">Unpublish date &amp; time</label>
+                  <input id="w-date" type="datetime-local"
+                    class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+                  <p class="mt-1 text-xs text-offwhite/50">The article automatically unpublishes (disappears) at this time. Set it far in the future to keep it up.</p>
                 </div>
-                <div id="w-enddate-wrap" class="hidden">
-                  <label for="w-enddate" class="block text-sm font-medium text-offwhite/80">End date (optional)</label>
-                  <input
-                    id="w-enddate"
-                    type="date"
-                    class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-                  />
-                </div>
-              </div>
-              <div id="w-location-wrap" class="mt-4 hidden">
-                <label for="w-location" class="block text-sm font-medium text-offwhite/80">Location (optional)</label>
-                <input
-                  id="w-location"
-                  type="text"
-                  maxlength="200"
-                  placeholder="e.g. Fulton House, Room 101"
-                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-                />
-              </div>
-              <div id="w-game-wrap" class="mt-4 hidden">
-                <label for="w-game" class="block text-sm font-medium text-offwhite/80">Game (optional)</label>
-                <input
-                  id="w-game"
-                  type="text"
-                  maxlength="200"
-                  placeholder="e.g. League of Legends"
-                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-                />
-              </div>
-              <div id="w-link-wrap" class="mt-4 hidden">
-                <label for="w-link" class="block text-sm font-medium text-offwhite/80">Sign-up link (optional)</label>
-                <input
-                  id="w-link"
-                  type="text"
-                  maxlength="200"
-                  placeholder="https://…"
-                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-                />
-              </div>
-            </section>
-
-            <!-- Step 3: summary & thumbnail -->
-            <section id="step-3" class="mt-8 hidden">
-              <h2 id="step3-heading" class="font-display text-xl tracking-wider text-offwhite">3 · Excerpt &amp; thumbnail</h2>
-              <div id="w-excerpt-wrap">
-                <label for="w-excerpt" class="mt-4 block text-sm font-medium text-offwhite/80">Excerpt (optional)</label>
-                <textarea
-                  id="w-excerpt"
-                  rows="2"
-                  maxlength="300"
-                  placeholder="One or two sentences summarising the post…"
-                  class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-                ></textarea>
-                <p class="mt-1 text-xs text-offwhite/50">Max 300 characters.</p>
-              </div>
-              <div id="w-desc-wrap" class="hidden">
-                <label for="w-desc" class="mt-4 block text-sm font-medium text-offwhite/80">Description (optional)</label>
-                <textarea
-                  id="w-desc"
-                  rows="2"
-                  maxlength="200"
-                  placeholder="A short description shown on the events listing…"
-                  class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"
-                ></textarea>
-                <p class="mt-1 text-xs text-offwhite/50">Max 200 characters.</p>
-              </div>
-              <div class="mt-4">
-                <span class="block text-sm font-medium text-offwhite/80">Thumbnail (optional)</span>
-                <div class="mt-2 flex flex-wrap items-center gap-3">
-                  <img id="w-thumb-preview" alt="Thumbnail preview" class="hidden h-20 w-36 rounded-lg border border-white/10 object-cover" />
-                  <label class="cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
-                    Upload image
-                    <input id="w-thumb-input" type="file" accept="image/*" class="hidden" />
+                <div>
+                  <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-white/15 px-3 py-2.5">
+                    <input id="w-sponsored" type="checkbox" class="h-4 w-4 accent-[#e08f20]" />
+                    <span class="text-sm text-offwhite/80">Sponsored — hide from search engines</span>
                   </label>
-                  <button
-                    id="w-thumb-remove"
-                    class="hidden rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
-                  >
-                    Remove
-                  </button>
+                  <p class="mt-1 text-xs text-offwhite/50">Sponsored posts are excluded from the sitemap so Google etc. don't index them.</p>
                 </div>
-                <p id="w-thumb-status" class="mt-2 text-xs text-offwhite/50"></p>
               </div>
-            </section>
-
-            <!-- Step 4: block editor -->
-            <section id="step-4" class="mt-8 hidden">
-              <h2 class="font-display text-xl tracking-wider text-offwhite">4 · Content</h2>
-              <p class="mt-1 text-sm text-offwhite/60">
-                Build the body from blocks. Text blocks support <span class="text-brand">markdown</span>; image blocks insert a picture between blocks.
-              </p>
-              <div id="block-list" class="mt-4 space-y-3"></div>
-              <div class="mt-4 flex flex-wrap gap-2">
-                <button
-                  id="add-text-btn"
-                  class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10"
-                >
-                  ＋ Add text block
-                </button>
-                <button
-                  id="add-image-btn"
-                  class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10"
-                >
-                  ＋ Add image block
-                </button>
-              </div>
-            </section>
-
-            <!-- Step 5: preview & publish -->
-            <section id="step-5" class="mt-8 hidden">
-              <h2 class="font-display text-xl tracking-wider text-offwhite">5 · Preview &amp; publish</h2>
-              <div class="mt-4 rounded-lg border border-white/10 bg-ink p-5">
-                <img id="pv-image" alt="" class="mb-4 hidden aspect-video w-full rounded-lg border border-white/10 object-cover" />
-                <h3 id="pv-title" class="font-display text-2xl tracking-wider text-offwhite"></h3>
-                <p id="pv-meta" class="mt-1 text-sm text-offwhite/50"></p>
-                <p id="pv-summary" class="mt-3 text-sm italic text-offwhite/70"></p>
-                <div id="pv-body" class="mt-4 whitespace-pre-wrap border-t border-white/10 pt-4 text-sm leading-relaxed text-offwhite/85"></div>
-              </div>
-              <p class="mt-3 text-xs text-offwhite/50">
-                Publishing commits the article to the site's GitHub repo — Cloudflare Pages rebuilds automatically.
-              </p>
-            </section>
-
-            <p id="step-error" class="mt-6 hidden text-sm text-red-400" aria-live="polite"></p>
-
-            <!-- nav buttons -->
-            <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
-              <button
-                id="btn-back"
-                class="hidden rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
-              >
-                Back
-              </button>
-              <span class="flex-1"></span>
-              <button
-                id="btn-preview"
-                class="hidden rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
-              >
-                Preview
-              </button>
-              <button
-                id="btn-save-draft"
-                class="hidden rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
-              >
-                Save draft
-              </button>
-              <button
-                id="btn-next"
-                class="hidden rounded-lg bg-brand px-6 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
-              >
-                Next
-              </button>
-              <button
-                id="btn-publish"
-                class="hidden rounded-lg bg-brand px-6 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Publish
-              </button>
             </div>
-          </div>
-        </section>
 
-        <!-- ============ SUCCESS ============ -->
-        <section id="success-view" class="hidden">
-          <div class="mx-auto max-w-md rounded-xl border border-white/10 bg-panel p-8 text-center">
-            <h1 id="success-heading" class="font-display text-3xl tracking-wider text-brand">Published 🎉</h1>
-            <p class="mt-3 text-sm text-offwhite/70">
-              Live shortly — the site rebuilds after this commit.<br />
-              <a id="success-link" href="/news" class="mt-2 inline-block text-brand underline-offset-4 hover:underline">/news/…</a>
-            </p>
-            <div class="mt-6 flex justify-center gap-3">
-              <a
-                id="success-view-link"
-                href="/news"
-                class="rounded-lg bg-brand px-5 py-2 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
-              >
-                View page
-              </a>
-              <button
-                id="success-back-btn"
-                class="rounded-lg border border-white/15 px-5 py-2 text-sm font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite"
-              >
-                Back to content
-              </button>
+            <!-- Type-specific fields -->
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div id="w-author-wrap">
+                <label for="w-author" class="block text-sm font-medium text-offwhite/80">Author</label>
+                <input id="w-author" type="text" maxlength="100" placeholder="Swansea Esports"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              </div>
+              <div id="w-enddate-wrap" class="hidden">
+                <label for="w-enddate" class="block text-sm font-medium text-offwhite/80">End date (optional)</label>
+                <input id="w-enddate" type="date"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              </div>
+              <div id="w-location-wrap" class="hidden">
+                <label for="w-location" class="block text-sm font-medium text-offwhite/80">Location (optional)</label>
+                <input id="w-location" type="text" maxlength="200" placeholder="e.g. Fulton House, Room 101"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              </div>
+              <div id="w-game-wrap" class="hidden">
+                <label for="w-game" class="block text-sm font-medium text-offwhite/80">Game (optional)</label>
+                <input id="w-game" type="text" maxlength="200" placeholder="e.g. League of Legends"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              </div>
+              <div id="w-link-wrap" class="hidden">
+                <label for="w-link" class="block text-sm font-medium text-offwhite/80">Sign-up link (optional)</label>
+                <input id="w-link" type="text" maxlength="200" placeholder="https://…"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              </div>
+            </div>
+
+            <!-- Excerpt / description -->
+            <div id="w-excerpt-wrap" class="mt-6">
+              <label for="w-excerpt" class="block text-sm font-medium text-offwhite/80">Excerpt (optional)</label>
+              <textarea id="w-excerpt" rows="2" maxlength="300" placeholder="One or two sentences summarising the post…"
+                class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"></textarea>
+              <p class="mt-1 text-xs text-offwhite/50">Max 300 characters.</p>
+            </div>
+            <div id="w-desc-wrap" class="mt-6 hidden">
+              <label for="w-desc" class="block text-sm font-medium text-offwhite/80">Description (optional)</label>
+              <textarea id="w-desc" rows="2" maxlength="200" placeholder="A short description shown on the events listing…"
+                class="mt-1 w-full resize-y rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand"></textarea>
+              <p class="mt-1 text-xs text-offwhite/50">Max 200 characters.</p>
+            </div>
+
+            <!-- Thumbnail -->
+            <div class="mt-6">
+              <span class="block text-sm font-medium text-offwhite/80">Thumbnail (optional)</span>
+              <p class="mt-0.5 text-xs text-offwhite/50">Automatically converted to WebP to save space.</p>
+              <div class="mt-2 flex flex-wrap items-center gap-3">
+                <img id="w-thumb-preview" alt="Thumbnail preview" class="hidden h-20 w-36 rounded-lg border border-white/10 object-cover" />
+                <label class="cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">
+                  Upload image
+                  <input id="w-thumb-input" type="file" accept="image/*" class="hidden" />
+                </label>
+                <button id="w-thumb-remove" class="hidden rounded-lg border border-white/15 px-3 py-2 text-sm text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite">Remove</button>
+              </div>
+              <p id="w-thumb-status" class="mt-2 text-xs text-offwhite/50"></p>
+            </div>
+
+            <!-- Body blocks -->
+            <div class="mt-6">
+              <span class="block text-sm font-medium text-offwhite/80">Content</span>
+              <p class="mt-0.5 text-xs text-offwhite/60">Text blocks support <span class="text-brand">markdown</span>; image blocks insert a picture between blocks.</p>
+              <div id="block-list" class="mt-3 space-y-3"></div>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <button id="add-text-btn" class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10">＋ Add text block</button>
+                <button id="add-image-btn" class="rounded-lg border border-brand/50 px-4 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/10">＋ Add image block</button>
+              </div>
             </div>
           </div>
         </section>
@@ -376,26 +218,20 @@ import "../../styles/global.css";
         "use strict";
 
         const $ = (id) => document.getElementById(id);
-        const SESSION_KEY = "su-admin-unsaved"; // session-only crash recovery
+        const API = "/api/content";
 
-        const now = new Date();
-        const today =
-          now.getFullYear() +
-          "-" +
-          String(now.getMonth() + 1).padStart(2, "0") +
-          "-" +
-          String(now.getDate()).padStart(2, "0");
-
-        const state = {
-          view: "login", // login | list | wizard | success
+        let role = "admin"; // set from /api/auth/me on boot
+        let state = {
+          view: "login", // login | list | editor
           mode: "create", // create | edit
-          type: "news", // news | events
-          slug: null, // original slug when editing
+          type: "news",
+          slug: null,
           sha: null,
-          draft: false, // draft:true = hidden from the public site
-          step: 1,
+          draft: true,
+          ready: false,
+          sponsored: false,
           title: "",
-          date: today,
+          date: "",
           author: "Swansea Esports",
           excerpt: "",
           description: "",
@@ -404,10 +240,45 @@ import "../../styles/global.css";
           game: "",
           link: "",
           image: "",
-          blocks: [], // [{ kind: "text", text } | { kind: "image", url, caption }]
+          blocks: [],
         };
 
-        // ---- small helpers -------------------------------------------------
+        let saveTimer = null;
+        let dirty = false;
+        let viewsLoaded = false;
+
+        // ---- helpers ----------------------------------------------------------
+        function todayLocal() {
+          const d = new Date();
+          d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+          return d.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM for datetime-local
+        }
+
+        function randomSlug() {
+          const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+          let s = "";
+          for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)];
+          return s;
+        }
+
+        function formatDate(iso) {
+          if (!iso) return "";
+          const d = new Date(iso.length === 16 ? iso + ":00" : iso);
+          return Number.isNaN(d.getTime())
+            ? ""
+            : d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+        }
+
+        function setStatus(text) {
+          $("editor-status").textContent = text;
+        }
+
+        function setError(msg) {
+          const el = $("editor-error");
+          el.textContent = msg || "";
+          el.classList.toggle("hidden", !msg);
+        }
+
         function slugify(str) {
           return String(str)
             .toLowerCase()
@@ -415,119 +286,25 @@ import "../../styles/global.css";
             .replace(/^-+|-+$/g, "");
         }
 
-        function formatDate(iso) {
-          if (!iso) return "";
-          const d = new Date(iso + "T00:00:00");
-          return Number.isNaN(d.getTime())
-            ? ""
-            : d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-        }
-
-        function defaultState() {
-          return {
-            mode: "create",
-            type: "news",
-            slug: null,
-            sha: null,
-            draft: false,
-            step: 1,
-            title: "",
-            date: today,
-            author: "Swansea Esports",
-            excerpt: "",
-            description: "",
-            endDate: "",
-            location: "",
-            game: "",
-            link: "",
-            image: "",
-            blocks: [{ kind: "text", text: "" }],
-          };
-        }
-
-        // ---- session-only crash recovery -----------------------------------
-        // The REAL draft lives server-side (frontmatter draft: true). This
-        // sessionStorage snapshot only protects against an accidental tab
-        // close mid-edit — it dies with the tab and is restored only on an
-        // explicit "Restore?" confirm. Never silently autosaves.
-        function snapshot() {
-          try {
-            sessionStorage.setItem(
-              SESSION_KEY,
-              JSON.stringify({
-                mode: state.mode,
-                type: state.type,
-                slug: state.slug,
-                title: state.title,
-                date: state.date,
-                author: state.author,
-                excerpt: state.excerpt,
-                description: state.description,
-                endDate: state.endDate,
-                location: state.location,
-                game: state.game,
-                link: state.link,
-                image: state.image,
-                blocks: state.blocks,
-              })
-            );
-          } catch (e) {
-            /* ignore */
-          }
-        }
-
-        function clearSnapshot() {
-          try {
-            sessionStorage.removeItem(SESSION_KEY);
-          } catch (e) {
-            /* ignore */
-          }
-        }
-
-        function applySnapshot(saved) {
-          if (!saved || typeof saved !== "object") return false;
-          if (typeof saved.title === "string") state.title = saved.title;
-          if (typeof saved.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(saved.date)) state.date = saved.date;
-          if (typeof saved.author === "string") state.author = saved.author;
-          if (typeof saved.excerpt === "string") state.excerpt = saved.excerpt;
-          if (typeof saved.description === "string") state.description = saved.description;
-          if (typeof saved.endDate === "string") state.endDate = saved.endDate;
-          if (typeof saved.location === "string") state.location = saved.location;
-          if (typeof saved.game === "string") state.game = saved.game;
-          if (typeof saved.link === "string") state.link = saved.link;
-          if (typeof saved.image === "string") state.image = saved.image;
-          if (Array.isArray(saved.blocks) && saved.blocks.length) {
-            state.blocks = saved.blocks
-              .filter((b) => b && (b.kind === "text" || b.kind === "image"))
-              .map((b) =>
-                b.kind === "image"
-                  ? { kind: "image", url: typeof b.url === "string" ? b.url : "", caption: typeof b.caption === "string" ? b.caption : "" }
-                  : { kind: "text", text: typeof b.text === "string" ? b.text : "" }
-              );
-          }
-          return true;
-        }
-
-        window.addEventListener("beforeunload", snapshot);
-
-        // ---- views -----------------------------------------------------------
+        // ---- views -------------------------------------------------------------
         function showView(name) {
           state.view = name;
-          ["login", "list", "wizard", "success"].forEach((v) => {
+          ["login", "list", "editor"].forEach((v) => {
             $(v + "-view").classList.toggle("hidden", v !== name);
           });
           $("signout-btn").classList.toggle("hidden", name === "login");
+          $("nav-analytics").classList.toggle("hidden", name === "login" || role !== "admin");
         }
 
-        // ---- list view --------------------------------------------------------
+        // ---- list ---------------------------------------------------------------
         async function fetchList() {
           const status = $("list-status");
           status.textContent = "Loading…";
           status.classList.remove("hidden");
           try {
             const [newsRes, eventsRes] = await Promise.all([
-              fetch("/api/content?type=news"),
-              fetch("/api/content?type=events"),
+              fetch(API + "?type=news"),
+              fetch(API + "?type=events"),
             ]);
             const newsData = await newsRes.json().catch(() => ({}));
             const eventsData = await eventsRes.json().catch(() => ({}));
@@ -556,11 +333,21 @@ import "../../styles/global.css";
             title.className = "truncate font-medium text-offwhite";
             title.textContent = item.title || "(untitled)";
             titleRow.append(title);
-            if (item.draft) {
-              const badge = document.createElement("span");
-              badge.className = "shrink-0 rounded-full border border-amber-400/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300";
+            const badge = document.createElement("span");
+            badge.className = "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider";
+            if (item.ready === true || item.ready === "true") {
+              badge.textContent = "Live";
+              badge.className += " border-emerald-400/50 text-emerald-300";
+            } else {
               badge.textContent = "Draft";
-              titleRow.append(badge);
+              badge.className += " border-amber-400/50 text-amber-300";
+            }
+            titleRow.append(badge);
+            if (item.sponsored === true || item.sponsored === "true") {
+              const sp = document.createElement("span");
+              sp.textContent = "Sponsored";
+              sp.className = "shrink-0 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-offwhite/50";
+              titleRow.append(sp);
             }
             const meta = document.createElement("p");
             meta.className = "mt-0.5 text-xs text-offwhite/50";
@@ -573,7 +360,7 @@ import "../../styles/global.css";
             editBtn.type = "button";
             editBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
             editBtn.textContent = "Edit";
-            editBtn.addEventListener("click", () => startWizard("edit", type, item.slug));
+            editBtn.addEventListener("click", () => openEditor(type, item.slug));
             const previewBtn = document.createElement("button");
             previewBtn.type = "button";
             previewBtn.className = "rounded border border-white/15 px-3 py-1.5 text-xs font-medium text-offwhite/70 transition-colors hover:border-white/30 hover:text-offwhite";
@@ -594,9 +381,7 @@ import "../../styles/global.css";
         async function deleteArticle(type, slug, title) {
           if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
           try {
-            const res = await fetch(`/api/content?type=${encodeURIComponent(type)}&slug=${encodeURIComponent(slug)}`, {
-              method: "DELETE",
-            });
+            const res = await fetch(`${API}?type=${encodeURIComponent(type)}&slug=${encodeURIComponent(slug)}`, { method: "DELETE" });
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
               window.alert((data && data.error) || "Delete failed — try again.");
@@ -608,60 +393,154 @@ import "../../styles/global.css";
           }
         }
 
-        // ---- wizard -------------------------------------------------------------
-        function startWizard(mode, type, slug) {
-          Object.assign(state, defaultState());
-          state.mode = mode;
-          state.type = type;
-          if (mode === "edit") {
-            state.slug = slug || null;
-          } else {
-            // Offer to restore an unsaved session draft, but never silently.
-            try {
-              const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
-              if (saved && saved.mode === "create" && (saved.title || (Array.isArray(saved.blocks) && saved.blocks.some((b) => b.text || b.url)))) {
-                if (window.confirm("You have an unsaved draft from this session. Restore it?")) {
-                  applySnapshot(saved);
-                } else {
-                  clearSnapshot();
-                }
-              }
-            } catch (e) {
-              /* ignore */
+        // ---- editor ---------------------------------------------------------------
+        // Create = immediately POST a draft with a random slug, then edit it.
+        async function createArticle(type) {
+          try {
+            const slug = randomSlug();
+            const payload = {
+              type,
+              slug,
+              title: "",
+              date: todayLocal(),
+              body: "",
+              draft: true,
+              ready: false,
+              sponsored: false,
+            };
+            const res = await fetch(API, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              window.alert((data && data.error) || "Could not create the article.");
+              return;
             }
-            if (!state.blocks.length) state.blocks = [{ kind: "text", text: "" }];
-          }
-          updateWizardHeading();
-          updateWizardStatus();
-          showView("wizard");
-          syncTypeFields();
-          syncInputs();
-          if (mode === "edit" && state.slug) {
-            loadArticle();
-          } else {
-            showStep(1);
+            // Reload into the editor as an edit of the new slug.
+            state.mode = "edit";
+            state.type = type;
+            state.slug = data.slug;
+            await loadArticle();
+          } catch (e) {
+            window.alert("Network error — could not create the article.");
           }
         }
 
-        function updateWizardHeading() {
+        function openEditor(type, slug) {
+          state.type = type;
+          state.slug = slug;
+          state.mode = "edit";
+          showView("editor");
+          loadArticle();
+        }
+
+        async function loadArticle() {
+          setStatus("Loading…");
+          viewsLoaded = false;
+          try {
+            const res = await fetch(`${API}?type=${encodeURIComponent(state.type)}&slug=${encodeURIComponent(state.slug)}`);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              setError((data && data.error) || "Could not load the article.");
+              return;
+            }
+            state.sha = data.sha || null;
+            state.title = typeof data.title === "string" ? data.title : "";
+            state.date = normalizeDate(data.date);
+            state.ready = data.ready === true || data.ready === "true";
+            state.sponsored = data.sponsored === true || data.sponsored === "true";
+            state.draft = data.draft === true || data.draft === "true";
+            if (state.type === "news") {
+              state.author = typeof data.author === "string" ? data.author : "Swansea Esports";
+              state.excerpt = typeof data.excerpt === "string" ? data.excerpt : "";
+            } else {
+              state.endDate = typeof data.endDate === "string" ? data.endDate : "";
+              state.location = typeof data.location === "string" ? data.location : "";
+              state.game = typeof data.game === "string" ? data.game : "";
+              state.link = typeof data.link === "string" ? data.link : "";
+              state.description = typeof data.description === "string" ? data.description : "";
+            }
+            state.image = typeof data.image === "string" ? data.image : "";
+            state.blocks = parseBlocks(typeof data.body === "string" ? data.body : "");
+            syncTypeFields();
+            syncInputs();
+            updateHeading();
+            updateReadyUI();
+            updateSlugHint();
+            updatePreviewLink();
+            loadViews();
+            dirty = false;
+            setStatus("Saved");
+          } catch (e) {
+            setError("Network error — could not load the article.");
+          }
+        }
+
+        function normalizeDate(v) {
+          if (!v) return todayLocal();
+          // Accept YYYY-MM-DD or ISO datetimes; always show local time.
+          try {
+            const d = new Date(v);
+            if (Number.isNaN(d.getTime())) return todayLocal();
+            const pad = (n) => String(n).padStart(2, "0");
+            return (
+              d.getFullYear() +
+              "-" + pad(d.getMonth() + 1) +
+              "-" + pad(d.getDate()) +
+              "T" + pad(d.getHours()) +
+              ":" + pad(d.getMinutes())
+            );
+          } catch (e) {
+            return todayLocal();
+          }
+        }
+
+        function updateHeading() {
           const verb = state.mode === "edit" ? "Edit" : "New";
           const noun = state.type === "news" ? "news post" : "event";
-          $("wizard-heading").textContent = verb + " " + noun;
+          $("editor-heading").textContent = verb + " " + noun;
         }
 
-        function updateWizardStatus() {
-          const badge = $("wizard-status");
-          if (state.mode === "edit") {
-            if (state.draft) {
-              badge.textContent = "Draft";
-              badge.className = "rounded-full border border-amber-400/50 px-3 py-1 text-xs font-semibold text-amber-300";
-            } else {
-              badge.textContent = "Live";
-              badge.className = "rounded-full border border-emerald-400/50 px-3 py-1 text-xs font-semibold text-emerald-300";
-            }
-            badge.classList.remove("hidden");
+        function updateSlugHint() {
+          $("w-slug-hint").textContent = state.slug ? "/" + state.type + "/" + state.slug : "—";
+        }
+
+        function updatePreviewLink() {
+          const link = $("editor-preview-link");
+          if (state.slug) {
+            link.href = `/api/preview?type=${encodeURIComponent(state.type)}&slug=${encodeURIComponent(state.slug)}`;
+            link.classList.remove("hidden");
           } else {
-            badge.classList.add("hidden");
+            link.classList.add("hidden");
+          }
+        }
+
+        function updateReadyUI() {
+          // Editors cannot flip the ready gate (admin-only).
+          const readyBox = $("w-ready");
+          readyBox.checked = state.ready;
+          if (role !== "admin") {
+            readyBox.disabled = true;
+            readyBox.title = "Only admins can make an article ready";
+            $("w-ready").parentElement.querySelector("span").textContent = "Ready (admin only)";
+          } else {
+            readyBox.disabled = false;
+          }
+        }
+
+        async function loadViews() {
+          try {
+            const res = await fetch(`/api/article-stats?type=${encodeURIComponent(state.type)}&slug=${encodeURIComponent(state.slug)}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            $("editor-views").textContent = `👁 ${data.humanViews} · 🤖 ${data.botViews}`;
+            $("editor-views").title = `${data.views} total views (${data.humanViews} human, ${data.botViews} bot)`;
+            $("editor-views").classList.remove("hidden");
+            viewsLoaded = true;
+          } catch (e) {
+            /* views unavailable — hide quietly */
           }
         }
 
@@ -674,8 +553,6 @@ import "../../styles/global.css";
           $("w-link-wrap").classList.toggle("hidden", isNews);
           $("w-excerpt-wrap").classList.toggle("hidden", !isNews);
           $("w-desc-wrap").classList.toggle("hidden", isNews);
-          $("step2-heading").textContent = isNews ? "2 · Date & author" : "2 · Date & details";
-          $("step3-heading").textContent = isNews ? "3 · Excerpt & thumbnail" : "3 · Summary & thumbnail";
         }
 
         function syncInputs() {
@@ -688,13 +565,9 @@ import "../../styles/global.css";
           $("w-location").value = state.location;
           $("w-game").value = state.game;
           $("w-link").value = state.link;
-          updateSlugHint();
+          $("w-sponsored").checked = state.sponsored;
           updateThumbnailUI();
-        }
-
-        function updateSlugHint() {
-          const slug = slugify(state.title);
-          $("w-slug-hint").textContent = slug ? "/" + state.type + "/" + slug : "—";
+          renderBlocks();
         }
 
         function updateThumbnailUI() {
@@ -710,68 +583,74 @@ import "../../styles/global.css";
           }
         }
 
-        function showStep(n) {
-          state.step = n;
-          for (let i = 1; i <= 5; i++) {
-            $("step-" + i).classList.toggle("hidden", i !== n);
-            const dot = $("dot-" + i);
-            const done = i <= n;
-            dot.classList.toggle("bg-brand", done);
-            dot.classList.toggle("bg-white/10", !done);
-            dot.classList.toggle("text-black", done);
-            dot.classList.toggle("text-offwhite/60", !done);
-          }
-          $("btn-back").classList.toggle("hidden", n === 1);
-          $("btn-next").classList.toggle("hidden", n === 5);
-          $("btn-publish").classList.toggle("hidden", n !== 5);
-          // Save draft is available on every step (relaxed validation — a
-          // skeleton draft only needs a title); Preview needs step 5 content.
-          $("btn-save-draft").classList.remove("hidden");
-          $("btn-preview").classList.toggle("hidden", n !== 5);
-          // Edit-mode labels: a draft's Publish makes it live; a live item's
-          // "Save as draft" hides it again. Editing a draft never auto-publishes.
-          $("btn-publish").textContent =
-            state.mode === "edit" ? (state.draft ? "Publish" : "Update") : "Publish";
-          $("btn-save-draft").textContent =
-            state.mode === "edit" && !state.draft ? "Save as draft" : "Save draft";
-          $("step-label").textContent = "Step " + n + " of 5";
-          if (n === 4) renderBlocks();
-          if (n === 5) renderPreview();
+        // ---- autosave --------------------------------------------------------------
+        function markDirty() {
+          dirty = true;
+          setStatus("Unsaved changes…");
+          clearTimeout(saveTimer);
+          saveTimer = setTimeout(saveNow, 900);
         }
 
-        function setError(msg) {
-          const err = $("step-error");
-          err.textContent = msg;
-          err.classList.toggle("hidden", !msg);
-        }
-
-        function validateStep(n) {
-          if (n === 1) {
-            if (!state.title.trim()) return "Give the post a title.";
-            if (state.title.trim().length > 200) return "Title must be 200 characters or fewer.";
-          } else if (n === 2) {
-            if (!/^\d{4}-\d{2}-\d{2}$/.test(state.date)) return "Pick a valid date.";
-            if (state.type === "news") {
-              if (!state.author.trim()) return "Add an author.";
-              if (state.author.trim().length > 100) return "Author must be 100 characters or fewer.";
-            } else {
-              if (state.endDate && !/^\d{4}-\d{2}-\d{2}$/.test(state.endDate)) return "End date must be a valid date.";
-              if (state.location.length > 200) return "Location must be 200 characters or fewer.";
-              if (state.game.length > 200) return "Game must be 200 characters or fewer.";
-              if (state.link.length > 200) return "Link must be 200 characters or fewer.";
+        async function saveNow() {
+          if (!state.slug || !dirty) return;
+          setStatus("Saving…");
+          try {
+            const payload = collectPayload();
+            const res = await fetch(`${API}?type=${encodeURIComponent(state.type)}&slug=${encodeURIComponent(state.slug)}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              setError((data && data.error) || "Save failed — try again.");
+              setStatus("Save failed");
+              return;
             }
-          } else if (n === 3) {
-            if (state.type === "news" && state.excerpt.length > 300) return "Excerpt must be 300 characters or fewer.";
-            if (state.type === "events" && state.description.length > 200) return "Description must be 200 characters or fewer.";
-          } else if (n === 4) {
-            const body = serializeBlocks();
-            if (!body.trim()) return "Write some content — add a text or image block.";
-            if (body.length > 100000) return "Body is too long (max 100,000 characters).";
+            state.sha = data.sha || state.sha;
+            dirty = false;
+            setError("");
+            setStatus("Saved ✓");
+          } catch (e) {
+            setStatus("Save failed — offline?");
           }
-          return "";
         }
 
-        // ---- block editor -------------------------------------------------------
+        function collectPayload() {
+          // Convert the local datetime-local input to a UTC ISO string so the
+          // unpublish gate compares correctly regardless of viewer timezone.
+          const dateIso = (() => {
+            try {
+              const d = new Date(state.date);
+              return Number.isNaN(d.getTime()) ? state.date : d.toISOString();
+            } catch (e) {
+              return state.date;
+            }
+          })();
+          const payload = {
+            type: state.type,
+            title: state.title.trim(),
+            date: dateIso,
+            body: serializeBlocks(),
+            draft: !state.ready, // ready = live; everything else is a draft
+            ready: state.ready,
+            sponsored: state.sponsored,
+          };
+          if (state.type === "news") {
+            payload.author = state.author.trim() || "Swansea Esports";
+            payload.excerpt = state.excerpt.trim();
+          } else {
+            payload.endDate = state.endDate.trim();
+            payload.location = state.location.trim();
+            payload.game = state.game.trim();
+            payload.link = state.link.trim();
+            payload.description = state.description.trim();
+          }
+          payload.image = state.image.trim();
+          return payload;
+        }
+
+        // ---- blocks ---------------------------------------------------------------
         function serializeBlocks() {
           return state.blocks
             .map((b) => {
@@ -849,7 +728,7 @@ import "../../styles/global.css";
               ta.value = block.text;
               ta.addEventListener("input", () => {
                 state.blocks[i].text = ta.value;
-                snapshot();
+                markDirty();
               });
               row.append(ta);
             } else {
@@ -874,12 +753,11 @@ import "../../styles/global.css";
                 const file = fileInput.files && fileInput.files[0];
                 if (!file) return;
                 try {
-                  // Preview the local file instantly; persist the server URL.
                   const { url, previewUrl } = await uploadFile(file);
                   state.blocks[i].url = url;
                   state.blocks[i].previewUrl = previewUrl;
                   renderBlocks();
-                  snapshot();
+                  markDirty();
                   setError("");
                 } catch (err) {
                   setError(err.message || "Upload failed — try again.");
@@ -887,12 +765,6 @@ import "../../styles/global.css";
               });
               fileLabel.append(fileInput);
               bar.append(fileLabel);
-              if (block.url) {
-                const urlText = document.createElement("span");
-                urlText.className = "min-w-0 truncate text-xs text-offwhite/50";
-                urlText.textContent = block.url;
-                bar.append(urlText);
-              }
               row.append(bar);
 
               const cap = document.createElement("input");
@@ -903,7 +775,7 @@ import "../../styles/global.css";
               cap.value = block.caption || "";
               cap.addEventListener("input", () => {
                 state.blocks[i].caption = cap.value;
-                snapshot();
+                markDirty();
               });
               row.append(cap);
             }
@@ -919,7 +791,7 @@ import "../../styles/global.css";
           state.blocks[i] = state.blocks[j];
           state.blocks[j] = tmp;
           renderBlocks();
-          snapshot();
+          markDirty();
         }
 
         function removeBlock(i) {
@@ -929,226 +801,75 @@ import "../../styles/global.css";
             state.blocks[0] = { kind: "text", text: "" };
           }
           renderBlocks();
-          snapshot();
+          markDirty();
         }
 
-        // ---- image upload ---------------------------------------------------------
-        // Returns { url, previewUrl }: url is the server path for frontmatter;
-        // previewUrl is a local data URL shown immediately (the server URL
-        // 404s until the Pages rebuild lands, so preview from the local file).
+        // ---- image upload (WebP conversion) -----------------------------------------
+        // Reads the file, converts to WebP via canvas (falls back to the
+        // original if WebP is unsupported), then uploads. Returns { url, previewUrl }.
         async function uploadFile(file) {
-          const data = await new Promise((resolve, reject) => {
+          let data = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result);
             reader.onerror = () => reject(new Error("Could not read the file"));
             reader.readAsDataURL(file);
           });
+          let contentType = file.type || "image/png";
+          let filename = file.name;
+
+          // Convert to WebP client-side (saves ~30-70% vs JPEG/PNG).
+          try {
+            const webp = await fileToWebP(file);
+            if (webp) {
+              data = webp.dataUrl;
+              contentType = "image/webp";
+              filename = filename.replace(/\.[^.]+$/, "") + ".webp";
+            }
+          } catch (e) {
+            /* keep original */
+          }
+
           const res = await fetch("/api/upload", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              filename: file.name,
-              data: data,
-              contentType: file.type || "image/png",
-            }),
+            body: JSON.stringify({ filename, data, contentType }),
           });
           const json = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error((json && json.error) || "Upload failed — try again.");
           return { url: json.url, previewUrl: data };
         }
 
-        // ---- preview ---------------------------------------------------------------
-        function renderPreview() {
-          $("pv-title").textContent = state.title.trim() || "(untitled)";
-          const isNews = state.type === "news";
-          let meta = formatDate(state.date);
-          if (isNews) meta += " · " + (state.author.trim() || "Swansea Esports");
-          else if (state.endDate) meta += " – " + formatDate(state.endDate);
-          $("pv-meta").textContent = meta;
-          const summary = (isNews ? state.excerpt : state.description).trim();
-          $("pv-summary").textContent = summary;
-          $("pv-summary").classList.toggle("hidden", !summary);
-          const img = $("pv-image");
-          if (state.image) {
-            img.src = state.image;
-            img.classList.remove("hidden");
-          } else {
-            img.removeAttribute("src");
-            img.classList.add("hidden");
-          }
-          $("pv-body").textContent = serializeBlocks();
-        }
-
-        // ---- publish / update ------------------------------------------------------
-        function collectPayload() {
-          const payload = {
-            title: state.title.trim(),
-            date: state.date,
-            body: serializeBlocks(),
-            draft: !!state.draft,
-          };
-          if (state.type === "news") {
-            payload.author = state.author.trim() || "Swansea Esports";
-            payload.excerpt = state.excerpt.trim();
-          } else {
-            payload.endDate = state.endDate.trim();
-            payload.location = state.location.trim();
-            payload.game = state.game.trim();
-            payload.link = state.link.trim();
-            payload.description = state.description.trim();
-          }
-          payload.image = state.image.trim();
-          return payload;
-        }
-
-        // Shared POST (create) / PUT (edit) that returns { ok, slug, error }.
-        async function saveContent(asDraft) {
-          state.draft = asDraft;
-          const isEdit = state.mode === "edit";
-          const url = isEdit
-            ? "/api/content?type=" + encodeURIComponent(state.type) + "&slug=" + encodeURIComponent(state.slug)
-            : "/api/content";
-          const res = await fetch(url, {
-            method: isEdit ? "PUT" : "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(collectPayload()),
+        function fileToWebP(file) {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+              try {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob(
+                  (blob) => {
+                    if (!blob) return resolve(null);
+                    const reader = new FileReader();
+                    reader.onload = () => resolve({ dataUrl: reader.result });
+                    reader.onerror = () => resolve(null);
+                    reader.readAsDataURL(blob);
+                  },
+                  "image/webp",
+                  0.82
+                );
+              } catch (e) {
+                resolve(null);
+              }
+            };
+            img.onerror = () => resolve(null);
+            img.src = URL.createObjectURL(file);
           });
-          const data = await res.json().catch(() => ({}));
-          if (res.ok && data.slug) {
-            // After a create, future saves become edits of the new slug.
-            state.mode = "edit";
-            state.slug = data.slug;
-            state.sha = data.sha || state.sha;
-            return { ok: true, slug: data.slug };
-          }
-          return { ok: false, error: (data && data.error) || (isEdit ? "Update failed — try again." : "Save failed — try again.") };
         }
 
-        async function publish() {
-          const btn = $("btn-publish");
-          const wasEdit = state.mode === "edit";
-          btn.disabled = true;
-          btn.textContent = "Publishing…";
-          setError("");
-          try {
-            const result = await saveContent(false);
-            if (result.ok) {
-              clearSnapshot();
-              updateWizardStatus();
-              showSuccess(result.slug, wasEdit);
-            } else {
-              setError(result.error);
-            }
-          } catch (e) {
-            setError("Network error — check your connection and try again.");
-          } finally {
-            btn.disabled = false;
-            btn.textContent = wasEdit ? (state.draft ? "Publish" : "Update") : "Publish";
-          }
-        }
-
-        // Save as a hidden draft (draft: true in frontmatter). Relaxed
-        // validation — title is enough to get a slug.
-        async function saveAsDraft() {
-          const btn = $("btn-save-draft");
-          btn.disabled = true;
-          btn.textContent = "Saving…";
-          setError("");
-          try {
-            if (!state.title.trim()) {
-              setError("Give the post a title before saving a draft.");
-              return;
-            }
-            const result = await saveContent(true);
-            if (result.ok) {
-              updateWizardStatus();
-              setError("");
-              btn.textContent = "Saved ✓";
-              setTimeout(() => {
-                btn.textContent = "Save draft";
-                btn.disabled = false;
-              }, 1500);
-            } else {
-              setError(result.error);
-              btn.disabled = false;
-              btn.textContent = "Save draft";
-            }
-          } catch (e) {
-            setError("Network error — check your connection and try again.");
-            btn.disabled = false;
-            btn.textContent = "Save draft";
-          }
-        }
-
-        // Open the gated preview page (requires the admin session cookie).
-        async function preview() {
-          setError("");
-          // Ensure a draft exists server-side so the preview has content.
-          if (state.mode === "create" && !state.slug) {
-            const result = await saveContent(true);
-            if (!result.ok) {
-              setError(result.error);
-              return;
-            }
-          }
-          const url = "/api/preview?type=" + encodeURIComponent(state.type) + "&slug=" + encodeURIComponent(state.slug);
-          window.open(url, "_blank");
-        }
-
-        function showSuccess(slug, isEdit) {
-          showView("success");
-          const noun = state.type === "news" ? "Post" : "Event";
-          $("success-heading").textContent = noun + " " + (isEdit ? "updated" : "published") + " 🎉";
-          const url = "/" + state.type + "/" + slug;
-          const link = $("success-link");
-          link.href = url;
-          link.textContent = url;
-          const viewLink = $("success-view-link");
-          viewLink.href = url;
-          viewLink.textContent = "View " + (state.type === "news" ? "news post" : "event");
-        }
-
-        // ---- edit mode --------------------------------------------------------------
-        async function loadArticle() {
-          try {
-            const res = await fetch(
-              "/api/content?type=" + encodeURIComponent(state.type) + "&slug=" + encodeURIComponent(state.slug)
-            );
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) {
-              window.alert((data && data.error) || "Could not load the article.");
-              showView("list");
-              fetchList();
-              return;
-            }
-            state.sha = data.sha || null;
-            state.title = typeof data.title === "string" ? data.title : "";
-            state.date = typeof data.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(data.date) ? data.date : today;
-            state.draft = data.draft === true || data.draft === "true";
-            if (state.type === "news") {
-              state.author = typeof data.author === "string" ? data.author : "Swansea Esports";
-              state.excerpt = typeof data.excerpt === "string" ? data.excerpt : "";
-            } else {
-              state.endDate = typeof data.endDate === "string" ? data.endDate : "";
-              state.location = typeof data.location === "string" ? data.location : "";
-              state.game = typeof data.game === "string" ? data.game : "";
-              state.link = typeof data.link === "string" ? data.link : "";
-              state.description = typeof data.description === "string" ? data.description : "";
-            }
-            state.image = typeof data.image === "string" ? data.image : "";
-            state.blocks = parseBlocks(typeof data.body === "string" ? data.body : "");
-            syncTypeFields();
-            syncInputs();
-            updateWizardStatus();
-            showStep(1);
-          } catch (e) {
-            window.alert("Network error — could not load the article.");
-            showView("list");
-            fetchList();
-          }
-        }
-
-        // ---- event wiring ------------------------------------------------------------
+        // ---- event wiring -----------------------------------------------------------
         const FIELD_MAP = {
           "w-title": "title",
           "w-date": "date",
@@ -1165,16 +886,24 @@ import "../../styles/global.css";
           $(id).addEventListener("input", (e) => {
             state[FIELD_MAP[id]] = e.target.value;
             if (id === "w-title") updateSlugHint();
-            snapshot();
+            markDirty();
           });
+        });
+
+        $("w-ready").addEventListener("change", (e) => {
+          state.ready = e.target.checked;
+          markDirty();
+        });
+
+        $("w-sponsored").addEventListener("change", (e) => {
+          state.sponsored = e.target.checked;
+          markDirty();
         });
 
         $("w-thumb-input").addEventListener("change", async (e) => {
           const file = e.target.files && e.target.files[0];
           if (!file) return;
           const status = $("w-thumb-status");
-          // Show the local image immediately — the server URL 404s until the
-          // Pages rebuild finishes.
           const preview = $("w-thumb-preview");
           preview.src = URL.createObjectURL(file);
           preview.classList.remove("hidden");
@@ -1184,7 +913,7 @@ import "../../styles/global.css";
             state.image = url;
             updateThumbnailUI();
             status.textContent = "Thumbnail appears on the live page once the rebuild finishes.";
-            snapshot();
+            markDirty();
             setError("");
           } catch (err) {
             status.textContent = "";
@@ -1197,70 +926,41 @@ import "../../styles/global.css";
         $("w-thumb-remove").addEventListener("click", () => {
           state.image = "";
           updateThumbnailUI();
-          snapshot();
+          markDirty();
         });
 
         $("add-text-btn").addEventListener("click", () => {
           state.blocks.push({ kind: "text", text: "" });
           renderBlocks();
-          snapshot();
+          markDirty();
         });
 
         $("add-image-btn").addEventListener("click", () => {
           state.blocks.push({ kind: "image", url: "", caption: "" });
           renderBlocks();
-          snapshot();
+          markDirty();
         });
 
         $("new-news-btn").addEventListener("click", () => {
           history.replaceState(null, "", "/admin/new");
-          startWizard("create", "news");
+          createArticle("news");
         });
 
         $("new-event-btn").addEventListener("click", () => {
           history.replaceState(null, "", "/admin/new");
-          startWizard("create", "events");
+          createArticle("events");
         });
 
-        $("success-back-btn").addEventListener("click", () => {
-          showView("list");
-          fetchList();
-        });
-
-        $("btn-next").addEventListener("click", () => {
-          const msg = validateStep(state.step);
-          if (msg) {
-            setError(msg);
-            return;
-          }
-          setError("");
-          showStep(state.step + 1);
-        });
-
-        $("btn-back").addEventListener("click", () => {
-          setError("");
-          showStep(Math.max(1, state.step - 1));
-        });
-
-        $("btn-publish").addEventListener("click", publish);
-
-        $("btn-save-draft").addEventListener("click", saveAsDraft);
-
-        $("btn-preview").addEventListener("click", preview);
-
-        $("wizard-back-link").addEventListener("click", (e) => {
+        $("editor-back-link").addEventListener("click", (e) => {
           e.preventDefault();
-          const dirty =
-            state.title.trim() ||
-            state.excerpt.trim() ||
-            state.description.trim() ||
-            state.blocks.some((b) => (b.text && b.text.trim()) || b.url);
-          if (dirty && !window.confirm("Leave this editor? Unsaved changes will be lost (saved drafts are kept on the site).")) {
-            return;
+          if (dirty && !window.confirm("You have unsaved changes. Save them before leaving?")) {
+            // still allow back — autosave will fire on next tick
           }
-          history.replaceState(null, "", "/admin/new");
-          showView("list");
-          fetchList();
+          saveNow().then(() => {
+            history.replaceState(null, "", "/admin/new");
+            showView("list");
+            fetchList();
+          });
         });
 
         $("signout-btn").addEventListener("click", async () => {
@@ -1304,7 +1004,7 @@ import "../../styles/global.css";
           }
         });
 
-        // ---- boot ---------------------------------------------------------------------
+        // ---- boot -----------------------------------------------------------------
         (async function init() {
           const params = new URLSearchParams(location.search);
           const editType = params.get("type");
@@ -1312,8 +1012,10 @@ import "../../styles/global.css";
           try {
             const res = await fetch("/api/auth/me");
             if (res.ok) {
+              const me = await res.json();
+              role = me.role === "editor" ? "editor" : "admin";
               if (editType && editSlug && (editType === "news" || editType === "events")) {
-                startWizard("edit", editType, editSlug);
+                openEditor(editType, editSlug);
               } else {
                 showView("list");
                 fetchList();

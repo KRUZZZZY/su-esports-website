@@ -8,7 +8,7 @@ import { site } from "../site.config";
 
 const now = new Date();
 const upcoming = (await getCollection("events"))
-  .filter((e) => !e.data.draft && e.data.date >= now)
+  .filter((e) => !e.data.draft && e.data.ready && e.data.date >= now)
   .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
   .slice(0, 3);
 const news = (await getCollection("news"))

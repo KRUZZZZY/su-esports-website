@@ -72,7 +72,7 @@ export async function verify(token, secret) {
     );
     if (!ok) return null;
     const payload = JSON.parse(decoder.decode(base64urlDecode(payloadB64)));
-    if (!payload || payload.sub !== "admin" || typeof payload.exp !== "number") return null;
+    if (!payload || typeof payload.role !== "string" || typeof payload.exp !== "number") return null;
     if (payload.exp < Math.floor(Date.now() / 1000)) return null;
     return payload;
   } catch {
@@ -101,8 +101,9 @@ export function parseCookies(request) {
 
 /**
  * Gate an endpoint on a valid admin session. Returns the payload object on
- * success, or a 401 Response on failure — callers should do
+ * success, or a Response on failure — callers should do
  * `const session = await requireSession(request, env); if (session instanceof Response) return session;`
+ * The payload carries { sub: email, role: "admin"|"editor", exp }.
  */
 export async function requireSession(request, env) {
   const cookies = parseCookies(request);
@@ -112,6 +113,16 @@ export async function requireSession(request, env) {
     return json({ error: "Unauthorized" }, 401);
   }
   return payload;
+}
+
+/** requireSession + role check. Editors are rejected with 403. */
+export async function requireAdmin(request, env) {
+  const session = await requireSession(request, env);
+  if (session instanceof Response) return session;
+  if (session.role !== "admin") {
+    return json({ error: "Admins only" }, 403);
+  }
+  return session;
 }
 
 /** Set-Cookie header value for the session cookie (HttpOnly, Secure, SameSite=Lax, 30 days). */

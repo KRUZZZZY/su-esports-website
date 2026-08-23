@@ -37,7 +37,9 @@ const events = defineCollection({
     image: z.string().optional(),
     link: z.string().optional(),
     description: z.string().optional(),
-    draft: z.boolean().default(false)
+    draft: z.boolean().default(false),
+    ready: z.boolean().default(false),
+    sponsored: z.boolean().default(false)
   })
 });
 
@@ -49,7 +51,9 @@ const news = defineCollection({
     author: z.string().default("Swansea Esports"),
     excerpt: z.string().optional(),
     image: z.string().optional(),
-    draft: z.boolean().default(false)
+    draft: z.boolean().default(false),
+    ready: z.boolean().default(false),
+    sponsored: z.boolean().default(false)
   })
 });
 

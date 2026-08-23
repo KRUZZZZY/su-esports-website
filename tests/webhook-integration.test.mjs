@@ -12,6 +12,7 @@ game: Valorant
 location: Singleton Campus
 image: /images/lan.jpg
 description: Our first LAN of the year.
+ready: true
 ---
 Body here.
 `;
@@ -20,6 +21,7 @@ title: Big Win
 date: 2026-08-20
 author: Swansea Esports
 excerpt: We won nationals!
+ready: true
 ---
 Body.
 `;
@@ -27,6 +29,7 @@ const DRAFT_MD = `---
 title: Draft post
 date: 2026-09-01
 draft: true
+ready: false
 ---
 Not ready.
 `;

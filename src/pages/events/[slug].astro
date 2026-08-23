@@ -3,7 +3,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
-  const events = (await getCollection("events")).filter((e) => !e.data.draft);
+  const now = new Date();
+  const events = (await getCollection("events")).filter(
+    (e) => !e.data.draft && e.data.ready && e.data.date > now
+  );
   return events.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
@@ -14,6 +17,17 @@ const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "long", day: "
 ---
 
 <BaseLayout title={title} description={description}>
+  <script is:inline>
+    // Per-article view beacon — fires once per page load, no cookies.
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(
+          "/api/view",
+          new Blob([JSON.stringify({ type: "events", slug: "{slug}" })], { type: "application/json" })
+        );
+      }
+    } catch (e) {}
+  </script>
   <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
     <a href="/events" class="text-sm text-brand transition-colors hover:text-brand-dark">← All events</a>
     <h1 class="mt-4 font-display text-4xl leading-tight tracking-wide text-offwhite">{title}</h1>

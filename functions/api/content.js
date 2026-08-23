@@ -2,12 +2,14 @@
 // Unified CRUD router for news + events content (Cloudflare Pages Functions).
 //   GET    /api/content?type=news|events            → list articles (date desc)
 //   GET    /api/content?type=news|events&slug=<s>   → one article
-//   POST   /api/content                             → create  { type, title, date, ...fields, body }
-//   PUT    /api/content?type=news|events&slug=<s>   → update  { title, date, ...fields, body }
+//   POST   /api/content                             → create  { type, title, date, ...fields, body, draft, ready, sponsored }
+//   PUT    /api/content?type=news|events&slug=<s>   → update  { title, date, ...fields, body, draft, ready, sponsored }
 //   DELETE /api/content?type=news|events&slug=<s>   → delete
 // All endpoints are gated by requireSession and persist via the GitHub
 // Contents API (the commit triggers the Cloudflare Pages auto-rebuild).
-import { json, requireSession } from "../_lib/auth.js";
+// Roles: admins may do everything; editors may create/edit/save drafts but
+// cannot flip `ready` (publish gate) — requireAdmin on ready:true transitions.
+import { json, requireAdmin, requireSession } from "../_lib/auth.js";
 import {
   buildMarkdown,
   deleteFile,
@@ -19,12 +21,12 @@ import {
 import { slugify } from "../_lib/slug.js";
 
 const TYPES = ["news", "events"];
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{3}Z?)?)?)?$/;
 
 function isValidDate(str) {
   if (!DATE_RE.test(str)) return false;
-  const d = new Date(`${str}T00:00:00Z`);
-  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === str;
+  const d = new Date(str);
+  return !Number.isNaN(d.getTime());
 }
 
 function isConfigured(env) {
@@ -39,7 +41,12 @@ function validate(type, body) {
   const fail = (error) => ({ error });
 
   const title = typeof body.title === "string" ? body.title.trim() : "";
-  if (!title) return fail("Title is required");
+  const isDraft = body.draft === true || body.draft === "true";
+  const isReady = body.ready === true || body.ready === "true";
+  // Drafts may have an empty title (auto-saved skeleton with a random slug);
+  // going live (ready) always requires a title.
+  if (!title && !isDraft) return fail("Title is required");
+  if (isReady && !title) return fail("Give the article a title before going live");
   if (title.length > 200) return fail("Title must be 200 characters or fewer");
 
   const date = typeof body.date === "string" ? body.date.trim() : "";
@@ -53,6 +60,10 @@ function validate(type, body) {
 
   // Draft flag: accept boolean or "true"/"false" strings, default false.
   fields.draft = body.draft === true || body.draft === "true";
+  // Ready (publish gate): article is public when ready && now < date.
+  fields.ready = body.ready === true || body.ready === "true";
+  // Sponsored: hide from the sitemap (search engines).
+  fields.sponsored = body.sponsored === true || body.sponsored === "true";
 
   if (type === "news") {
     const author = typeof body.author === "string" ? body.author.trim() : "";
@@ -108,7 +119,7 @@ export async function onRequestGet({ request, env }) {
     if (file.status === 404) return json({ error: "Not found" }, 404);
     if (file.status !== 200) return json({ error: "Could not read from GitHub" }, 502);
     const { data, body } = parseMarkdown(file.content);
-    return json({ slug, sha: file.sha, ...data, draft: data.draft === "true", body });
+    return json({ slug, sha: file.sha, ...data, draft: data.draft === "true", ready: data.ready === "true", sponsored: data.sponsored === "true", body });
   }
 
   const entries = await listDir(env, `src/content/${type}`);
@@ -124,7 +135,7 @@ export async function onRequestGet({ request, env }) {
   return json({ items });
 }
 
-/** POST /api/content — create a new article (slug derived from title). */
+/** POST /api/content — create a new article (slug from client or title). */
 export async function onRequestPost({ request, env }) {
   const session = await requireSession(request, env);
   if (session instanceof Response) return session;
@@ -145,13 +156,22 @@ export async function onRequestPost({ request, env }) {
   const result = validate(type, body);
   if (result.error) return json(result, 400);
 
-  const slug = slugify(result.fields.title) || "post";
+  // Flipping `ready` on (publish gate) is admin-only.
+  if (result.fields.ready && session.role !== "admin") {
+    return json({ error: "Only admins can make an article ready" }, 403);
+  }
+
+  // Slug: client-supplied (random identifier for auto-saved drafts) or
+  // derived from the title. Random slugs keep repeating events from colliding.
+  const SLUG_RE = /^[a-z0-9-]{4,64}$/;
+  const clientSlug = typeof body.slug === "string" ? body.slug.trim().toLowerCase() : "";
+  const slug = clientSlug && SLUG_RE.test(clientSlug) ? clientSlug : slugify(result.fields.title) || "post";
   const path = `src/content/${type}/${slug}.md`;
   const markdown = buildMarkdown(type, result.fields, result.body);
 
   let res;
   try {
-    res = await writeFile(env, path, markdown, undefined, `Add ${contentTypeLabel(type)}: ${result.fields.title}`);
+    res = await writeFile(env, path, markdown, undefined, `Add ${contentTypeLabel(type)}: ${result.fields.title || slug}`);
   } catch {
     return json({ error: "Could not reach GitHub — try again shortly" }, 502);
   }
@@ -163,6 +183,13 @@ export async function onRequestPost({ request, env }) {
       sha = created && created.content ? created.content.sha : null;
     } catch {
       /* body not JSON — sha stays null; the wizard re-reads on next edit anyway */
+    }
+    // Record the unpublish gate so the middleware 404s at the exact time.
+    try {
+      const { setUnpublishGate } = await import("../_lib/clicks.js");
+      await setUnpublishGate(env, { type, slug, ready: result.fields.ready, unpublishAt: result.fields.date });
+    } catch (e) {
+      /* gate table unavailable — fall back to rebuild-time filtering */
     }
     return json({ slug, url: `/${type}/${slug}`, sha }, 201);
   }
@@ -196,6 +223,11 @@ export async function onRequestPut({ request, env }) {
   const result = validate(type, body);
   if (result.error) return json(result, 400);
 
+  // Flipping `ready` on (publish gate) is admin-only.
+  if (result.fields.ready && session.role !== "admin") {
+    return json({ error: "Only admins can make an article ready" }, 403);
+  }
+
   const path = `src/content/${type}/${slug}.md`;
   const current = await getFile(env, path);
   if (current.status === 404) return json({ error: "Not found" }, 404);
@@ -210,6 +242,13 @@ export async function onRequestPut({ request, env }) {
   }
 
   if (res.status === 200 || res.status === 201) {
+    // Update the unpublish gate (ready articles expire at `date`).
+    try {
+      const { setUnpublishGate } = await import("../_lib/clicks.js");
+      await setUnpublishGate(env, { type, slug, ready: result.fields.ready, unpublishAt: result.fields.date });
+    } catch (e) {
+      /* gate table unavailable — fall back to rebuild-time filtering */
+    }
     return json({ slug, url: `/${type}/${slug}` });
   }
   if (res.status === 409 || res.status === 422) {
@@ -244,6 +283,14 @@ export async function onRequestDelete({ request, env }) {
     return json({ error: "Could not reach GitHub — try again shortly" }, 502);
   }
 
-  if (res.status === 200) return json({ ok: true });
+  if (res.status === 200) {
+    try {
+      const { setUnpublishGate } = await import("../_lib/clicks.js");
+      await setUnpublishGate(env, { type, slug, ready: false, unpublishAt: null });
+    } catch (e) {
+      /* gate table unavailable */
+    }
+    return json({ ok: true });
+  }
   return json({ error: "GitHub rejected the delete — try again shortly" }, 502);
 }

@@ -54,6 +54,49 @@ export async function insertClick(env, { label, href, page }) {
     .run();
 }
 
+/** Insert one article page view, classified bot vs human at write time. */
+export async function insertView(env, { type, slug, isBot }) {
+  await ensureTable(env);
+  await env.track_db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS article_views (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        type TEXT NOT NULL,
+        slug TEXT NOT NULL,
+        ts INTEGER NOT NULL,
+        is_bot INTEGER NOT NULL DEFAULT 0
+      )`
+    )
+    .run();
+  await env.track_db
+    .prepare(
+      `CREATE INDEX IF NOT EXISTS idx_article_views_key ON article_views(type, slug, ts)`
+    )
+    .run();
+  await env.track_db
+    .prepare(
+      `INSERT INTO article_views (type, slug, ts, is_bot) VALUES (?, ?, ?, ?)`
+    )
+    .bind(type, slug, Date.now(), isBot ? 1 : 0)
+    .run();
+}
+
+/** Per-article view counts: { views, botViews, humanViews }. */
+export async function articleViewCounts(env, type, slug) {
+  await ensureTable(env);
+  const res = await env.track_db
+    .prepare(
+      `SELECT COUNT(*) AS total, SUM(CASE WHEN is_bot = 1 THEN 1 ELSE 0 END) AS bots
+       FROM article_views WHERE type = ? AND slug = ?`
+    )
+    .bind(type, slug)
+    .first();
+  if (!res) return { views: 0, botViews: 0, humanViews: 0 };
+  const total = res.total || 0;
+  const botViews = res.bots || 0;
+  return { views: total, botViews, humanViews: total - botViews };
+}
+
 /**
  * Privacy-light per-IP daily write cap: HMACs the connecting IP with
  * AUTH_SECRET (raw IPs never touch disk), counts rows per hash per UTC day,
@@ -115,6 +158,49 @@ export async function totalClicks(env, fromDay, toDay) {
     .bind(fromDay, toDay)
     .first();
   return res ? res.n : 0;
+}
+
+/**
+ * Record (or clear) the unpublish gate for an article in D1. When an article
+ * is ready, the middleware 404s it once now > unpublish_at — exact-time
+ * unpublish that doesn't wait for a rebuild. ready=false clears the gate.
+ */
+export async function setUnpublishGate(env, { type, slug, ready, unpublishAt }) {
+  await ensureTable(env);
+  await env.track_db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS unpublish_gates (
+        type TEXT NOT NULL,
+        slug TEXT NOT NULL,
+        unpublish_at TEXT NOT NULL,
+        PRIMARY KEY (type, slug)
+      )`
+    )
+    .run();
+  if (ready && unpublishAt) {
+    await env.track_db
+      .prepare(
+        `INSERT INTO unpublish_gates (type, slug, unpublish_at) VALUES (?, ?, ?)
+         ON CONFLICT(type, slug) DO UPDATE SET unpublish_at = excluded.unpublish_at`
+      )
+      .bind(type, slug, unpublishAt)
+      .run();
+  } else {
+    await env.track_db
+      .prepare(`DELETE FROM unpublish_gates WHERE type = ? AND slug = ?`)
+      .bind(type, slug)
+      .run();
+  }
+}
+
+/** Read an article's unpublish gate (or null). */
+export async function getUnpublishGate(env, type, slug) {
+  await ensureTable(env);
+  const res = await env.track_db
+    .prepare(`SELECT unpublish_at FROM unpublish_gates WHERE type = ? AND slug = ?`)
+    .bind(type, slug)
+    .first();
+  return res ? res.unpublish_at : null;
 }
 
 /**

@@ -35,6 +35,7 @@ game: Valorant
 location: Singleton Campus
 image: /images/lan.jpg
 description: Our first LAN of the year.
+ready: true
 ---
 Body here.
 `;
@@ -43,6 +44,7 @@ const NEWS_DRAFT = `---
 title: Draft post
 date: 2026-09-01
 draft: true
+ready: false
 ---
 Not ready.
 `;
@@ -51,6 +53,7 @@ const NEWS_DRAFT_YES = `---
 title: Draft yes
 date: 2026-09-01
 draft: yes
+ready: false
 ---
 Not ready.
 `;
@@ -59,6 +62,7 @@ const EVENT_DRAFT_TRUE = `---
 title: Event with draft field
 date: 2026-09-01
 draft: true
+ready: false
 ---
 Body.
 `;

@@ -37,32 +37,36 @@ no per-admin wiring needed. Zero new hosting, zero cost (all free tiers).
 
 ## Draft workflow (create hidden → preview → publish)
 
-Both **news** and **events** support drafts via `draft: true|false` frontmatter.
-Drafts are committed to the repo (so they survive any browser/machine) but are
-filtered out of every public page.
+Both **news** and **events** support the ready-gate model:
+
+- `draft: true|false` — hidden vs not-hidden.
+- `ready: true|false` — **the publish gate**. An article is public only when
+  `ready: true` AND its `date` (the unpublish gate) hasn't passed yet. When the
+  date passes, the article is automatically unpublished — enforced exactly by a
+  D1-backed middleware (no waiting for a rebuild).
+- `sponsored: true` — excluded from the sitemap (hidden from search engines).
 
 Editor flow in the admin wizard (`/admin/new`):
 
-1. **New news/event** → fill in the wizard. **Save draft** is available on
-   every step (only a title is required) and writes the post with
-   `draft: true` — hidden from the site.
-2. **Preview** (step 5, or the list's Preview button) opens the gated preview
-   at `/api/preview?type=…&slug=…` — requires the admin session cookie (401
-   otherwise), shows a "PREVIEW — not published yet" banner, and renders the
-   article in the site's style. Images may 404 until the Pages rebuild lands.
-3. **Publish** flips `draft` to `false` → the page appears after the rebuild
-   (~30–60s). **Unpublish**: edit a live post → "Save as draft".
-4. The content list badges drafts (amber "Draft") vs live items, and every
-   row has a Preview link.
+1. **New news/event** — clicking it immediately creates a draft with a **random
+   slug** (e.g. `/news/x7k2m9p4`) so repeating events never collide. The draft
+   auto-saves as you type (debounced, server-side — survives any browser).
+2. Everything is on **one page** — title, unpublish date & time, type fields,
+   thumbnail, content blocks. The page also shows **view counts** (human vs
+   bot) for existing articles.
+3. **Preview** opens the gated `/api/preview?type=…&slug=…` (admin cookie
+   required, PREVIEW banner).
+4. **Ready ✓** (admin-only) — tick it and set the unpublish date. The article
+   goes live immediately and auto-unpublishes when the date passes. Editors
+   cannot tick Ready or publish; they can create/edit/save drafts and see
+   per-article views (site-wide analytics is admin-only).
+5. Thumbnails and body images are **auto-converted to WebP** client-side
+   before upload (~30–70% smaller).
 
-Editing a draft **never auto-publishes it** — the wizard preserves the loaded
-draft state. Draft events with `draft: true` are hidden from the homepage,
-the events page, and the event detail page. Sveltia CMS (`/admin`) also has
-the draft field for both collections.
-
-**Crash recovery:** the wizard keeps a sessionStorage snapshot (dies with the
-tab) and offers an explicit "Restore?" prompt — no silent autosave, no
-cross-session persistence.
+Roles: `ADMIN_EMAIL`/`ADMIN_PASSWORD` = admin (everything); `EDITOR_EMAIL`/
+`EDITOR_PASSWORD` = editor (create/edit/save drafts, per-article views — no
+ready/publish, no site-wide analytics). Add the two editor secrets in the
+Cloudflare dashboard (or `.dev.vars` locally).
 
 ## Role pings (configurable per game)
 

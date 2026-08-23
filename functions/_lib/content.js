@@ -74,6 +74,8 @@ export function buildMarkdown(type, fields, body = "") {
     if (f.excerpt) lines.push(`excerpt: ${yamlString(f.excerpt)}`);
     if (f.image) lines.push(`image: ${yamlString(f.image)}`);
     lines.push(`draft: ${f.draft ? "true" : "false"}`);
+    lines.push(`ready: ${f.ready ? "true" : "false"}`);
+    if (f.sponsored) lines.push("sponsored: true");
   } else if (type === "events") {
     lines.push(`title: ${yamlString(f.title || "")}`);
     lines.push(`date: ${yamlString(f.date || "")}`);
@@ -84,6 +86,8 @@ export function buildMarkdown(type, fields, body = "") {
     if (f.link) lines.push(`link: ${yamlString(f.link)}`);
     if (f.description) lines.push(`description: ${yamlString(f.description)}`);
     lines.push(`draft: ${f.draft ? "true" : "false"}`);
+    lines.push(`ready: ${f.ready ? "true" : "false"}`);
+    if (f.sponsored) lines.push("sponsored: true");
   } else {
     throw new Error(`Unknown content type: ${type}`);
   }

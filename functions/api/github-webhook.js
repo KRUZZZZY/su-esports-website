@@ -147,8 +147,9 @@ async function processPush(env, payload, log = console) {
       }
       const file = parseContentFile(path, raw);
       if (!file) continue;
-      if (file.isDraft) {
-        results.skipped.push(`${path} (draft)`);
+      // Skip drafts AND non-ready articles (ready is the publish gate now).
+      if (file.isDraft || !file.isReady) {
+        results.skipped.push(`${path} (${file.isDraft ? "draft" : "not ready"})`);
         continue;
       }
       const announce = buildAnnouncement(file, {

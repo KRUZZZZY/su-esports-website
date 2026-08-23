@@ -37,6 +37,7 @@ export function parseContentFile(path, raw) {
     meta: data,
     body,
     isDraft: DRAFT_VALUES.has(String(data.draft).toLowerCase()),
+    isReady: String(data.ready).toLowerCase() === "true",
   };
 }
 
