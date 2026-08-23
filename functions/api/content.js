@@ -9,7 +9,7 @@
 // Contents API (the commit triggers the Cloudflare Pages auto-rebuild).
 // Roles: admins may do everything; editors may create/edit/save drafts but
 // cannot flip `ready` (publish gate) — requireAdmin on ready:true transitions.
-import { json, requireAdmin, requireSession } from "../_lib/auth.js";
+import { json, requireSession } from "../_lib/auth.js";
 import {
   buildMarkdown,
   deleteFile,

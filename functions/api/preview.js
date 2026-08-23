@@ -10,7 +10,6 @@ import { parseMarkdown } from "../_lib/content.js";
 
 const BRAND = "#e08f20";
 const INK = "#111215";
-const PANEL = "#17181c";
 const OFFWHITE = "#e9e9e9";
 
 /** Escape HTML in raw text. */

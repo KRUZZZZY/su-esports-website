@@ -245,7 +245,6 @@ import "../../styles/global.css";
 
         let saveTimer = null;
         let dirty = false;
-        let viewsLoaded = false;
 
         // ---- helpers ----------------------------------------------------------
         function todayLocal() {
@@ -277,13 +276,6 @@ import "../../styles/global.css";
           const el = $("editor-error");
           el.textContent = msg || "";
           el.classList.toggle("hidden", !msg);
-        }
-
-        function slugify(str) {
-          return String(str)
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-+|-+$/g, "");
         }
 
         // ---- views -------------------------------------------------------------
@@ -438,7 +430,6 @@ import "../../styles/global.css";
 
         async function loadArticle() {
           setStatus("Loading…");
-          viewsLoaded = false;
           try {
             const res = await fetch(`${API}?type=${encodeURIComponent(state.type)}&slug=${encodeURIComponent(state.slug)}`);
             const data = await res.json().catch(() => ({}));
@@ -538,7 +529,6 @@ import "../../styles/global.css";
             $("editor-views").textContent = `👁 ${data.humanViews} · 🤖 ${data.botViews}`;
             $("editor-views").title = `${data.views} total views (${data.humanViews} human, ${data.botViews} bot)`;
             $("editor-views").classList.remove("hidden");
-            viewsLoaded = true;
           } catch (e) {
             /* views unavailable — hide quietly */
           }
@@ -840,7 +830,7 @@ import "../../styles/global.css";
         }
 
         function fileToWebP(file) {
-          return new Promise((resolve, reject) => {
+          return new Promise((resolve) => {
             const img = new Image();
             img.onload = () => {
               try {
