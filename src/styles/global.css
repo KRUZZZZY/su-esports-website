@@ -121,3 +121,34 @@
 [data-theme="light"] .icon-moon {
   display: block;
 }
+
+/* ------------------------------------------------------------
+   Article body — image sizes + wide text blocks.
+   Image blocks emit markdown `![alt](url "size")`; the title
+   attribute lands on the <img> and drives sizing here.
+   ------------------------------------------------------------ */
+.prose img[title="small"] {
+  width: 40%;
+}
+.prose img[title="medium"] {
+  width: 60%;
+}
+.prose img[title="large"] {
+  width: 80%;
+}
+.prose img[title="full"],
+.prose img:not([title]),
+.prose img[title=""] {
+  width: 100%;
+}
+/* Centered block images look better than left-float */
+.prose p > img {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Wide text blocks (editor "Wide" toggle wraps text in <div class="wide">) */
+.prose .wide {
+  grid-column: 1 / -1;
+}
+

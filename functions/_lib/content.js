@@ -71,8 +71,11 @@ export function buildMarkdown(type, fields, body = "") {
     lines.push(`title: ${yamlString(f.title || "")}`);
     lines.push(`date: ${yamlString(f.date || "")}`);
     lines.push(`author: ${yamlString(f.author || "Swansea Esports")}`);
-    if (f.excerpt) lines.push(`excerpt: ${yamlString(f.excerpt)}`);
+    if (f.category) lines.push(`category: ${yamlString(f.category)}`);
+    if (f.intro) lines.push(`intro: ${yamlString(f.intro)}`);
+    if (f.teaser) lines.push(`teaser: ${yamlString(f.teaser)}`);
     if (f.image) lines.push(`image: ${yamlString(f.image)}`);
+    if (f.thumbnail) lines.push(`thumbnail: ${yamlString(f.thumbnail)}`);
     lines.push(`draft: ${f.draft ? "true" : "false"}`);
     lines.push(`ready: ${f.ready ? "true" : "false"}`);
     if (f.sponsored) lines.push("sponsored: true");
@@ -84,9 +87,9 @@ export function buildMarkdown(type, fields, body = "") {
     if (f.location) lines.push(`location: ${yamlString(f.location)}`);
     if (f.game) lines.push(`game: ${yamlString(f.game)}`);
     if (f.image) lines.push(`image: ${yamlString(f.image)}`);
+    if (f.thumbnail) lines.push(`thumbnail: ${yamlString(f.thumbnail)}`);
     if (f.link) lines.push(`link: ${yamlString(f.link)}`);
     if (f.description) lines.push(`description: ${yamlString(f.description)}`);
-    if (f.author) lines.push(`author: ${yamlString(f.author)}`);
     if (f.organiser) lines.push(`organiser: ${yamlString(f.organiser)}`);
     lines.push(`draft: ${f.draft ? "true" : "false"}`);
     lines.push(`ready: ${f.ready ? "true" : "false"}`);

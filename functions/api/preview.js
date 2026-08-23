@@ -97,6 +97,7 @@ function page(html, { title, isDraft }) {
   .meta { color: rgba(233,233,233,0.65); font-size: 0.92rem; margin: 0 0 20px; }
   .hero { width: 100%; border-radius: 12px; margin: 0 0 24px; display: block; }
   .excerpt { font-style: italic; color: rgba(233,233,233,0.8); font-size: 1.05rem; margin: 0 0 20px; }
+  .cat { display: inline-block; background: rgba(224,143,32,0.12); color: ${BRAND}; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; margin-bottom: 8px; }
   .prose { font-size: 1.06rem; }
   .prose h2 { font-size: 1.5rem; margin: 32px 0 10px; color: ${OFFWHITE}; }
   .prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
@@ -147,21 +148,25 @@ export async function onRequestGet({ request, env }) {
     if (data.endDate) metaParts.push(`until ${fmtDate(data.endDate)}`);
     if (data.game) metaParts.push(data.game);
     if (data.location) metaParts.push(data.location);
-    // Organiser is the credit for events; avoid "Organised by X · by X".
+    // Organiser is the credit for events.
     if (data.organiser) metaParts.push(`Organised by ${data.organiser}`);
-    else if (data.author && data.author !== "Swansea Esports") metaParts.push(`by ${data.author}`);
   }
 
-  const hero = data.image ? `<img class="hero" src="${esc(data.image)}" alt="" />` : "";
+  const hero = data.image || data.thumbnail
+    ? `<img class="hero" src="${esc(data.image || data.thumbnail)}" alt="" />`
+    : `<img class="hero" src="/brand/swan-wide.png" alt="" />`;
   const link =
     type === "events" && data.link
       ? `<p><a class="cta" href="${esc(data.link)}" target="_blank" rel="noopener">Sign up / more info</a></p>`
       : "";
-  const excerpt = data.excerpt || data.description
-    ? `<p class="excerpt">${esc(data.excerpt || data.description)}</p>`
+  const excerpt = data.intro || data.teaser || data.description
+    ? `<p class="excerpt">${esc(data.intro || data.teaser || data.description)}</p>`
+    : "";
+  const category = type === "news" && data.category
+    ? `<span class="cat">${esc(data.category)}</span>`
     : "";
 
-  const html = `<h1>${esc(title)}</h1>
+  const html = `${category}<h1>${esc(title)}</h1>
 <p class="meta">${esc(metaParts.join(" · "))}</p>
 ${hero}
 ${excerpt}

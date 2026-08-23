@@ -12,9 +12,11 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, date, startDate, endDate, location, game, image, link, description, author, organiser } = entry.data;
+const { title, date, startDate, endDate, location, game, image, thumbnail, link, description, organiser } = entry.data;
 const eventStart = startDate || date;
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+// Intro/hero image defaults to the swan banner.
+const heroImage = image || thumbnail || "/brand/swan-wide.png";
 ---
 
 <BaseLayout title={title} description={description}>
@@ -38,9 +40,9 @@ const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "long", day: "
       {game && <span>{game}</span>}
       {location && <span>{location}</span>}
       {organiser && <span>Organised by {organiser}</span>}
-      {!organiser && author && author !== "Swansea Esports" && <span>by {author}</span>}
     </div>
-    {image && <img src={image} alt="" class="mt-8 w-full rounded-xl border border-line/25" style="max-height:480px;object-fit:cover;object-position:center" />}
+    {heroImage && <img src={heroImage} alt="" class="mt-8 w-full rounded-xl border border-line/25" style="max-height:480px;object-fit:cover;object-position:center" />}
+    {description && <p class="mt-6 text-lg leading-relaxed text-offwhite/85">{description}</p>}
     <div class="prose prose-invert mt-8 max-w-none prose-a:text-brand">
       <Content />
     </div>

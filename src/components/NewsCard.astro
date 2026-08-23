@@ -2,19 +2,23 @@
 interface Props {
   title: string;
   date: Date;
-  excerpt?: string;
+  author?: string;
+  category?: string;
+  teaser?: string;
   image?: string;
+  thumbnail?: string;
   href: string;
 }
 
-const { title, date, excerpt, image, href } = Astro.props;
+const { title, date, author, category, teaser, image, thumbnail, href } = Astro.props;
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+const cardImage = thumbnail || image;
 ---
 
 <a href={href} class="group flex flex-col overflow-hidden rounded-lg border border-line/25 bg-panel transition-colors hover:border-brand/60">
   {
-    image ? (
-      <img src={image} alt="" width="640" height="360" class="aspect-video w-full object-cover" />
+    cardImage ? (
+      <img src={cardImage} alt="" width="640" height="360" class="aspect-video w-full object-cover transition-opacity group-hover:opacity-90" />
     ) : (
       <div class="flex aspect-video w-full items-center justify-center bg-brand-gradient">
         <img src="/brand/swan-head-clean.png" alt="" width="64" height="64" class="h-16 w-16 object-contain opacity-40" />
@@ -22,8 +26,14 @@ const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: 
     )
   }
   <div class="flex flex-1 flex-col p-5">
-    <time class="text-xs font-semibold uppercase tracking-wider text-brand">{fmt(date)}</time>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <time class="text-xs font-semibold uppercase tracking-wider text-brand">{fmt(date)}</time>
+      {category && <span class="rounded bg-line/5 px-2 py-0.5 text-xs text-offwhite/70">{category}</span>}
+    </div>
     <h3 class="mt-2 font-display text-xl leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">{title}</h3>
-    {excerpt && <p class="mt-2 text-sm text-offwhite/60 line-clamp-2">{excerpt}</p>}
+    {teaser && <p class="mt-2 text-sm text-offwhite/60 line-clamp-2">{teaser}</p>}
+    {author && author !== "Swansea Esports" && (
+      <p class="mt-auto pt-3 text-xs text-offwhite/50">by {author}</p>
+    )}
   </div>
 </a>

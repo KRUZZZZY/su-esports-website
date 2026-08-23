@@ -74,9 +74,19 @@ function validate(type, body) {
     const author = typeof body.author === "string" ? body.author.trim() : "";
     if (author.length > 100) return fail("Author must be 100 characters or fewer");
     fields.author = author || "Swansea Esports";
-    const excerpt = typeof body.excerpt === "string" ? body.excerpt.trim() : "";
-    if (excerpt.length > 300) return fail("Excerpt must be 300 characters or fewer");
-    if (excerpt) fields.excerpt = excerpt;
+    const category = typeof body.category === "string" ? body.category.trim() : "";
+    if (category.length > 60) return fail("Category must be 60 characters or fewer");
+    if (category) fields.category = category;
+    // intro = article display (300 max); teaser = card text (160 max).
+    const intro = typeof body.intro === "string" ? body.intro.trim() : "";
+    if (intro.length > 300) return fail("Introduction must be 300 characters or fewer");
+    if (intro) fields.intro = intro;
+    const teaser = typeof body.teaser === "string" ? body.teaser.trim() : "";
+    if (teaser.length > 160) return fail("Teaser must be 160 characters or fewer");
+    if (teaser) fields.teaser = teaser;
+    const thumbnail = typeof body.thumbnail === "string" ? body.thumbnail.trim() : "";
+    if (thumbnail.length > 500) return fail("Thumbnail must be 500 characters or fewer");
+    if (thumbnail) fields.thumbnail = thumbnail;
   } else {
     for (const key of ["startDate", "endDate"]) {
       if (body[key] !== undefined && body[key] !== "") {
@@ -85,11 +95,14 @@ function validate(type, body) {
         fields[key] = val;
       }
     }
-    for (const key of ["location", "game", "link", "description", "author", "organiser"]) {
+    for (const key of ["location", "game", "link", "description", "organiser"]) {
       const val = typeof body[key] === "string" ? body[key].trim() : "";
       if (val.length > 200) return fail(`${key} must be 200 characters or fewer`);
       if (val) fields[key] = val;
     }
+    const thumbnail = typeof body.thumbnail === "string" ? body.thumbnail.trim() : "";
+    if (thumbnail.length > 500) return fail("Thumbnail must be 500 characters or fewer");
+    if (thumbnail) fields.thumbnail = thumbnail;
   }
 
   if (body.image !== undefined && body.image !== "") {

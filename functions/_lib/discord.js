@@ -98,7 +98,7 @@ export function buildAnnouncement(file, opts = {}) {
   const { meta, type, slug } = file;
   const url = `${SITE_URL}/${type}/${encodeURIComponent(slug)}`;
   const title = String(meta.title || slug).slice(0, 256);
-  const excerpt = String(meta.excerpt || meta.description || "").trim().slice(0, 200);
+  const excerpt = String(meta.teaser || meta.intro || meta.description || "").trim().slice(0, 200);
 
   const embed = {
     title,
@@ -109,9 +109,10 @@ export function buildAnnouncement(file, opts = {}) {
     footer: { text: "swanseauniesports.co.uk" },
   };
   // Thumbnail must be a valid absolute URL; a bad value skips just the image.
-  if (typeof meta.image === "string" && meta.image.trim()) {
+  const thumbSrc = meta.thumbnail || meta.image;
+  if (typeof thumbSrc === "string" && thumbSrc.trim()) {
     try {
-      embed.thumbnail = { url: new URL(meta.image, SITE_URL).href };
+      embed.thumbnail = { url: new URL(thumbSrc, SITE_URL).href };
     } catch {
       /* malformed image — announce without thumbnail */
     }
@@ -126,6 +127,7 @@ export function buildAnnouncement(file, opts = {}) {
     if (meta.game) fields.push({ name: "🎮 Game", value: String(meta.game).slice(0, 100), inline: true });
     if (meta.link) fields.push({ name: "🔗 Sign up", value: String(meta.link).slice(0, 200), inline: false });
   } else {
+    if (meta.category) fields.push({ name: "🏷️ Category", value: String(meta.category).slice(0, 60), inline: true });
     if (meta.author) fields.push({ name: "✍️ Author", value: String(meta.author).slice(0, 100), inline: true });
     if (meta.date) fields.push({ name: "📅 Date", value: fmtDate(meta.date), inline: true });
   }

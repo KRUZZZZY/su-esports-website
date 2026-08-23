@@ -80,7 +80,7 @@ const latestPlacements = placements
       upcoming.length > 0 ? (
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {upcoming.map((e) => (
-            <EventCard title={e.data.title} date={e.data.startDate || e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} image={e.data.image} href={`/events/${e.id}`} />
+            <EventCard title={e.data.title} date={e.data.startDate || e.data.date} endDate={e.data.endDate} location={e.data.location} game={e.data.game} organiser={e.data.organiser} image={e.data.image} thumbnail={e.data.thumbnail} href={`/events/${e.id}`} />
           ))}
         </div>
       ) : (

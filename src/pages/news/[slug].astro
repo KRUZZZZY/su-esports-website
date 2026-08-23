@@ -12,11 +12,14 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, date, author, excerpt, image } = entry.data;
+const { title, date, author, category, intro, teaser, image, thumbnail } = entry.data;
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+// Intro/hero image defaults to the swan banner.
+const heroImage = image || thumbnail || "/brand/swan-wide.png";
+const metaDescription = intro || teaser || "";
 ---
 
-<BaseLayout title={title} description={excerpt}>
+<BaseLayout title={title} description={metaDescription}>
   <script is:inline>
     // Per-article view beacon — fires once per page load, no cookies.
     try {
@@ -30,14 +33,18 @@ const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: 
   </script>
   <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
     <a href="/news" class="text-sm text-brand transition-colors hover:text-brand-dark">← All news</a>
-    <h1 class="mt-4 font-display text-4xl leading-tight tracking-wide text-offwhite">{title}</h1>
+    {category && (
+      <span class="mt-4 inline-block rounded bg-brand/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-brand">{category}</span>
+    )}
+    <h1 class="mt-3 font-display text-4xl leading-tight tracking-wide text-offwhite">{title}</h1>
     <div class="mt-3 flex items-center gap-3 text-sm text-offwhite/60">
       <time>{fmt(date)}</time>
       <span>·</span>
       <span>{author}</span>
     </div>
-    {image && <img src={image} alt="" class="mt-8 w-full rounded-xl border border-line/25" style="max-height:480px;object-fit:cover;object-position:center" />}
-    <div class="prose prose-invert mt-8 max-w-none prose-a:text-brand">
+    {heroImage && <img src={heroImage} alt="" class="mt-8 w-full rounded-xl border border-line/25" style="max-height:480px;object-fit:cover;object-position:center" />}
+    {intro && <p class="mt-6 text-lg leading-relaxed text-offwhite/85">{intro}</p>}
+    <div class="prose prose-invert mt-6 max-w-none prose-a:text-brand">
       <Content />
     </div>
   </article>

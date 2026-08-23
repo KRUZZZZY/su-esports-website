@@ -44,18 +44,17 @@ test("ready news requires title + date + body", () => {
   assert.equal(noBody.error, "Body is required");
 });
 
-test("ready event accepts organiser + author, requires body/date/title", () => {
+test("ready event accepts organiser, requires body/date/title; author is dropped for events", () => {
   const ok = validate("events", {
     title: "LAN",
     date: "2026-09-20T18:00",
     body: "body",
     organiser: "Lewis",
-    author: "Zack",
     ready: true,
   });
   assert.equal(ok.error, undefined);
   assert.equal(ok.fields.organiser, "Lewis");
-  assert.equal(ok.fields.author, "Zack");
+  assert.equal(ok.fields.author, undefined, "events no longer carry author");
 });
 
 test("ready news still defaults author when omitted", () => {

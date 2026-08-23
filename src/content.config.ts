@@ -35,10 +35,10 @@ const events = defineCollection({
     endDate: z.coerce.date().optional(),
     location: z.string().optional(),
     game: z.string().optional(),
-    image: z.string().optional(),
+    image: z.string().optional(), // intro/hero image (defaults to swan-wide)
+    thumbnail: z.string().optional(), // card image (cropped)
     link: z.string().optional(),
     description: z.string().optional(),
-    author: z.string().optional(),
     organiser: z.string().optional(),
     draft: z.boolean().default(false),
     ready: z.boolean().default(false),
@@ -50,10 +50,14 @@ const news = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/news" }),
   schema: z.object({
     title: z.string(),
-    date: z.coerce.date(),
+    date: z.coerce.date(), // publish date (gate: live when ready && now >= date)
     author: z.string().default("Swansea Esports"),
-    excerpt: z.string().optional(),
-    image: z.string().optional(),
+    category: z.string().optional(),
+    // intro = shown on the article (max 300 chars); teaser = card text (max 160).
+    intro: z.string().optional(),
+    teaser: z.string().optional(),
+    image: z.string().optional(), // intro/hero image (defaults to swan-wide)
+    thumbnail: z.string().optional(), // card image (cropped)
     draft: z.boolean().default(false),
     ready: z.boolean().default(false),
     sponsored: z.boolean().default(false)

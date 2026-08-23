@@ -40,10 +40,10 @@ collections:
       - { name: endDate, label: "End date", widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
       - { name: game, label: "Game", widget: string, required: false }
       - { name: location, label: "Location", widget: string, required: false }
-      - { name: image, label: "Thumbnail", widget: image, required: false }
+      - { name: image, label: "Intro image (defaults to swan banner)", widget: image, required: false }
+      - { name: thumbnail, label: "Card thumbnail (cropped)", widget: image, required: false }
       - { name: link, label: "Sign-up link", widget: string, required: false }
       - { name: description, label: "Short description", widget: string, required: false }
-      - { name: author, label: "Author", widget: string, required: false }
       - { name: organiser, label: "Event organiser", widget: string, required: false }
       - { name: body, label: "Details", widget: markdown, required: false }
       - { name: draft, label: "Draft (hidden from site)", widget: boolean, default: false, required: false }
@@ -59,10 +59,13 @@ collections:
       - { name: title, label: "Title", widget: string }
       - { name: date, label: "Publish date & time", widget: datetime, required: true }
       - { name: author, label: "Author", widget: string, default: "Swansea Esports" }
-      - { name: excerpt, label: "Excerpt", widget: string, required: false }
-      - { name: image, label: "Image", widget: image, required: false }
+      - { name: category, label: "Category", widget: string, required: false, hint: "Shown on cards — e.g. Announcement, Match Report, Results" }
+      - { name: intro, label: "Introduction (shown on the article)", widget: text, required: false, hint: "Max 300 characters" }
+      - { name: teaser, label: "Teaser (shown on cards)", widget: text, required: false, hint: "Max 160 characters" }
+      - { name: image, label: "Intro image (defaults to swan banner)", widget: image, required: false }
+      - { name: thumbnail, label: "Card thumbnail (cropped)", widget: image, required: false }
       - { name: draft, label: "Draft", widget: boolean, default: false }
-      - { name: ready, label: "Ready (goes live until the date passes)", widget: boolean, default: false, required: false }
+      - { name: ready, label: "Ready (goes live at the publish time)", widget: boolean, default: false, required: false }
       - { name: sponsored, label: "Sponsored (hide from search engines)", widget: boolean, default: false, required: false }
       - { name: body, label: "Body", widget: markdown, required: false }
 
