@@ -50,10 +50,13 @@ function validate(type, body) {
   if (title.length > 200) return fail("Title must be 200 characters or fewer");
 
   const date = typeof body.date === "string" ? body.date.trim() : "";
-  if (!isValidDate(date)) return fail("Date must be a valid YYYY-MM-DD date");
+  if (!isValidDate(date)) return fail("Date must be a valid date or datetime (YYYY-MM-DD or YYYY-MM-DDTHH:MM)");
 
   const mdBody = typeof body.body === "string" ? body.body : "";
-  if (!mdBody.trim()) return fail("Body is required");
+  // Drafts may have an empty body (auto-saved skeleton); going live (ready)
+  // always requires content.
+  if (!mdBody.trim() && !isDraft) return fail("Body is required");
+  if (isReady && !mdBody.trim()) return fail("Write some content before going live");
   if (mdBody.length > 100000) return fail("Body is too long (max 100,000 characters)");
 
   const fields = { title, date };
