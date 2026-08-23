@@ -4,6 +4,6 @@ date: 2026-09-15
 game: Valorant
 location: Singleton Campus
 description: TEMPORARY test event — will be deleted.
-draft: true
+draft: false
 ---
-This is a hidden draft used to verify draft filtering. Delete after testing.
+This was a hidden draft used to verify draft filtering. Delete after testing.
