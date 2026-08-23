@@ -50,6 +50,10 @@ The committee edits content via Sveltia CMS at `/admin` (`public/admin/index.htm
 
 The site tracks link clicks (per-link per-day, user-selectable range) via `functions/api/track.js` (public beacon ingest → D1 `clicks` table, bot-filtered + per-IP rate-capped) and `functions/api/analytics.js` (admin-auth'd `?days=X` pivot). Report UI at `/admin/analytics`; the client click handler lives in `src/layouts/BaseLayout.astro` (sendBeacon, `data-track` labels). D1 binding `track_db` (database `su-esports-track`) — see `docs/analytics.md` for deployment + label conventions.
 
+## Discord announce-on-publish note
+
+`functions/api/github-webhook.js` receives GitHub **push** webhooks (HMAC-verified vs `GITHUB_WEBHOOK_SECRET`, main branch only) and posts a Discord embed + role ping whenever an events/news markdown file changes on main — catching every publish path (admin wizard, Sveltia, git). Embed/role logic lives in `functions/_lib/discord.js` (game→role map from the `DISCORD_ROLES` JSON secret, drafts skipped, mention lockdown). No Node APIs (Buffer etc.) — runs on the Workers runtime. See `docs/discord-announce.md` for webhook wiring + secrets; tests in `tests/discord-announce.test.mjs` (unit) + `tests/webhook-integration.test.mjs` (full handler, `node --test "tests/*.test.mjs"`).
+
 ## Docs
 
 - `README.md` — overview, stack, local dev, folder structure
@@ -57,5 +61,6 @@ The site tracks link clicks (per-link per-day, user-selectable range) via `funct
 - `DEPLOY.md` — deploy runbook (domain, Cloudflare Pages, CMS auth)
 - `SPEC.md` — site spec: pages, content model, design tokens, acceptance criteria
 - `docs/analytics.md` — link-click tracker: how it works, D1 deployment, label conventions
+- `docs/discord-announce.md` — Discord announce-on-publish: GitHub webhook wiring, role pings, secrets
 
 Keep these docs accurate when you change the site.
