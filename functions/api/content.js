@@ -43,18 +43,19 @@ function validate(type, body) {
   const title = typeof body.title === "string" ? body.title.trim() : "";
   const isDraft = body.draft === true || body.draft === "true";
   const isReady = body.ready === true || body.ready === "true";
-  // Drafts may have an empty title (auto-saved skeleton with a random slug);
-  // going live (ready) always requires a title.
+
+  // Rule: drafts (not ready) may have ANY field empty — the wizard auto-saves
+  // a skeleton with a random slug as you type. Only going live (ready)
+  // requires title, a valid date, and content.
   if (!title && !isDraft) return fail("Title is required");
   if (isReady && !title) return fail("Give the article a title before going live");
   if (title.length > 200) return fail("Title must be 200 characters or fewer");
 
   const date = typeof body.date === "string" ? body.date.trim() : "";
-  if (!isValidDate(date)) return fail("Date must be a valid date or datetime (YYYY-MM-DD or YYYY-MM-DDTHH:MM)");
+  if (date && !isValidDate(date)) return fail("Date must be a valid date or datetime (YYYY-MM-DD or YYYY-MM-DDTHH:MM)");
+  if (isReady && !date) return fail("Set the unpublish date before going live");
 
   const mdBody = typeof body.body === "string" ? body.body : "";
-  // Drafts may have an empty body (auto-saved skeleton); going live (ready)
-  // always requires content.
   if (!mdBody.trim() && !isDraft) return fail("Body is required");
   if (isReady && !mdBody.trim()) return fail("Write some content before going live");
   if (mdBody.length > 100000) return fail("Body is too long (max 100,000 characters)");
@@ -62,17 +63,17 @@ function validate(type, body) {
   const fields = { title, date };
 
   // Draft flag: accept boolean or "true"/"false" strings, default false.
-  fields.draft = body.draft === true || body.draft === "true";
+  fields.draft = isDraft;
   // Ready (publish gate): article is public when ready && now < date.
-  fields.ready = body.ready === true || body.ready === "true";
+  fields.ready = isReady;
   // Sponsored: hide from the sitemap (search engines).
   fields.sponsored = body.sponsored === true || body.sponsored === "true";
 
   if (type === "news") {
+    // Author defaults to the society name — never blocks a draft or a save.
     const author = typeof body.author === "string" ? body.author.trim() : "";
-    if (!author) return fail("Author is required");
     if (author.length > 100) return fail("Author must be 100 characters or fewer");
-    fields.author = author;
+    fields.author = author || "Swansea Esports";
     const excerpt = typeof body.excerpt === "string" ? body.excerpt.trim() : "";
     if (excerpt.length > 300) return fail("Excerpt must be 300 characters or fewer");
     if (excerpt) fields.excerpt = excerpt;
@@ -97,6 +98,7 @@ function validate(type, body) {
 
   return { fields, body: mdBody };
 }
+export { validate };
 
 function contentTypeLabel(type) {
   return type === "news" ? "news post" : "event";
