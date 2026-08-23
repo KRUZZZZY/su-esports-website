@@ -13,3 +13,5 @@ This is a test to see what everything looks like
 
 
 ![Swan wide](/images/1787525659035-swan-wide.webp)
+
+![](/images/1787525669798-logo-crest.webp)
