@@ -23,6 +23,7 @@ This document is the **specification** for the Swansea Esports website. It recor
 | `/about` | `src/pages/about.astro` | About the society + contact email. |
 | `404` | `src/pages/404.astro` | Custom 404 page. |
 | `/admin` | `public/admin/index.html` | Sveltia CMS editor UI (not an Astro route — a static file). |
+| `/admin/new` | `src/pages/admin/new.astro` | Admin editor — single-page news/events editor (email/password login, admin + editor roles). |
 | `/sitemap-index.xml` | generated | Produced by `@astrojs/sitemap` at build time. |
 
 **Navigation** (defined in `src/site.config.ts` `nav`): Home, Committee, Events, News, Achievements, About.
@@ -42,12 +43,19 @@ One file per event. Shown on the Events page (+ detail page).
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `title` | string | ✅ | Event name. |
-| `date` | date | ✅ | `YYYY-MM-DD`. |
+| `date` | datetime | ✅ | **Publish time** — the gate. Live when `ready` && now >= date. |
+| `startDate` | datetime | — | When the event actually starts (upcoming/past split). |
 | `endDate` | date | — | Only for multi-day events. |
 | `location` | string | — | Venue / online. |
-| `game` | string | — | Game(s), e.g. "Multi-game". |
-| `link` | string | — | Sign-up or info URL. |
+| `game` | string | — | Game(s), e.g. "Multi-game" (also drives Discord role pings). |
+| `link` | string | — | Sign-up or info URL (https-only). |
+| `image` | string | — | Intro/hero image (defaults to `/brand/swan-wide.png`). |
+| `thumbnail` | string | — | Card image (cropped 16:9). |
 | `description` | string | — | Short line shown on the events listing. |
+| `organiser` | string | — | Who's running it (events credit an organiser, not an author). |
+| `draft` | boolean | — | Default `false`; `true` hides the event. |
+| `ready` | boolean | — | Default `false` — the publish gate. |
+| `sponsored` | boolean | — | Hidden from the sitemap. |
 | body | markdown | — | Full event details. |
 
 ### 2.3 News — `src/content/news/*.md`
@@ -57,14 +65,19 @@ One file per post. Shown on the News page (+ detail page).
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `title` | string | ✅ | Headline. |
-| `date` | date | ✅ | `YYYY-MM-DD`. |
+| `date` | datetime | ✅ | **Publish time** — the gate. Live when `ready` && now >= date. |
 | `author` | string | — | Defaults to `Swansea Esports` when omitted. |
-| `excerpt` | string | — | Summary for the listing page. |
-| `image` | string | — | Optional cover image. |
+| `category` | string | — | Badge on cards, e.g. Announcement, Match Report. |
+| `intro` | string | — | Shown at the top of the article (max 300 chars). |
+| `teaser` | string | — | Card text (max 120 chars). |
+| `image` | string | — | Intro/hero image (defaults to `/brand/swan-wide.png`). |
+| `thumbnail` | string | — | Card image (cropped 16:9). |
 | `draft` | boolean | — | Default `false`. `true` hides the post from the live site. |
+| `ready` | boolean | — | Default `false` — the publish gate. |
+| `sponsored` | boolean | — | Hidden from the sitemap. |
 | body | markdown | ✅ (in practice) | The article. |
 
-**Draft rule:** drafts must be filtered out of listings and detail routes at render time — never render a `draft: true` post.
+**Publish rule:** an article is public only when `ready: true` AND `now >= date` (date = publish time). Listings and detail routes filter drafts and not-yet-ready posts; a D1-backed middleware 404s article routes before the publish time so scheduled posts never leak early between rebuilds.
 
 ---
 
@@ -162,6 +175,7 @@ Single source for site metadata and links (used by Header, Footer, SocialLinks, 
 
 ## 5. Content editing (CMS)
 
+- The **admin editor** at `/admin/new` (`src/pages/admin/new.astro`) is the primary news/events editor: email/password login (admin + editor roles), single-page editor with a create dialog, explicit save, duplicate, media picker, 16:9 thumbnail crop, image size / wide blocks, and the ready + publish-time gate. Backed by Pages Functions: `/api/content` (CRUD), `/api/upload`, `/api/media`, `/api/preview`.
 - Sveltia CMS (Decap/Netlify-CMS-compatible, git-based) served at **`/admin`** from `public/admin/index.html` + `public/admin/config.yml`.
 - Committee members edit content in the web UI; **each save commits markdown to the GitHub repo**; Cloudflare Pages auto-rebuilds.
 - Auth: `sveltia-cms-auth` Cloudflare Worker + fine-grained GitHub PAT (set as a Pages secret).
@@ -185,9 +199,9 @@ Use as a checklist when reviewing the site or a change to it.
 ### Content & data
 - [ ] Committee, game reps, events, news, placements, and rankings all render from their markdown collections via `src/content.config.ts` schemas.
 - [ ] Every required field is enforced by the zod schema; optional fields render only when present.
-- [ ] News posts with `draft: true` never appear on the live site.
+- [ ] News/event posts are public only when `ready: true` and the publish time has passed — drafts and not-yet-ready posts never appear on the live site.
 - [ ] Events sort by `date`; multi-day events (`endDate`) display correctly.
-- [ ] Listing pages show excerpts/descriptions where provided and degrade gracefully when absent.
+- [ ] Listing pages show teasers/intros/descriptions where provided and degrade gracefully when absent.
 
 ### Design & brand
 - [ ] All colours/fonts come from `@theme` tokens in `src/styles/global.css` — no hardcoded brand values in components.
@@ -196,7 +210,7 @@ Use as a checklist when reviewing the site or a change to it.
 - [ ] Logos referenced from `public/brand/` (swan-head square mark, swan-wide, logo-crest) and `public/favicon.png` used for the favicon.
 
 ### Site behaviour
-- [ ] All nav links (Home, Committee, Roster, Events, News, Achievements, About) resolve; 404 page handles unknown routes.
+- [ ] All nav links (Home, Committee, Events, News, Achievements, About) resolve; 404 page handles unknown routes.
 - [ ] Social/competition/merch/SU links match `src/site.config.ts` exactly.
 - [ ] Sitemap generated at build (`@astrojs/sitemap`) with the canonical URL `https://swanseauniesports.co.uk`.
 - [ ] Fully static — `npm run build` succeeds with no SSR adapter; `dist/` works when served statically.

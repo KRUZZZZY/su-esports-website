@@ -49,13 +49,16 @@ npx astro check
 │   ├── fonts/                  # Bebas Neue (Regular + Bold, bundled locally)
 │   └── favicon.png
 ├── src/
-│   ├── components/             # Header, Footer, RosterCard, EventCard, NewsCard, SocialLinks
+│   ├── components/             # Header, Footer, CommitteeCard, EventCard, NewsCard, SocialLinks
 │   ├── content/
-│   │   ├── roster/*.md         # Roster members (team/committee)
+│   │   ├── committee/*.md      # Committee members
+│   │   ├── reps/*.md           # Game reps
 │   │   ├── events/*.md         # Events
-│   │   └── news/*.md           # News posts
+│   │   ├── news/*.md           # News posts
+│   │   ├── placements/*.md     # Competitive placements
+│   │   └── rankings/*.md       # Season rankings
 │   ├── layouts/BaseLayout.astro
-│   ├── pages/                  # Routes: /, /roster, /events, /news, /about, 404
+│   ├── pages/                  # Routes: /, /committee, /events, /news, /achievements, /about, 404
 │   ├── content.config.ts       # Content collection schemas (zod) — the source of truth
 │   ├── site.config.ts          # Site-wide config: name, URL, socials, competitions, etc.
 │   └── styles/global.css       # Tailwind entry + all brand design tokens (@theme)
@@ -65,15 +68,16 @@ npx astro check
 
 ## How content works
 
-All site content is **markdown files with YAML frontmatter**, organised into three Astro content collections defined in `src/content.config.ts` (glob loaders + zod schemas):
+All site content is **markdown files with YAML frontmatter**, organised into six Astro content collections defined in `src/content.config.ts` (glob loaders + zod schemas):
 
-- **Roster** — `src/content/roster/*.md` — a player/committee member (name, in-game name, game, role, optional photo/socials).
-- **Events** — `src/content/events/*.md` — a tournament, LAN, or social (title, date, optional end date/location/game/link/description, plus a body).
-- **News** — `src/content/news/*.md` — a news post (title, date, author, optional excerpt/image, draft flag, plus a body).
+- **Committee & Game Reps** — `src/content/committee/*.md` + `src/content/reps/*.md` — committee members and game representatives (name, role/game, optional photo/socials).
+- **Events** — `src/content/events/*.md` — a tournament, LAN, or social (title, publish date, optional start/end date, location, game, link, description, organiser, image/thumbnail, draft/ready flags, plus a body).
+- **News** — `src/content/news/*.md` — a news post (title, publish date, author, category, intro, teaser, image/thumbnail, draft/ready flags, plus a body).
+- **Achievements & Rankings** — `src/content/placements/*.md` + `src/content/rankings/*.md` — competitive placements and season standings.
 
 > ⚠️ The schemas in `src/content.config.ts` are the source of truth. If a field is added or changed there, `public/admin/config.yml` (the Sveltia CMS editor config) must be updated to match.
 
-The committee normally edits content through the **Sveltia CMS web UI at `/admin`** — see [CONTENT-EDITING.md](./CONTENT-EDITING.md). Each save in the CMS commits the markdown to the GitHub repo, and Cloudflare Pages auto-rebuilds and redeploys the site.
+The committee edits news and events through the **admin editor at `/admin/new`** (email/password login) and the rest of the content through the **Sveltia CMS web UI at `/admin`** — see [CONTENT-EDITING.md](./CONTENT-EDITING.md). Each save commits the markdown to the GitHub repo, and Cloudflare Pages auto-rebuilds and redeploys the site.
 
 ## Brand
 

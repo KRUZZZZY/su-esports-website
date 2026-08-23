@@ -1,7 +1,7 @@
 # Discord announce-on-publish
 
 Whenever an **event** or **news article** is published on the site — via the
-admin wizard (`/admin/new`), Sveltia CMS (`/admin`), or a direct git push — a
+admin editor (`/admin/new`), Sveltia CMS (`/admin`), or a direct git push — a
 Discord message (embed + role ping) is posted automatically.
 
 Architecture:
@@ -13,7 +13,7 @@ Publish (wizard | Sveltia | git push)
   → Pages Function verifies X-Hub-Signature-256 (HMAC)
   → picks changed src/content/{events,news}/*.md files (main branch only)
   → fetches each at the pushed commit (GitHub Contents API)
-  → parses frontmatter, skips drafts
+  → parses frontmatter, skips drafts and not-ready posts (the publish gate)
   → posts Discord embed + ping to the channel webhook
 ```
 
@@ -23,45 +23,55 @@ no per-admin wiring needed. Zero new hosting, zero cost (all free tiers).
 ## What gets announced
 
 - **Events**: embed with title (links to `/events/<slug>`), date, end date,
-  location, game, sign-up link, thumbnail from the post image, brand-orange
-  accent. Content line: `📢 New event — <@&role>`.
-- **News**: title (links to `/news/<slug>`), author, date, excerpt, thumbnail.
-  Content line: `📰 News — <@&role>`.
+  location, game, sign-up link, thumbnail (from `thumbnail`, falling back to
+  `image`), brand-orange accent. Content line: `📢 New event — <@&role>`.
+- **News**: title (links to `/news/<slug>`), category, author, date, summary
+  (teaser, falling back to intro), thumbnail. Content line: `📰 News — <@&role>`.
 - **Edits** re-announce with an "(updated)" marker so date changes get noticed.
   Deletes are ignored.
-- News with a truthy `draft` (`true`/`yes`/`on`/`1`) is **never** announced.
-  Events also support `draft: true|false` — a draft event is hidden from the
-  site and not announced (the webhook skips drafts for both types).
+- Only **published** articles are announced: the webhook skips anything still
+  a draft (`draft: true`) or not yet ready (`ready: false`) — `ready` is the
+  publish gate, for both news and events.
 - Emoji in Discord messages (📢 📰 📅 📍 🎮 ✍️ 🔗) is intentional — Discord is
   a chat surface, not site copy; the site's no-emoji rule applies to the site.
 
-## Draft workflow (create hidden → preview → publish)
+## Publishing model (ready + publish time)
 
 Both **news** and **events** support the ready-gate model:
 
 - `draft: true|false` — hidden vs not-hidden.
 - `ready: true|false` — **the publish gate**. An article is public only when
-  `ready: true` AND its `date` (the unpublish gate) hasn't passed yet. When the
-  date passes, the article is automatically unpublished — enforced exactly by a
-  D1-backed middleware (no waiting for a rebuild).
+  `ready: true` AND `now >= date` — `date` is the **publish time**, not an
+  expiry. Before the publish time a D1-backed middleware serves 404 so
+  scheduled posts never leak early (no waiting for a rebuild); at or after it,
+  the article is live. Nothing auto-unpublishes — a published article stays up
+  until someone edits or deletes it.
 - `sponsored: true` — excluded from the sitemap (hidden from search engines).
 
-Editor flow in the admin wizard (`/admin/new`):
+Editor flow in the admin editor (`/admin/new`):
 
-1. **New news/event** — clicking it immediately creates a draft with a **random
-   slug** (e.g. `/news/x7k2m9p4`) so repeating events never collide. The draft
-   auto-saves as you type (debounced, server-side — survives any browser).
-2. Everything is on **one page** — title, unpublish date & time, type fields,
-   thumbnail, content blocks. The page also shows **view counts** (human vs
-   bot) for existing articles.
-3. **Preview** opens the gated `/api/preview?type=…&slug=…` (admin cookie
-   required, PREVIEW banner).
-4. **Ready ✓** (admin-only) — tick it and set the unpublish date. The article
-   goes live immediately and auto-unpublishes when the date passes. Editors
-   cannot tick Ready or publish; they can create/edit/save drafts and see
-   per-article views (site-wide analytics is admin-only).
-5. Thumbnails and body images are **auto-converted to WebP** client-side
-   before upload (~30–70% smaller).
+1. **New news/event** — a create dialog forces a name and author (news) /
+   organiser (events), then creates a draft with a **random slug** (e.g.
+   `/news/x7k2m9p4`) so repeating events never collide, and drops you in the
+   editor.
+2. Everything is on **one page** — publish date & time, type fields (news:
+   category, intro, teaser; events: start/end date, location, game, sign-up
+   link, organiser), intro/hero image, thumbnail, content blocks. The page
+   also shows **view counts** (human vs bot) for existing articles.
+3. **Save** is explicit — nothing auto-saves. **Preview** opens the last saved
+   version via the gated `/api/preview?type=…&slug=…` (session cookie
+   required, PREVIEW banner). **Duplicate** copies the article to a fresh
+   draft.
+4. Images go through a **media picker** — upload a new one (auto-converted to
+   WebP client-side, min 400px wide, 800px+ recommended, 5MB cap) or pick from
+   the `/api/media` library. Thumbnails are **cropped to 16:9** (drag to pan,
+   zoom slider) and exported as WebP. Body images have a size selector
+   (small/medium/large/full) and text blocks have a **Wide** toggle.
+5. **Ready ✓** (admin-only) — tick it and set the publish time; the article
+   goes live when the clock passes it. **Publish now** sets the publish time
+   to this moment and saves. Editors cannot tick Ready or publish; they can
+   create/edit/save drafts and see per-article views (site-wide analytics is
+   admin-only).
 
 Roles: `ADMIN_EMAIL`/`ADMIN_PASSWORD` = admin (everything); `EDITOR_EMAIL`/
 `EDITOR_PASSWORD` = editor (create/edit/save drafts, per-article views — no
@@ -183,4 +193,5 @@ A missing Discord message usually means one of:
   called a handful of times per push (5,000/hr with the token, shared with the
   admin API — a bulk import is the only realistic way to get close).
 - The announced page link can 404 for ~30–60s after the push while Cloudflare
-  Pages deploys — the embed itself is correct.
+  Pages deploys — the embed itself is correct. It also 404s until a scheduled
+  post's publish time arrives (the middleware gate).

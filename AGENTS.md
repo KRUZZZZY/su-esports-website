@@ -4,7 +4,7 @@ Cross-tool context for AI coding agents (Claude Code, Codex, Cursor, Copilot, �
 
 ## What this repo is
 
-The website for **Swansea University Esports** (a UK university society), live at https://swanseauniesports.co.uk. A fully static site built with **Astro 7.2.3** + **Tailwind CSS 4.3.3** (CSS-first), with **@tailwindcss/typography** and **@astrojs/sitemap**. Content is markdown in Astro content collections, edited by committee members through **Sveltia CMS** at `/admin`. Hosted on **Cloudflare Pages** (static output, no SSR adapter — `dist/` is served directly). Package manager: **npm**. Node >= 22.
+The website for **Swansea University Esports** (a UK university society), live at https://swanseauniesports.co.uk. A fully static site built with **Astro 7.2.3** + **Tailwind CSS 4.3.3** (CSS-first), with **@tailwindcss/typography** and **@astrojs/sitemap**. Content is markdown in Astro content collections, edited by committee members through the **admin editor** at `/admin/new` (news/events) and **Sveltia CMS** at `/admin`. Hosted on **Cloudflare Pages** (static output, no SSR adapter — `dist/` is served directly). Package manager: **npm**. Node >= 22.
 
 ## Commands
 
@@ -25,12 +25,12 @@ Always run `npm run build` (and ideally `npx astro check`) before finishing a ch
 
 2. **Content lives in `src/content/*` with schemas in `src/content.config.ts`.**
    - `src/content/committee/*.md` — name (req), role (req), ign, photo, socials
-   - `src/content/events/*.md` — title (req), date (req, YYYY-MM-DD), endDate, location, game, image, link, description + markdown body
-   - `src/content/news/*.md` — title (req), date (req), author (default "Swansea Esports"), excerpt, image, draft (default false) + markdown body
+   - `src/content/events/*.md` — title (req), date (req — the PUBLISH time), startDate, endDate, location, game, image, thumbnail, link (https-only), description, organiser, draft, ready, sponsored + markdown body (events have no author)
+   - `src/content/news/*.md` — title (req), date (req — the PUBLISH time), author (default "Swansea Esports"), category, intro (300 max), teaser (120 max), image, thumbnail, draft, ready, sponsored + markdown body
    - `src/content/placements/*.md` — year (req, number), competition (req), game (req), medal (req "1st"/"2nd"/"3rd")
    - `src/content/rankings/*.md` — season (req), placement (req), order (number, sort key)
    - `src/content/reps/*.md` — game (req), name (req, "TBC" if vacant), ign
-   `src/content.config.ts` (glob loaders + zod schemas) is the source of truth for fields. **Keep `public/admin/config.yml` (Sveltia CMS) in sync** whenever collections or fields change — the CMS editor must match the schemas. Filter `draft: true` news posts out of listings and detail routes.
+   `src/content.config.ts` (glob loaders + zod schemas) is the source of truth for fields. **Keep `public/admin/config.yml` (Sveltia CMS) in sync** whenever collections or fields change — the CMS editor must match the schemas. An article is public only when `ready: true` AND `now >= date` (date = publish time) — listings/detail routes filter drafts and not-yet-ready posts, and the D1 middleware 404s article routes before the publish time.
 
 3. **Never commit `dist/`.** It is git-ignored build output; Cloudflare Pages builds it from source.
 
@@ -40,11 +40,11 @@ Always run `npm run build` (and ideally `npx astro check`) before finishing a ch
 
 ## Content editing / CMS note
 
-The committee edits content via Sveltia CMS at `/admin` (`public/admin/index.html` + `public/admin/config.yml`). Each save commits markdown to the GitHub repo and Cloudflare Pages auto-rebuilds. Auth uses the `sveltia-cms-auth` Cloudflare Worker with a fine-grained GitHub PAT set as a Pages secret. The `backend.repo` value in `config.yml` is a placeholder until the society repo exists. See DEPLOY.md for the full runbook.
+Committee members edit news and events through the **admin editor** at `/admin/new` (email/password login, admin + editor roles) and the rest of the content via Sveltia CMS at `/admin` (`public/admin/index.html` + `public/admin/config.yml`). Each save commits markdown to the GitHub repo and Cloudflare Pages auto-rebuilds. Auth uses the `sveltia-cms-auth` Cloudflare Worker with a fine-grained GitHub PAT set as a Pages secret. The `backend.repo` value in `config.yml` is a placeholder until the society repo exists. See DEPLOY.md for the full runbook.
 
-## Admin API / news wizard note
+## Admin API / editor note
 
-`functions/` holds **Cloudflare Pages Functions** (Pages Functions module syntax — the site stays `output: static`, no adapter needed; Functions co-deploy with the build): `functions/api/auth/{login,me,logout}.js` implement the single-admin login (email + password from secrets, HMAC-SHA256-signed HttpOnly session cookie) and `functions/api/news.js` validates a news post and commits it to GitHub via the Contents API, which triggers the Pages auto-rebuild. Shared helpers live in `functions/_lib/` (underscore-prefixed = not routed). The step-based news wizard is `src/pages/admin/new.astro` → `/admin/new`. Local secrets live in **`.dev.vars`** (git-ignored — never commit it); set the same variables as Pages secrets for production. Test Functions locally with `npx wrangler pages dev dist` after `npm run build` — `astro dev` does not run Functions.
+`functions/` holds **Cloudflare Pages Functions** (Pages Functions module syntax — the site stays `output: static`, no adapter needed; Functions co-deploy with the build): `functions/api/auth/{login,me,logout}.js` implement the two-role login (admin + editor, email + password from secrets, HMAC-SHA256-signed HttpOnly session cookie); `functions/api/content.js` is the **unified CRUD router for news + events** (GET list/one, POST/PUT/DELETE, persisting via the GitHub Contents API — the commit triggers the Pages auto-rebuild); `functions/api/upload.js` (images → `public/images/`), `functions/api/media.js` (media library listing) and `functions/api/preview.js` (gated draft preview) back the editor. Flipping `ready` on (the publish gate) is admin-only. Shared helpers live in `functions/_lib/` (underscore-prefixed = not routed). The **single-page admin editor** is `src/pages/admin/new.astro` → `/admin/new` (create dialog → random-slug draft → explicit save, duplicate, media picker, 16:9 thumbnail crop). Local secrets live in **`.dev.vars`** (git-ignored — never commit it); set the same variables as Pages secrets for production. Test Functions locally with `npx wrangler pages dev dist` after `npm run build` — `astro dev` does not run Functions.
 
 ## Link-click analytics note
 

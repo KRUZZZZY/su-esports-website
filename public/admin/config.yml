@@ -47,7 +47,7 @@ collections:
       - { name: organiser, label: "Event organiser", widget: string, required: false }
       - { name: body, label: "Details", widget: markdown, required: false }
       - { name: draft, label: "Draft (hidden from site)", widget: boolean, default: false, required: false }
-      - { name: ready, label: "Ready (goes live until the date passes)", widget: boolean, default: false, required: false }
+      - { name: ready, label: "Ready (goes live at the publish time)", widget: boolean, default: false, required: false }
       - { name: sponsored, label: "Sponsored (hide from search engines)", widget: boolean, default: false, required: false }
 
   - name: news
