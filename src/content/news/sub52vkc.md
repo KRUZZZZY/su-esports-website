@@ -2,6 +2,7 @@
 title: Test draft
 date: "2026-08-23T22:48:00.000Z"
 author: KRUZZZZY
+excerpt: Test News Post
 draft: true
 ready: false
 ---
