@@ -42,6 +42,8 @@ collections:
       - { name: image, label: "Thumbnail", widget: image, required: false }
       - { name: link, label: "Sign-up link", widget: string, required: false }
       - { name: description, label: "Short description", widget: string, required: false }
+      - { name: author, label: "Author", widget: string, required: false }
+      - { name: organiser, label: "Event organiser", widget: string, required: false }
       - { name: body, label: "Details", widget: markdown, required: false }
       - { name: draft, label: "Draft (hidden from site)", widget: boolean, default: false, required: false }
       - { name: ready, label: "Ready (goes live until the date passes)", widget: boolean, default: false, required: false }

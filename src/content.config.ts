@@ -37,6 +37,8 @@ const events = defineCollection({
     image: z.string().optional(),
     link: z.string().optional(),
     description: z.string().optional(),
+    author: z.string().optional(),
+    organiser: z.string().optional(),
     draft: z.boolean().default(false),
     ready: z.boolean().default(false),
     sponsored: z.boolean().default(false)

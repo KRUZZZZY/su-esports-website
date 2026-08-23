@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, date, endDate, location, game, image, link, description } = entry.data;
+const { title, date, endDate, location, game, image, link, description, author, organiser } = entry.data;
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 ---
 
@@ -36,6 +36,8 @@ const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "long", day: "
       {endDate && <time>until {fmt(endDate)}</time>}
       {game && <span>{game}</span>}
       {location && <span>{location}</span>}
+      {organiser && <span>Organised by {organiser}</span>}
+      {author && <span>by {author}</span>}
     </div>
     {image && <img src={image} alt="" width="1200" height="675" class="mt-8 aspect-video w-full rounded-lg border border-line/25 object-cover" />}
     <div class="prose prose-invert mt-8 max-w-none prose-a:text-brand">

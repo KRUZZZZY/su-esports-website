@@ -79,10 +79,10 @@ function validate(type, body) {
   } else {
     if (body.endDate !== undefined && body.endDate !== "") {
       const endDate = typeof body.endDate === "string" ? body.endDate.trim() : "";
-      if (!isValidDate(endDate)) return fail("End date must be a valid YYYY-MM-DD date");
+      if (!isValidDate(endDate)) return fail("End date must be a valid date or datetime");
       fields.endDate = endDate;
     }
-    for (const key of ["location", "game", "link", "description"]) {
+    for (const key of ["location", "game", "link", "description", "author", "organiser"]) {
       const val = typeof body[key] === "string" ? body[key].trim() : "";
       if (val.length > 200) return fail(`${key} must be 200 characters or fewer`);
       if (val) fields[key] = val;

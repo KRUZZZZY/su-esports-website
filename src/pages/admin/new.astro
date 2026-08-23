@@ -74,10 +74,24 @@ import "../../styles/global.css";
           <p id="list-status" class="mt-4 text-sm text-offwhite/50" aria-live="polite">Loading…</p>
 
           <h2 class="mt-8 font-display text-xl tracking-wider text-offwhite">News</h2>
+          <div class="mt-3 flex flex-wrap gap-2 text-xs text-offwhite/50">
+            <span class="mr-1 py-1.5">Sort:</span>
+            <button data-sort="news" data-key="date" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Date</button>
+            <button data-sort="news" data-key="title" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Title</button>
+            <button data-sort="news" data-key="author" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Author</button>
+            <button data-sort="news" data-key="status" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Status</button>
+          </div>
           <div id="list-news" class="mt-3 space-y-2"></div>
           <p id="list-news-empty" class="hidden mt-3 text-sm text-offwhite/50">No news posts yet.</p>
 
           <h2 class="mt-8 font-display text-xl tracking-wider text-offwhite">Events</h2>
+          <div class="mt-3 flex flex-wrap gap-2 text-xs text-offwhite/50">
+            <span class="mr-1 py-1.5">Sort:</span>
+            <button data-sort="events" data-key="date" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Date</button>
+            <button data-sort="events" data-key="title" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Title</button>
+            <button data-sort="events" data-key="author" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Organiser</button>
+            <button data-sort="events" data-key="status" class="rounded border border-white/15 px-2.5 py-1.5 transition-colors hover:border-white/30 hover:text-offwhite">Status</button>
+          </div>
           <div id="list-events" class="mt-3 space-y-2"></div>
           <p id="list-events-empty" class="hidden mt-3 text-sm text-offwhite/50">No events yet.</p>
         </section>
@@ -146,6 +160,12 @@ import "../../styles/global.css";
                 <label for="w-author" class="block text-sm font-medium text-offwhite/80">Author</label>
                 <input id="w-author" type="text" maxlength="100" placeholder="Swansea Esports"
                   class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+              </div>
+              <div id="w-organiser-wrap" class="hidden">
+                <label for="w-organiser" class="block text-sm font-medium text-offwhite/80">Event organiser (optional)</label>
+                <input id="w-organiser" type="text" maxlength="100" placeholder="e.g. Lewis Dasilva"
+                  class="mt-1 w-full rounded-lg border border-white/10 bg-ink px-3 py-2.5 text-offwhite outline-none transition-colors focus:border-brand" />
+                <p class="mt-1 text-xs text-offwhite/50">Who is running this event.</p>
               </div>
               <div id="w-enddate-wrap" class="hidden">
                 <label for="w-enddate" class="block text-sm font-medium text-offwhite/80">End date (optional)</label>
@@ -233,6 +253,7 @@ import "../../styles/global.css";
           title: "",
           date: "",
           author: "Swansea Esports",
+          organiser: "",
           excerpt: "",
           description: "",
           endDate: "",
@@ -289,6 +310,9 @@ import "../../styles/global.css";
         }
 
         // ---- list ---------------------------------------------------------------
+        const listStore = { news: [], events: [] };
+        const listSort = { news: { key: "date", dir: -1 }, events: { key: "date", dir: -1 } };
+
         async function fetchList() {
           const status = $("list-status");
           status.textContent = "Loading…";
@@ -300,18 +324,38 @@ import "../../styles/global.css";
             ]);
             const newsData = await newsRes.json().catch(() => ({}));
             const eventsData = await eventsRes.json().catch(() => ({}));
-            renderList("news", Array.isArray(newsData.items) ? newsData.items : []);
-            renderList("events", Array.isArray(eventsData.items) ? eventsData.items : []);
+            listStore.news = Array.isArray(newsData.items) ? newsData.items : [];
+            listStore.events = Array.isArray(eventsData.items) ? eventsData.items : [];
+            renderList("news");
+            renderList("events");
             status.classList.add("hidden");
           } catch (e) {
             status.textContent = "Could not load content — refresh to try again.";
           }
         }
 
-        function renderList(type, items) {
+        function sortItems(type) {
+          const { key, dir } = listSort[type];
+          const items = [...listStore[type]];
+          const val = (it) => {
+            if (key === "title") return String(it.title || "").toLowerCase();
+            if (key === "author") return String(it.author || it.organiser || "").toLowerCase();
+            if (key === "status") return it.ready === true || it.ready === "true" ? 1 : 0;
+            return String(it.date || "");
+          };
+          items.sort((a, b) => {
+            const va = val(a);
+            const vb = val(b);
+            return va < vb ? -dir : va > vb ? dir : 0;
+          });
+          return items;
+        }
+
+        function renderList(type) {
           const container = $(type === "news" ? "list-news" : "list-events");
           const empty = $(type === "news" ? "list-news-empty" : "list-events-empty");
           container.textContent = "";
+          const items = sortItems(type);
           empty.classList.toggle("hidden", items.length > 0);
           items.forEach((item) => {
             const row = document.createElement("div");
@@ -343,7 +387,8 @@ import "../../styles/global.css";
             }
             const meta = document.createElement("p");
             meta.className = "mt-0.5 text-xs text-offwhite/50";
-            meta.textContent = item.date ? formatDate(item.date) : "—";
+            const authorName = item.author || item.organiser || "";
+            meta.textContent = (item.date ? formatDate(item.date) : "—") + (authorName ? " · " + authorName : "");
             info.append(titleRow, meta);
 
             const actions = document.createElement("div");
@@ -452,6 +497,8 @@ import "../../styles/global.css";
               state.game = typeof data.game === "string" ? data.game : "";
               state.link = typeof data.link === "string" ? data.link : "";
               state.description = typeof data.description === "string" ? data.description : "";
+              state.author = typeof data.author === "string" ? data.author : "";
+              state.organiser = typeof data.organiser === "string" ? data.organiser : "";
             }
             state.image = typeof data.image === "string" ? data.image : "";
             state.blocks = parseBlocks(typeof data.body === "string" ? data.body : "");
@@ -536,7 +583,9 @@ import "../../styles/global.css";
 
         function syncTypeFields() {
           const isNews = state.type === "news";
-          $("w-author-wrap").classList.toggle("hidden", !isNews);
+          // Author is shown for BOTH types (events credit the writer too).
+          $("w-author-wrap").classList.remove("hidden");
+          $("w-organiser-wrap").classList.toggle("hidden", isNews);
           $("w-enddate-wrap").classList.toggle("hidden", isNews);
           $("w-location-wrap").classList.toggle("hidden", isNews);
           $("w-game-wrap").classList.toggle("hidden", isNews);
@@ -549,6 +598,7 @@ import "../../styles/global.css";
           $("w-title").value = state.title;
           $("w-date").value = state.date;
           $("w-author").value = state.author;
+          $("w-organiser").value = state.organiser;
           $("w-excerpt").value = state.excerpt;
           $("w-desc").value = state.description;
           $("w-enddate").value = state.endDate;
@@ -625,9 +675,9 @@ import "../../styles/global.css";
             draft: !state.ready, // ready = live; everything else is a draft
             ready: state.ready,
             sponsored: state.sponsored,
+            author: state.author.trim() || "Swansea Esports",
           };
           if (state.type === "news") {
-            payload.author = state.author.trim() || "Swansea Esports";
             payload.excerpt = state.excerpt.trim();
           } else {
             payload.endDate = state.endDate.trim();
@@ -635,6 +685,7 @@ import "../../styles/global.css";
             payload.game = state.game.trim();
             payload.link = state.link.trim();
             payload.description = state.description.trim();
+            payload.organiser = state.organiser.trim();
           }
           payload.image = state.image.trim();
           return payload;
@@ -864,6 +915,7 @@ import "../../styles/global.css";
           "w-title": "title",
           "w-date": "date",
           "w-author": "author",
+          "w-organiser": "organiser",
           "w-excerpt": "excerpt",
           "w-desc": "description",
           "w-enddate": "endDate",
@@ -929,6 +981,27 @@ import "../../styles/global.css";
           state.blocks.push({ kind: "image", url: "", caption: "" });
           renderBlocks();
           markDirty();
+        });
+
+        document.querySelectorAll("[data-sort]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const type = btn.dataset.sort;
+            const key = btn.dataset.key;
+            const cur = listSort[type];
+            if (cur.key === key) {
+              cur.dir = -cur.dir; // toggle asc/desc on repeat click
+            } else {
+              cur.key = key;
+              cur.dir = -1;
+            }
+            // Active-state styling.
+            document.querySelectorAll(`[data-sort="${type}"]`).forEach((b) => {
+              const on = b.dataset.key === cur.key;
+              b.classList.toggle("border-brand", on);
+              b.classList.toggle("text-brand", on);
+            });
+            renderList(type);
+          });
         });
 
         $("new-news-btn").addEventListener("click", () => {

@@ -137,6 +137,8 @@ export async function onRequestGet({ request, env }) {
     if (data.endDate) metaParts.push(`until ${fmtDate(data.endDate)}`);
     if (data.game) metaParts.push(data.game);
     if (data.location) metaParts.push(data.location);
+    if (data.organiser) metaParts.push(`Organised by ${data.organiser}`);
+    if (data.author) metaParts.push(`by ${data.author}`);
   }
 
   const hero = data.image ? `<img src="${esc(data.image)}" alt="" />` : "";
