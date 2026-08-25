@@ -14,9 +14,28 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { title, date, startDate, endDate, location, game, image, thumbnail, link, description, organiser } = entry.data;
 const eventStart = startDate || date;
-const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+const fmtShort = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+const now = new Date();
+
 // Intro/hero image defaults to the swan banner.
 const heroImage = image || thumbnail || "/brand/swan-wide.png";
+
+// Sidebar: the 3 nearest upcoming events (same live filter as the events
+// listing — published AND not yet started, split by startDate with a fallback
+// to the publish date, soonest first) — excluding this event.
+const starts = (e: { data: { startDate?: Date; date: Date } }) => e.data.startDate || e.data.date;
+const otherEvents = (await getCollection("events"))
+  .filter((e) => !e.data.draft && e.data.ready && e.data.date <= now && starts(e) >= now && e.id !== entry.id)
+  .sort((a, b) => starts(a).getTime() - starts(b).getTime())
+  .slice(0, 3);
+
+// Sidebar: the 4 most recent OTHER published news articles (same live filter
+// as this page, excluding the current article), newest first.
+const otherNews = (await getCollection("news"))
+  .filter((n) => !n.data.draft && n.data.ready && n.data.date <= now && n.id !== entry.id)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 4);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -31,27 +50,153 @@ const heroImage = image || thumbnail || "/brand/swan-wide.png";
       }
     } catch (e) {}
   </script>
-  <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-    <a href="/events" class="text-sm text-brand transition-colors hover:text-brand-dark">← All events</a>
-    <h1 class="mt-4 font-display text-4xl leading-tight tracking-wide text-offwhite">{title}</h1>
-    <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-offwhite/60">
-      <time>{fmt(eventStart)}</time>
-      {endDate && <time>until {fmt(endDate)}</time>}
-      {game && <span>{game}</span>}
-      {location && <span>{location}</span>}
-      {organiser && <span>Organised by {organiser}</span>}
+
+  <!-- Full-bleed hero: edge-to-edge image, sharp corners, dark gradient overlay -->
+  <section class="relative w-full overflow-hidden bg-ink max-h-[70vh]">
+    <img src={heroImage} alt="" class="absolute inset-0 h-full w-full object-cover" />
+    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/25"></div>
+    <div class="relative mx-auto flex min-h-[400px] w-full max-w-6xl flex-col justify-end px-4 pb-12 pt-24 sm:min-h-[480px] sm:px-6 md:min-h-[540px] md:pb-16">
+      <a
+        href="/events"
+        data-track="events-back"
+        class="absolute left-4 top-6 inline-flex items-center rounded bg-black/40 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/60 hover:text-brand sm:left-6 sm:top-8"
+      >
+        ← All events
+      </a>
+      {game && (
+        <span class="mb-4 inline-block w-fit rounded bg-brand/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-brand">
+          {game}
+        </span>
+      )}
+      <h1 class="max-w-3xl font-display text-5xl leading-[0.95] tracking-wide text-white sm:text-6xl md:text-7xl">
+        {title}
+      </h1>
+      <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+        <time class="text-white/70">{fmt(eventStart)}</time>
+        {location && (
+          <>
+            <span class="text-white/50">·</span>
+            <span class="text-white/70">{location}</span>
+          </>
+        )}
+        {game && (
+          <>
+            <span class="text-white/50">·</span>
+            <span class="text-white/70">{game}</span>
+          </>
+        )}
+        {endDate && (
+          <>
+            <span class="text-white/50">·</span>
+            <span class="text-white/70">until {fmt(endDate)}</span>
+          </>
+        )}
+      </div>
+      {(link || organiser) && (
+        <div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+          {link && (
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener"
+              data-track="event-signup"
+              class="inline-block rounded bg-brand px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-brand-dark"
+            >
+              Sign up / more info
+            </a>
+          )}
+          {organiser && <span class="text-sm text-white/70">Organised by {organiser}</span>}
+        </div>
+      )}
     </div>
-    {heroImage && <img src={heroImage} alt="" class="mt-8 w-full rounded-xl border border-line/25" style="max-height:480px;object-fit:cover;object-position:center" />}
-    {description && <p class="mt-6 text-lg leading-relaxed text-offwhite/85">{description}</p>}
-    <div class="prose prose-invert mt-8 max-w-none prose-a:text-brand">
-      <Content />
+  </section>
+
+  <!-- Two-column body: event (left, ~70%) + sidebar (right, ~30%), stacked on small screens -->
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+    <div class="grid gap-10 lg:grid-cols-[7fr_3fr] lg:gap-12">
+      <article class="min-w-0">
+        {description && (
+          <p class="border-b border-line/25 pb-6 text-lg leading-relaxed text-offwhite/85">{description}</p>
+        )}
+        <div class="prose prose-invert mt-8 max-w-none prose-a:text-brand">
+          <Content />
+        </div>
+      </article>
+
+      <aside class="min-w-0 lg:border-l lg:border-line/25 lg:pl-10">
+        <h2 class="font-display text-2xl tracking-wide text-offwhite">Other Events</h2>
+        <div class="mt-2 h-0.5 w-10 bg-brand" aria-hidden="true"></div>
+        {
+          otherEvents.length > 0 ? (
+            <ul class="mt-6 space-y-4">
+              {otherEvents.map((e) => (
+                <li>
+                  <a href={`/events/${e.id}`} data-track={`other-events-${e.id}`} class="group block">
+                    <span class="block font-display text-lg leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">
+                      {e.data.title}
+                    </span>
+                    <time class="mt-0.5 block text-xs text-offwhite/60">{fmtShort(starts(e))}</time>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="mt-6 text-sm text-offwhite/60">No upcoming events — join the Discord to hear first.</p>
+          )
+        }
+
+        <div class="my-8 border-t border-line/25" aria-hidden="true"></div>
+
+        <h2 class="font-display text-2xl tracking-wide text-offwhite">Other News</h2>
+        <div class="mt-2 h-0.5 w-10 bg-brand" aria-hidden="true"></div>
+        {
+          otherNews.length > 0 ? (
+            <ul class="mt-6 space-y-5">
+              {otherNews.map((n) => (
+                <li>
+                  <a href={`/news/${n.id}`} data-track={`other-news-${n.id}`} class="group flex items-start gap-3">
+                    {n.data.thumbnail || n.data.image ? (
+                      <img
+                        src={n.data.thumbnail || n.data.image}
+                        alt=""
+                        width="80"
+                        height="56"
+                        class="h-14 w-20 shrink-0 rounded border border-line/25 object-cover transition-opacity group-hover:opacity-90"
+                      />
+                    ) : (
+                      <div class="flex h-14 w-20 shrink-0 items-center justify-center rounded border border-line/25 bg-brand-gradient">
+                        <img src="/brand/swan-head-clean.png" alt="" width="28" height="28" class="h-7 w-7 object-contain opacity-40" />
+                      </div>
+                    )}
+                    <span class="min-w-0">
+                      <span class="line-clamp-2 font-display text-lg leading-tight tracking-wide text-offwhite transition-colors group-hover:text-brand">
+                        {n.data.title}
+                      </span>
+                      <time class="mt-0.5 block text-xs text-offwhite/60">{fmtShort(n.data.date)}</time>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="mt-6 text-sm text-offwhite/60">No other news yet.</p>
+          )
+        }
+      </aside>
     </div>
-    {
-      link && (
-        <a href={link} target="_blank" rel="noopener" class="mt-6 inline-block rounded bg-brand px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-brand-dark">
-          Sign up / more info
-        </a>
-      )
-    }
-  </article>
+  </div>
 </BaseLayout>
+
+<style is:global>
+  /* Cap inline article images: the raw markdown images render at natural size
+     (up to the full content-column width). Keep them at a contained editorial
+     size — cover-cropped, rounded, token-bordered. */
+  .prose img {
+    max-height: 24rem;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--color-line) 25%, transparent);
+  }
+</style>
