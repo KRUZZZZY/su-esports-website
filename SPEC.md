@@ -171,6 +171,8 @@ Single source for site metadata and links (used by Header, Footer, SocialLinks, 
 
 **Style conventions:** dark theme (`color-scheme: dark`); Bebas Neue for headings with `letter-spacing: 0.03em`; body text in the system sans stack; prose styles from `@tailwindcss/typography` for rendered markdown.
 
+**News article page layout (`/news/[slug]`):** full-bleed hero band at the top (article `image`/`thumbnail`, sharp corners, dark gradient overlay, capped at `70vh`) with the category badge, Bebas Neue title and an `author · date · N min read` line overlaid at the bottom-left; below, a two-column grid (`7fr/3fr`, stacks on small screens) — the article body (intro lead + prose) on the left, and a right sidebar separated by a vertical rule containing **Other News** (4 most recent published posts, excluding the current one) and **Other Events** (3 nearest upcoming), the two modules split by a horizontal rule. Inline markdown images in the prose are capped (`max-height: 24rem`, `object-fit: cover`, rounded, token-bordered).
+
 ---
 
 ## 5. Content editing (CMS)
