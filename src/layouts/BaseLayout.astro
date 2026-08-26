@@ -11,6 +11,7 @@ interface Props {
 
 const { title, description = site.description } = Astro.props;
 const fullTitle = title ? `${title} · ${site.shortName}` : `${site.name} — ${site.handle}`;
+const ogImage = `${site.url}/brand/og.png`;
 ---
 
 <!doctype html>
@@ -36,6 +37,9 @@ const fullTitle = title ? `${title} · ${site.shortName}` : `${site.name} — ${
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
     <link rel="canonical" href={Astro.url.href} />
     <script is:inline>
       // Link-click tracker: fires a sendBeacon to /api/track on every anchor
