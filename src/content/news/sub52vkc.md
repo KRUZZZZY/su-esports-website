@@ -7,8 +7,8 @@ intro: "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmo
 teaser: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
 image: /images/1787525960463-swan-wide.webp
 thumbnail: /images/1787529154739-thumbnail-1787529154653.webp
-draft: false
-ready: true
+draft: true
+ready: false
 ---
 
 ![Swan wide](/images/1787525659035-swan-wide.webp)
